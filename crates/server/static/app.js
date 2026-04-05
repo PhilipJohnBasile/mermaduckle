@@ -1500,9 +1500,39 @@ function showAgentModal(agent = null) {
   document.body.appendChild(overlay);
 }
 
-document.addEventListener('DOMContentLoaded', () => { 
-  navigate('dashboard'); 
-  
+document.addEventListener('DOMContentLoaded', async () => {
+  // Development convenience: if running on localhost and no API key is set,
+  // auto-create a one-time dev API key using the seeded dev credential and
+  // store it in localStorage so the SPA becomes functional without manual steps.
+  try {
+    if (!localStorage.getItem('apiKey') && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      if (!sessionStorage.getItem('dev_auto_key_done')) {
+        try {
+          const res = await fetch('/api/settings/api-keys', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer sk_dev_qwe456**********************'
+            },
+            body: JSON.stringify({ name: 'auto-generated-dev' })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem('apiKey', data.key);
+            apiKey = data.key;
+            sessionStorage.setItem('dev_auto_key_done', '1');
+            showCreatedKeyModal(data.key);
+            showToast('Auto-created a development API key', 'success');
+          }
+        } catch (e) {
+          // ignore — server may not be ready yet
+        }
+      }
+    }
+  } catch (e) { console.error('dev key auto-create failed', e); }
+
+  navigate('dashboard');
+
   // Live Polling for active views
   setInterval(() => {
     if (currentPage === 'dashboard' || currentPage === 'approvals') {
