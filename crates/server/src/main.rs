@@ -16,23 +16,35 @@ async fn validator(
 ) -> Result<actix_web::dev::ServiceRequest, (Error, actix_web::dev::ServiceRequest)> {
     let token = credentials.token();
     let pool = req.app_data::<web::Data<db::DbPool>>().cloned().unwrap();
-    let conn = pool.get().unwrap();
+    let client = pool.get().await.map_err(|_| {
+        (
+            actix_web::error::ErrorInternalServerError("DB pool error"),
+            // We can't clone req here, but this is handled by the outer pattern
+        )
+    });
+    let client = match client {
+        Ok(c) => c,
+        Err(_) => return Err((actix_web::error::ErrorInternalServerError("DB pool error"), req)),
+    };
     // Fetch active key hashes and verify using Argon2 via password-hash API
-    let mut stmt = conn
-        .prepare("SELECT key_hash FROM api_keys WHERE status = 'active'")
-        .unwrap();
-    let key_iter = stmt.query_map([], |row| row.get::<_, String>(0)).unwrap();
-    for kh in key_iter.filter_map(|r| r.ok()) {
+    let rows = client
+        .query("SELECT key_hash FROM api_keys WHERE status = 'active'", &[])
+        .await
+        .unwrap_or_default();
+    for row in &rows {
+        let kh: String = row.get(0);
         if let Ok(parsed) = PasswordHash::new(&kh) {
             if Argon2::default()
                 .verify_password(token.as_bytes(), &parsed)
                 .is_ok()
             {
-                conn.execute(
-                    "UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE key_hash = ?1",
-                    [&kh],
-                )
-                .ok();
+                client
+                    .execute(
+                        "UPDATE api_keys SET last_used_at = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') WHERE key_hash = $1",
+                        &[&kh],
+                    )
+                    .await
+                    .ok();
                 return Ok(req);
             }
         }
@@ -44,14 +56,15 @@ async fn validator(
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
-    let db_path = std::env::var("DATABASE_PATH").unwrap_or_else(|_| "data/app.db".into());
-    let pool = db::create_pool(&db_path);
-    log::info!("Database initialized at {db_path}");
+    let database_url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set (e.g. postgresql://user:pass@host/db?sslmode=require)");
+    let pool = db::create_pool(&database_url).await;
+    log::info!("Database initialized (Neon Postgres)");
 
     // Start background scheduler
-    let scheduler_pool = pool.clone();
+    let scheduler_pool = std::sync::Arc::new(pool.clone());
     tokio::spawn(async move {
-        scheduler::start_scheduler(scheduler_pool).await;
+        scheduler::start_scheduler(scheduler_pool);
     });
 
     let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".into());

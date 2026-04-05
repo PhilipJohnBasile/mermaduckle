@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle Docs | Self-Hosted Deployment Guide</title>
+    <title>Mermaduckle Docs | Postgres Deployment Guide</title>
     <meta
       name="description"
-      content="Deploy Mermaduckle in your own environment. This guide explains the public sandbox, the self-hosted deployment path, Fly.io setup, GitHub Actions, and runtime configuration."
+      content="Deploy Mermaduckle in your own environment. This guide explains the public sandbox, the Postgres-backed deployment path, Fly.io setup, GitHub Actions, and runtime configuration."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,7 +24,7 @@
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>Self-hosted deployment guide</span>
+            <span>Postgres deployment guide</span>
           </span>
         </a>
         <div class="marketing-nav-actions">
@@ -37,13 +37,14 @@
         <section class="marketing-docs-hero marketing-reveal" data-reveal>
           <div class="marketing-docs-hero-grid">
             <div class="marketing-docs-hero-copy">
-              <div class="marketing-eyebrow">Self-hosted guide</div>
-              <h1>Self-host the same product you see in the public sandbox.</h1>
+              <div class="marketing-eyebrow">Production deployment guide</div>
+              <h1>Deploy the Rust control plane with Postgres behind it.</h1>
               <p>
                 This domain hosts three things: the marketing site, a public sandbox at
                 <code>/app</code>, and this deployment guide. Customer production environments use
-                the same Rust service, but run as separate deployments under your ownership or as a
-                supported rollout.
+                the same Rust service, but run as separate deployments backed by Postgres. We
+                recommend Neon when you want one database that works cleanly with both Fly and
+                Railway.
               </p>
               <div class="marketing-cta-row">
                 <a class="marketing-button marketing-button-primary" href="/app">Open sandbox</a>
@@ -69,7 +70,7 @@
                 </div>
                 <div>
                   <span>Deployment guide</span>
-                  <strong><code>/docs</code> covers the self-hosted path and release workflow.</strong>
+                  <strong><code>/docs</code> covers the Postgres deployment path and release workflow.</strong>
                   <p>Use it when you are ready to run the same service in your own environment.</p>
                 </div>
               </div>
@@ -93,7 +94,8 @@
               <h2>Deployment model</h2>
               <p>
                 The public sandbox and the self-hosted product are the same service in different
-                deployment contexts.
+                deployment contexts. Production deployments are moving to a dedicated
+                Postgres-backed architecture.
               </p>
             </div>
           </div>
@@ -106,12 +108,12 @@
             <article class="marketing-doc-card">
               <span class="marketing-card-kicker">Self-host</span>
               <h3>Deploy a separate customer-owned environment.</h3>
-              <p>Run the same service in Fly or your own infrastructure stack with repo-provided artifacts.</p>
+              <p>Run the same service in Fly, Railway, or your own infrastructure stack with a dedicated Postgres database.</p>
             </article>
             <article class="marketing-doc-card">
               <span class="marketing-card-kicker">Supported rollout</span>
               <h3>Launch with implementation help.</h3>
-              <p>Use a supported rollout when the team wants faster adoption and operational guidance.</p>
+              <p>Use a supported rollout when the team wants faster adoption, Neon setup help, and operational guidance.</p>
             </article>
           </div>
         </section>
@@ -121,7 +123,7 @@
             <div class="marketing-doc-step">02</div>
             <div>
               <h2>Local start</h2>
-              <p>Run a local instance from the repository root and inspect every public route.</p>
+              <p>Run a local evaluation instance from the repository root and inspect every public route.</p>
             </div>
           </div>
           <pre data-copyable><code>cargo run -p mermaduckle-server</code></pre>
@@ -131,6 +133,10 @@
             <li><code>/docs</code> deployment guide</li>
             <li><code>/api/health</code> service readiness endpoint</li>
           </ul>
+          <p class="marketing-doc-note">
+            Use the local path for product evaluation. The production deployment target is a
+            Postgres-backed environment rather than embedded single-machine storage.
+          </p>
         </section>
 
         <section class="marketing-doc-block marketing-reveal" id="fly-deploy" data-reveal>
@@ -139,15 +145,16 @@
             <div>
               <h2>Deploy to Fly.io</h2>
               <p>
-                The repository already includes the Dockerfile and <code>fly.toml</code> required
-                for a Fly rollout.
+                Use Fly for the app tier and connect it to managed Postgres. The repository already
+                includes the Dockerfile and <code>fly.toml</code> required for a Fly rollout.
               </p>
             </div>
           </div>
           <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --remote-only --config fly.toml</code></pre>
           <p class="marketing-doc-note">
-            The current repo is configured around a single service that serves the marketing site,
-            sandbox, docs, and API from internal port <code>3001</code>.
+            The current repo is configured around a single Rust service that serves the marketing
+            site, sandbox, docs, and API from internal port <code>3001</code>. Pair that service
+            with Neon or another managed Postgres provider for production data.
           </p>
         </section>
 
@@ -162,6 +169,7 @@
           <pre data-copyable><code>fly tokens create deploy --app &lt;app-name&gt;</code></pre>
           <ul>
             <li>Add the token as the repository secret <code>FLY_API_TOKEN</code>.</li>
+            <li>Store your Postgres connection string as an environment secret for the deployed app.</li>
             <li>The deployment workflow lives in <code>.github/workflows/fly-deploy.yml</code>.</li>
             <li>The workflow runs <code>flyctl deploy --remote-only --config fly.toml</code>.</li>
           </ul>
@@ -189,11 +197,16 @@ flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
             </div>
           </div>
           <div class="marketing-doc-table">
-            <div><strong>DATABASE_PATH</strong><span><code>data/app.db</code></span></div>
+            <div><strong>DATABASE_URL</strong><span><code>postgresql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;/&lt;db&gt;</code></span></div>
             <div><strong>OLLAMA_URL</strong><span><code>http://localhost:11434</code></span></div>
             <div><strong>HOST</strong><span><code>0.0.0.0</code></span></div>
             <div><strong>PORT</strong><span><code>3001</code></span></div>
           </div>
+          <p class="marketing-doc-note">
+            Production deployments are moving from file-based SQLite configuration to
+            <code>DATABASE_URL</code>-driven Postgres connectivity. Keep the app tier portable and
+            the data tier shared.
+          </p>
         </section>
 
         <section class="marketing-doc-block marketing-reveal" data-reveal>

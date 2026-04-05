@@ -1,6 +1,5 @@
 use crate::db::DbPool;
 use actix_web::{HttpResponse, get, web};
-use rusqlite::params;
 
 #[get("/api/reporting/audit/{workflow_id}")]
 pub async fn generate_workflow_report(
@@ -8,36 +7,45 @@ pub async fn generate_workflow_report(
     path: web::Path<String>,
 ) -> HttpResponse {
     let workflow_id = path.into_inner();
-    let conn = pool.get().unwrap();
+    let client = pool.get().await.unwrap();
 
     // 1. Get workflow details
-    let (name, run_count) = match conn.query_row(
-        "SELECT name, run_count FROM workflows WHERE id = ?1",
-        params![workflow_id],
-        |row| Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?)),
-    ) {
-        Ok(v) => v,
-        Err(_) => {
+    let wf_row = client
+        .query_opt(
+            "SELECT name, run_count FROM workflows WHERE id = $1",
+            &[&workflow_id],
+        )
+        .await;
+
+    let (name, run_count): (String, i64) = match wf_row {
+        Ok(Some(row)) => (row.get(0), row.get(1)),
+        _ => {
             return HttpResponse::NotFound()
                 .json(serde_json::json!({"error": "Workflow not found"}));
         }
     };
 
     // 2. Get recent runs
-    let mut stmt = conn.prepare("SELECT status, started_at, completed_at FROM workflow_runs WHERE workflow_id = ?1 ORDER BY started_at DESC LIMIT 10").unwrap();
-    let runs: Vec<serde_json::Value> = stmt
-        .query_map(params![workflow_id], |row| {
-            Ok(serde_json::json!({
-                "status": row.get::<_, String>(0)?,
-                "started_at": row.get::<_, String>(1)?,
-                "completed_at": row.get::<_, Option<String>>(2)?,
-            }))
+    let rows = client
+        .query(
+            "SELECT status, started_at, completed_at FROM workflow_runs WHERE workflow_id = $1 ORDER BY started_at DESC LIMIT 10",
+            &[&workflow_id],
+        )
+        .await
+        .unwrap_or_default();
+
+    let runs: Vec<serde_json::Value> = rows
+        .iter()
+        .map(|row| {
+            serde_json::json!({
+                "status": row.get::<_, String>(0),
+                "started_at": row.get::<_, String>(1),
+                "completed_at": row.get::<_, Option<String>>(2),
+            })
         })
-        .unwrap()
-        .filter_map(|r| r.ok())
         .collect();
 
-    // 3. Construct a beautiful Markdown report
+    // 3. Construct a Markdown report
     let mut report = format!("# Executive Audit Report: {}\n\n", name);
     report.push_str(&format!("**ID:** `{}`  \n", workflow_id));
     report.push_str(&format!("**Total Executions:** {}  \n", run_count));

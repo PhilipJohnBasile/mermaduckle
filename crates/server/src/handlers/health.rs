@@ -5,9 +5,9 @@ use actix_web::{HttpResponse, get, web};
 
 #[get("/api/health")]
 pub async fn health_check(pool: web::Data<DbPool>) -> HttpResponse {
-    let db_status = match pool.get() {
-        Ok(conn) => match conn.query_row("SELECT 1", [], |_| Ok(())) {
-            Ok(()) => "ok".to_string(),
+    let db_status = match pool.get().await {
+        Ok(client) => match client.query_one("SELECT 1", &[]).await {
+            Ok(_) => "ok".to_string(),
             Err(_) => "error".to_string(),
         },
         Err(_) => "error".to_string(),

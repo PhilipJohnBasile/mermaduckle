@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/
 WORKDIR /app
 COPY --from=builder /workspace/target/release/mermaduckle-server /usr/local/bin/mermaduckle-server
 COPY --from=builder /workspace/crates/server/static ./static
-RUN mkdir -p data
 EXPOSE 3001
 ENV PORT=3001
 CMD ["/usr/local/bin/mermaduckle-server"]

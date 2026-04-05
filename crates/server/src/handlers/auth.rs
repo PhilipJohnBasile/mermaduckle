@@ -3,7 +3,6 @@ use actix_web::{HttpRequest, HttpResponse, get, post, web};
 use argon2::password_hash::{PasswordHash, SaltString};
 use argon2::{Argon2, PasswordHasher, PasswordVerifier};
 use rand::rngs::OsRng;
-use rusqlite::params;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -31,16 +30,14 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
         }));
     }
 
-    let conn = pool.get().unwrap();
+    let client = pool.get().await.unwrap();
 
     // Check if email already exists
-    let exists: i64 = conn
-        .query_row(
-            "SELECT COUNT(*) FROM users WHERE email = ?1",
-            params![email],
-            |row| row.get(0),
-        )
-        .unwrap_or(0);
+    let row = client
+        .query_one("SELECT COUNT(*)::bigint FROM users WHERE email = $1", &[&email])
+        .await
+        .ok();
+    let exists: i64 = row.map(|r| r.get(0)).unwrap_or(0);
 
     if exists > 0 {
         return HttpResponse::Conflict().json(serde_json::json!({
@@ -65,10 +62,12 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
     );
     let session_id = format!("ses_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
 
-    // First registered user becomes admin, all others are regular users
-    let user_count: i64 = conn
-        .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
-        .unwrap_or(0);
+    // First registered user becomes admin
+    let count_row = client
+        .query_one("SELECT COUNT(*)::bigint FROM users", &[])
+        .await
+        .ok();
+    let user_count: i64 = count_row.map(|r| r.get(0)).unwrap_or(0);
     let role = if user_count == 0 || db::is_bootstrap_admin_email(&email) {
         "admin"
     } else {
@@ -76,21 +75,27 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
     };
 
     // Insert user
-    if let Err(_) = conn.execute(
-        "INSERT INTO users (id, name, email, password_hash, role) VALUES (?1, ?2, ?3, ?4, ?5)",
-        params![user_id, name, email, password_hash, role],
-    ) {
+    if client
+        .execute(
+            "INSERT INTO users (id, name, email, password_hash, role) VALUES ($1, $2, $3, $4, $5)",
+            &[&user_id, &name, &email, &password_hash, &role],
+        )
+        .await
+        .is_err()
+    {
         return HttpResponse::InternalServerError().json(serde_json::json!({
             "error": "Failed to create account."
         }));
     }
 
     // Create session
-    conn.execute(
-        "INSERT INTO sessions (id, user_id) VALUES (?1, ?2)",
-        params![session_id, user_id],
-    )
-    .ok();
+    client
+        .execute(
+            "INSERT INTO sessions (id, user_id) VALUES ($1, $2)",
+            &[&session_id, &user_id],
+        )
+        .await
+        .ok();
 
     // Auto-provision an API key for this user
     let raw_key = format!(
@@ -107,11 +112,13 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
             .unwrap_or("x")
     );
 
-    conn.execute(
-        "INSERT INTO api_keys (id, name, key_hash, scopes, status) VALUES (?1, ?2, ?3, 'read,write,execute', 'active')",
-        params![key_id, format!("{}'s key", name), key_hash],
-    )
-    .ok();
+    client
+        .execute(
+            "INSERT INTO api_keys (id, name, key_hash, scopes, status) VALUES ($1, $2, $3, 'read,write,execute', 'active')",
+            &[&key_id, &format!("{}'s key", name), &key_hash],
+        )
+        .await
+        .ok();
 
     HttpResponse::Ok().json(serde_json::json!({
         "session": session_id,
@@ -130,30 +137,29 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
     let email = body.email.trim().to_lowercase();
     let password = &body.password;
 
-    let conn = pool.get().unwrap();
+    let client = pool.get().await.unwrap();
 
-    let user = conn.query_row(
-        "SELECT id, name, email, password_hash, role FROM users WHERE email = ?1",
-        params![email],
-        |row| {
-            Ok((
-                row.get::<_, String>(0)?,
-                row.get::<_, String>(1)?,
-                row.get::<_, String>(2)?,
-                row.get::<_, String>(3)?,
-                row.get::<_, String>(4)?,
-            ))
-        },
-    );
+    let user = client
+        .query_opt(
+            "SELECT id, name, email, password_hash, role FROM users WHERE email = $1",
+            &[&email],
+        )
+        .await;
 
-    let (user_id, name, user_email, stored_hash, mut role) = match user {
-        Ok(u) => u,
-        Err(_) => {
+    let row = match user {
+        Ok(Some(r)) => r,
+        _ => {
             return HttpResponse::Unauthorized().json(serde_json::json!({
                 "error": "Invalid email or password."
             }));
         }
     };
+
+    let user_id: String = row.get(0);
+    let name: String = row.get(1);
+    let user_email: String = row.get(2);
+    let stored_hash: String = row.get(3);
+    let mut role: String = row.get(4);
 
     // Verify password
     let parsed = match PasswordHash::new(&stored_hash) {
@@ -175,30 +181,35 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
     }
 
     if db::is_bootstrap_admin_email(&user_email) && role != "admin" {
-        conn.execute(
-            "UPDATE users SET role = 'admin' WHERE id = ?1",
-            params![user_id],
-        )
-        .ok();
+        client
+            .execute(
+                "UPDATE users SET role = 'admin' WHERE id = $1",
+                &[&user_id],
+            )
+            .await
+            .ok();
         role = "admin".to_string();
     }
 
     // Create session
     let session_id = format!("ses_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
-    conn.execute(
-        "INSERT INTO sessions (id, user_id) VALUES (?1, ?2)",
-        params![session_id, user_id],
-    )
-    .ok();
-
-    // Find or create an API key for this user
-    let existing_key: Option<String> = conn
-        .query_row(
-            "SELECT id FROM api_keys WHERE name LIKE ?1 AND status = 'active' LIMIT 1",
-            params![format!("{}%", name)],
-            |row| row.get(0),
+    client
+        .execute(
+            "INSERT INTO sessions (id, user_id) VALUES ($1, $2)",
+            &[&session_id, &user_id],
         )
+        .await
         .ok();
+
+    // Find or create an API key
+    let existing_key = client
+        .query_opt(
+            "SELECT id FROM api_keys WHERE name LIKE $1 AND status = 'active' LIMIT 1",
+            &[&format!("{}%", name)],
+        )
+        .await
+        .ok()
+        .flatten();
 
     let raw_key = format!(
         "mk_live_{}",
@@ -206,13 +217,15 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
     );
     let key_hash = db::hash_key(&raw_key);
 
-    if let Some(existing_id) = existing_key {
-        // Rotate the existing key so user gets a fresh one
-        conn.execute(
-            "UPDATE api_keys SET key_hash = ?1, last_used_at = CURRENT_TIMESTAMP WHERE id = ?2",
-            params![key_hash, existing_id],
-        )
-        .ok();
+    if let Some(existing_row) = existing_key {
+        let existing_id: String = existing_row.get(0);
+        client
+            .execute(
+                "UPDATE api_keys SET key_hash = $1, last_used_at = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') WHERE id = $2",
+                &[&key_hash, &existing_id],
+            )
+            .await
+            .ok();
     } else {
         let key_id = format!(
             "key_{}",
@@ -222,11 +235,13 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
                 .next()
                 .unwrap_or("x")
         );
-        conn.execute(
-            "INSERT INTO api_keys (id, name, key_hash, scopes, status) VALUES (?1, ?2, ?3, 'read,write,execute', 'active')",
-            params![key_id, format!("{}'s key", name), key_hash],
-        )
-        .ok();
+        client
+            .execute(
+                "INSERT INTO api_keys (id, name, key_hash, scopes, status) VALUES ($1, $2, $3, 'read,write,execute', 'active')",
+                &[&key_id, &format!("{}'s key", name), &key_hash],
+            )
+            .await
+            .ok();
     }
 
     HttpResponse::Ok().json(serde_json::json!({
@@ -257,28 +272,29 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
         }
     };
 
-    let conn = pool.get().unwrap();
-    let user = conn.query_row(
-        "SELECT u.id, u.name, u.email, u.role FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = ?1",
-        params![session_id],
-        |row| {
-            Ok((
-                row.get::<_, String>(0)?,
-                row.get::<_, String>(1)?,
-                row.get::<_, String>(2)?,
-                row.get::<_, String>(3)?,
-            ))
-        },
-    );
+    let client = pool.get().await.unwrap();
+    let user = client
+        .query_opt(
+            "SELECT u.id, u.name, u.email, u.role FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = $1",
+            &[&session_id],
+        )
+        .await;
 
     match user {
-        Ok((user_id, name, email, mut role)) => {
+        Ok(Some(row)) => {
+            let user_id: String = row.get(0);
+            let name: String = row.get(1);
+            let email: String = row.get(2);
+            let mut role: String = row.get(3);
+
             if db::is_bootstrap_admin_email(&email) && role != "admin" {
-                conn.execute(
-                    "UPDATE users SET role = 'admin' WHERE id = ?1",
-                    params![user_id],
-                )
-                .ok();
+                client
+                    .execute(
+                        "UPDATE users SET role = 'admin' WHERE id = $1",
+                        &[&user_id],
+                    )
+                    .await
+                    .ok();
                 role = "admin".to_string();
             }
 
@@ -289,7 +305,7 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
                 "role": role,
             }))
         }
-        Err(_) => HttpResponse::Unauthorized().json(serde_json::json!({
+        _ => HttpResponse::Unauthorized().json(serde_json::json!({
             "error": "Invalid or expired session."
         })),
     }
@@ -303,8 +319,10 @@ pub async fn logout(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
         .and_then(|v| v.to_str().ok())
         .and_then(|v| v.strip_prefix("Bearer "))
     {
-        let conn = pool.get().unwrap();
-        conn.execute("DELETE FROM sessions WHERE id = ?1", params![session_id])
+        let client = pool.get().await.unwrap();
+        client
+            .execute("DELETE FROM sessions WHERE id = $1", &[&session_id])
+            .await
             .ok();
     }
     HttpResponse::Ok().json(serde_json::json!({ "success": true }))

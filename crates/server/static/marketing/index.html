@@ -6,12 +6,12 @@
     <title>Mermaduckle — Ship AI Workflows with Confidence</title>
     <meta
       name="description"
-      content="Open-source AI workflow platform. Build visually, approve before executing, audit every run. Self-host or deploy with support."
+      content="Open-source AI workflow platform. Build visually, approve high-stakes actions, audit every run, and deploy on a Postgres-backed architecture."
     />
     <meta property="og:title" content="Mermaduckle — Ship AI Workflows with Confidence" />
     <meta
       property="og:description"
-      content="Build, approve, run, and audit AI workflows. Open source. Self-hosted. Production-ready."
+      content="Build, approve, run, and audit AI workflows. Open source, self-hostable, and designed for Postgres-backed production deployments."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,12 +63,12 @@
         <!-- ═══ HERO ═══ -->
         <section class="marketing-hero" id="platform">
           <div class="marketing-hero-copy marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Open-source &middot; Self-hosted &middot; Free</div>
+            <div class="marketing-eyebrow">Open source &middot; Postgres-backed &middot; Self-hostable</div>
             <h1>Ship AI workflows with confidence.</h1>
             <p class="marketing-lede">
               Build visual workflows, route sensitive actions through human approval,
               manage agents and secrets, and audit every run &mdash; all in one open-source
-              Rust binary you deploy on your own infrastructure.
+              Rust control plane designed for reliable Postgres-backed production deployments.
             </p>
             <div class="marketing-cta-row">
               <a class="marketing-button marketing-button-primary" href="/app"
@@ -82,7 +82,7 @@
 
           <aside class="marketing-command-card marketing-reveal" data-reveal>
             <div class="marketing-card-kicker">Get running in 60 seconds</div>
-            <h2>One binary. Zero dependencies.</h2>
+            <h2>Rust control plane. Postgres where it counts.</h2>
             <article class="marketing-code-card" style="border:none;padding:0;background:none;box-shadow:none;">
               <pre style="margin:0.8rem 0;"><code><span style="color:var(--marketing-faint)">$</span> git clone https://github.com/PhilipJohnBasile/mermaduckle
 <span style="color:var(--marketing-faint)">$</span> cd mermaduckle
@@ -92,13 +92,13 @@
             <div class="marketing-command-grid" style="margin-top:0.8rem;">
               <article class="marketing-command-pane">
                 <span>Stack</span>
-                <strong>Rust + SQLite</strong>
-                <p>Single binary, embedded DB, no infra dependencies.</p>
+                <strong>Rust + Postgres</strong>
+                <p>Rust app server with a production-safe relational data layer.</p>
               </article>
               <article class="marketing-command-pane">
                 <span>Deploy</span>
-                <strong>Docker + Fly.io</strong>
-                <p>Ship with the included Dockerfile or one-click Fly deploy.</p>
+                <strong>Fly, Railway, or Docker</strong>
+                <p>Run the app tier anywhere and point it at Neon or platform Postgres.</p>
               </article>
             </div>
           </aside>
@@ -119,8 +119,8 @@
             <span>Core surfaces</span>
           </div>
           <div class="marketing-stat">
-            <strong>0</strong>
-            <span>External dependencies</span>
+            <strong>3</strong>
+            <span>Deploy paths</span>
           </div>
           <div class="marketing-stat">
             <strong>&lt;50ms</strong>
@@ -154,7 +154,7 @@
             <article class="marketing-usecase-card">
               <div class="marketing-usecase-icon">⚙️</div>
               <div class="marketing-usecase-role">DevOps</div>
-              <p>Self-host with Docker, deploy to Fly.io, integrate via webhooks and schedules</p>
+              <p>Run the app on Fly or Railway, connect to managed Postgres, and operate with webhooks and schedules</p>
             </article>
           </div>
         </section>
@@ -301,7 +301,7 @@
               <span class="marketing-dim">—</span>
             </div>
             <div class="marketing-compare-item">
-              <span>Self-hosted single binary</span>
+              <span>Self-hosted Rust control plane</span>
               <span class="marketing-check">✓</span>
               <span class="marketing-dim">Node.js</span>
               <span class="marketing-dim">Python</span>
@@ -309,12 +309,12 @@
               <span class="marketing-dim">cloud only</span>
             </div>
             <div class="marketing-compare-item">
-              <span>Zero external dependencies</span>
+              <span>Postgres-ready production path</span>
               <span class="marketing-check">✓</span>
-              <span class="marketing-dim">Postgres</span>
+              <span class="marketing-check">✓</span>
               <span class="marketing-dim">varies</span>
               <span class="marketing-dim">varies</span>
-              <span class="marketing-dim">cloud</span>
+              <span class="marketing-check">✓</span>
             </div>
             <div class="marketing-compare-item">
               <span>Secrets vault + API key rotation</span>
@@ -416,34 +416,35 @@
             <div class="marketing-eyebrow">Deployment</div>
             <h2>Your infrastructure. Your data. Your rules.</h2>
             <p>
-              Mermaduckle runs as a single Rust binary with an embedded SQLite database.
-              No Postgres, no Redis, no message queue. Deploy it anywhere that runs Docker.
+              Mermaduckle is moving to a Postgres-backed deployment model so the Rust control
+              plane can run reliably on Fly, Railway, or your own infrastructure without the
+              single-machine limits of embedded storage.
             </p>
           </div>
 
           <div class="marketing-delivery-grid">
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
               <span class="marketing-card-kicker">Self-host</span>
-              <h3>Clone, build, own.</h3>
+              <h3>Own the control plane.</h3>
               <p>
-                Pull the repo, <code>cargo build --release</code>, and run the binary.
-                Your data stays on your machine. SQLite means zero infrastructure to manage.
+                Run the Rust service on your own infrastructure and connect it to customer-owned
+                Postgres. Keep the app tier portable while the data tier stays durable.
               </p>
             </article>
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Docker</span>
-              <h3>One-line deploy.</h3>
+              <span class="marketing-card-kicker">Neon Postgres</span>
+              <h3>Recommended shared database.</h3>
               <p>
-                Multi-stage Dockerfile included. Build a minimal Debian image with the release
-                binary and static assets. Works on any container platform.
+                Use Neon when you want a free starting point, clean Postgres URLs, and the
+                flexibility to run the app itself on either Fly or Railway.
               </p>
             </article>
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Fly.io</span>
-              <h3>Push to deploy.</h3>
+              <span class="marketing-card-kicker">Fly.io + Railway</span>
+              <h3>Portable app tier.</h3>
               <p>
-                <code>fly.toml</code> and GitHub Actions CI/CD included.
-                Push to main, deploy automatically with persistent SQLite on Fly volumes.
+                Keep the same Rust service and move between Fly, Railway, or another container
+                platform without rewriting the application layer.
               </p>
             </article>
           </div>
@@ -454,21 +455,23 @@
               <ul class="marketing-route-list">
                 <li><code>Cargo.toml</code> — Rust workspace with 4 crates</li>
                 <li><code>crates/server/</code> — Actix-web server + API + SPA</li>
-                <li><code>Dockerfile</code> — multi-stage build</li>
+                <li><code>deploy/Dockerfile.fly</code> — production app image</li>
                 <li><code>fly.toml</code> — Fly.io deployment config</li>
                 <li><code>.github/workflows/</code> — CI/CD pipeline</li>
               </ul>
             </div>
             <article class="marketing-code-card">
               <div class="marketing-code-header">
-                <span>Deploy to Fly.io</span>
+                <span>Recommended production topology</span>
               </div>
-              <pre data-copyable><code><span style="color:var(--marketing-faint)"># Clone and deploy in under 2 minutes</span>
-git clone https://github.com/PhilipJohnBasile/mermaduckle
-cd mermaduckle
-fly launch
-fly volumes create mermaduckle_data --size 1
-fly deploy</code></pre>
+              <pre data-copyable><code><span style="color:var(--marketing-faint)"># App tier</span>
+Fly.io or Railway
+
+<span style="color:var(--marketing-faint)"># Data tier</span>
+Postgres (Neon recommended)
+
+<span style="color:var(--marketing-faint)"># Runtime</span>
+Rust service + GitHub Actions deploys</code></pre>
             </article>
           </div>
         </section>
@@ -490,8 +493,12 @@ fly deploy</code></pre>
               <span>High-performance async HTTP framework</span>
             </div>
             <div class="marketing-stack-item">
-              <strong>SQLite</strong>
-              <span>Embedded database, zero infrastructure</span>
+              <strong>PostgreSQL</strong>
+              <span>Production-safe relational storage for multi-machine deployments</span>
+            </div>
+            <div class="marketing-stack-item">
+              <strong>Neon</strong>
+              <span>Recommended hosted Postgres for Fly and Railway portability</span>
             </div>
             <div class="marketing-stack-item">
               <strong>Argon2</strong>
@@ -503,7 +510,7 @@ fly deploy</code></pre>
             </div>
             <div class="marketing-stack-item">
               <strong>Docker</strong>
-              <span>Multi-stage builds, minimal runtime image</span>
+              <span>Portable app packaging for Fly, Railway, or customer infrastructure</span>
             </div>
           </div>
         </section>
