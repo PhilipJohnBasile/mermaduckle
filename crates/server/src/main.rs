@@ -146,16 +146,19 @@ async fn serve_index(req: actix_web::HttpRequest) -> actix_web::HttpResponse {
         let html = include_str!("../static/app/index.html");
         actix_web::HttpResponse::Ok()
             .content_type("text/html; charset=utf-8")
+            .insert_header(("Cache-Control", "no-cache, no-store, must-revalidate"))
             .body(html)
     } else if path.starts_with("/docs") {
         let html = include_str!("../static/marketing/docs.html");
         actix_web::HttpResponse::Ok()
             .content_type("text/html; charset=utf-8")
+            .insert_header(("Cache-Control", "no-cache, no-store, must-revalidate"))
             .body(html)
     } else {
         let html = include_str!("../static/marketing/index.html");
         actix_web::HttpResponse::Ok()
             .content_type("text/html; charset=utf-8")
+            .insert_header(("Cache-Control", "no-cache, no-store, must-revalidate"))
             .body(html)
     }
 }
