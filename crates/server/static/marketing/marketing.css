@@ -203,16 +203,26 @@ body.marketing-page :not(pre) > code {
 }
 
 .marketing-button-primary {
-  color: #07111b;
-  background: linear-gradient(135deg, #fef9f2 0%, #dff5ff 52%, #b0e8ff 100%);
-  box-shadow: 0 8px 24px rgba(127, 216, 255, 0.2);
+  color: #071520;
+  background: #38bdf8;
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
   font-weight: 700;
 }
 
+.marketing-button-primary:hover {
+  background: #7dd3fc;
+  box-shadow: 0 8px 28px rgba(56, 189, 248, 0.45);
+}
+
 .marketing-button-secondary {
-  color: var(--marketing-text);
-  border-color: var(--marketing-line-strong);
-  background: rgba(255, 255, 255, 0.035);
+  color: #e8eef8;
+  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.marketing-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .marketing-nav-actions {
