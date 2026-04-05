@@ -1,0 +1,3 @@
+crates\server\src\handlers\workflows.rs:283:48: error[E0716]: temporary value dropped while borrowed: creates a temporary value which is freed while still in use
+crates\server\src\handlers\workflows.rs:284:48: error[E0716]: temporary value dropped while borrowed: creates a temporary value which is freed while still in use
+error: could not compile `mermaduckle-server` (bin "mermaduckle-server") due to 2 previous errors

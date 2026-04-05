@@ -1,0 +1,14 @@
+target/
+**/*.rs.bk
+Cargo.lock
+
+# App data
+/data/
+app.db
+app.db-journal
+app.db-wal
+app.db-shm
+
+# OS files
+.DS_Store
+Thumbs.db

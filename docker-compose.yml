@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mermaduckle:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_PATH=/data/app.db
+      - OLLAMA_URL=http://ollama:11434
+    volumes:
+      - ./data:/data
+    depends_on:
+      - ollama
+    networks:
+      - mermaduckle-net
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - mermaduckle-net
+
+volumes:
+  ollama-data:
+
+networks:
+  mermaduckle-net:
+    driver: bridge

@@ -1,0 +1,1 @@
+crates\server\src\models.rs:309:12: warning: struct `WebhookLogEntry` is never constructed
