@@ -53,7 +53,8 @@ Database & migrations
 
 Environment variables
 - `DATABASE_URL` (required)
-- `OLLAMA_URL` (default `http://localhost:11434`)
+- `OLLAMA_URL` (optional, default `http://localhost:11434`)
+- `OLLAMA_REQUIRED` (optional, default `false`; set to `true` only when Ollama is a required part of the deployment)
 - `HOST` (default `0.0.0.0`)
 - `PORT` (default `3001`)
 - `ADMIN_EMAILS` (optional comma-separated bootstrap admin emails; first registered user is auto-promoted to admin regardless)

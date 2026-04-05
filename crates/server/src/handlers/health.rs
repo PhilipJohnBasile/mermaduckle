@@ -3,6 +3,18 @@ use crate::models::HealthServices;
 use crate::models::HealthStatus;
 use actix_web::{HttpResponse, get, web};
 
+fn env_flag(name: &str, default: bool) -> bool {
+    std::env::var(name)
+        .ok()
+        .map(|value| {
+            matches!(
+                value.trim().to_ascii_lowercase().as_str(),
+                "1" | "true" | "yes" | "on"
+            )
+        })
+        .unwrap_or(default)
+}
+
 #[get("/api/health")]
 pub async fn health_check(pool: web::Data<DbPool>) -> HttpResponse {
     let db_status = match pool.get().await {
@@ -21,7 +33,9 @@ pub async fn health_check(pool: web::Data<DbPool>) -> HttpResponse {
         Err(e) => format!("unreachable: {e}"),
     };
 
-    let overall = if db_status == "ok" && ollama_status == "ok" {
+    let ollama_required = env_flag("OLLAMA_REQUIRED", false);
+    let ollama_ready = ollama_status == "ok";
+    let overall = if db_status == "ok" && (!ollama_required || ollama_ready) {
         "ok"
     } else {
         "degraded"
@@ -33,6 +47,7 @@ pub async fn health_check(pool: web::Data<DbPool>) -> HttpResponse {
         services: HealthServices {
             database: db_status,
             ollama: ollama_status,
+            ollama_required,
         },
     })
 }

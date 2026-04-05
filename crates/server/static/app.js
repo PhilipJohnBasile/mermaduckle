@@ -507,6 +507,8 @@ async function renderDashboard(el) {
   pollActivityStream();
 
   const row = h('div', { class: 'grid', style: { gridTemplateColumns: '2fr 1fr', gap: '1rem' } });
+  const ollamaRequired = health?.services?.ollama_required === true;
+  const ollamaAvailable = health?.services?.ollama === 'ok';
 
   const recentCard = h('div', { class: 'glass-card' },
     h('div', { class: 'section-header' },
@@ -541,12 +543,17 @@ async function renderDashboard(el) {
       ...[
         { name: 'Workflow Engine', ok: health?.status === 'ok' },
         { name: 'Database', ok: health?.services?.database === 'ok' },
-        { name: 'Ollama AI', ok: health?.services?.ollama === 'ok', na: !health },
+        {
+          name: 'Ollama AI',
+          ok: ollamaAvailable,
+          optional: health && !ollamaRequired && !ollamaAvailable,
+          na: !health,
+        },
       ].map(s => h('div', { class: 'status-item' },
-        h('div', { class: 'status-dot', style: { background: s.na ? 'var(--slate-600)' : s.ok ? 'var(--emerald-400)' : 'var(--red-400)' } }),
+        h('div', { class: 'status-dot', style: { background: s.na ? 'var(--slate-600)' : s.ok ? 'var(--emerald-400)' : s.optional ? 'var(--amber-400)' : 'var(--red-400)' } }),
         h('span', { class: 'status-label' }, s.name),
-        h('span', { class: 'status-value', style: { color: s.na ? 'var(--slate-600)' : s.ok ? 'var(--emerald-400)' : 'var(--red-400)' } },
-          s.na ? 'Unknown' : s.ok ? 'Operational' : 'Degraded'
+        h('span', { class: 'status-value', style: { color: s.na ? 'var(--slate-600)' : s.ok ? 'var(--emerald-400)' : s.optional ? 'var(--amber-400)' : 'var(--red-400)' } },
+          s.na ? 'Unknown' : s.ok ? 'Operational' : s.optional ? 'Optional' : 'Degraded'
         )
       ))
     )

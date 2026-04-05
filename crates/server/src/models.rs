@@ -235,6 +235,7 @@ pub struct HealthStatus {
 pub struct HealthServices {
     pub database: String,
     pub ollama: String,
+    pub ollama_required: bool,
 }
 
 // ── Request Bodies ─────────────────────────────────────────

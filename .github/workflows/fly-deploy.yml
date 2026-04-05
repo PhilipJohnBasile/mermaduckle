@@ -42,6 +42,39 @@ jobs:
           curl -fsSL https://fly.io/install.sh | sh
           echo "$HOME/.fly/bin" >> "$GITHUB_PATH"
 
+      - name: Validate Fly volume config
+        if: steps.fly-token.outputs.available == 'true'
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          volumes="$(flyctl volumes list -a mermaduckle --json)"
+          echo "$volumes"
+          if grep -q '^\[\[mounts\]\]' fly.toml; then
+            config_has_mount=true
+          else
+            config_has_mount=false
+          fi
+          live_volume_count="$(VOLUMES_JSON="$volumes" python3 - <<'PY'
+          import json
+          import os
+
+          payload = json.loads(os.environ["VOLUMES_JSON"])
+          print(len(payload))
+          PY
+          )"
+          echo "config_has_mount=$config_has_mount"
+          echo "live_volume_count=$live_volume_count"
+
+          if [ "$live_volume_count" -gt 0 ] && [ "$config_has_mount" != "true" ]; then
+            echo "::error::Fly app still has live volumes, but fly.toml no longer declares [[mounts]]. Retire the legacy volume before removing the mount stanza."
+            exit 1
+          fi
+
+          if [ "$live_volume_count" -eq 0 ] && [ "$config_has_mount" = "true" ]; then
+            echo "::warning::No live Fly volumes remain. The legacy [[mounts]] stanza can be removed from fly.toml."
+          fi
+
       - name: Deploy to Fly
         if: steps.fly-token.outputs.available == 'true'
         run: flyctl deploy --remote-only --yes --config fly.toml
@@ -54,4 +87,27 @@ jobs:
         run: |
           response="$(curl --fail --silent --show-error --retry 10 --retry-delay 3 --retry-connrefused https://mermaduckle.fly.dev/api/health)"
           echo "$response"
-          echo "$response" | grep -q '"database"'
+          HEALTH_RESPONSE="$response" python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          payload = json.loads(os.environ["HEALTH_RESPONSE"])
+          services = payload.get("services", {})
+          database_ok = services.get("database") == "ok"
+          ollama_required = services.get("ollama_required", False)
+          overall_ok = payload.get("status") == "ok"
+
+          if not database_ok:
+              print("Database health check failed", file=sys.stderr)
+              sys.exit(1)
+
+          if overall_ok:
+              sys.exit(0)
+
+          if ollama_required:
+              print("Required service is degraded", file=sys.stderr)
+              sys.exit(1)
+
+          print("Health is degraded only because optional Ollama is unavailable; continuing.")
+          PY

@@ -8,6 +8,8 @@ app = "mermaduckle"
   # DATABASE_URL is set via `fly secrets set`
 
 [[mounts]]
+  # Legacy Fly volume retained while the old SQLite-era disk is still attached to the app.
+  # Remove this stanza after the live volume is retired from Fly.
   source = "mermaduckle_data"
   destination = "/app/data"
 
