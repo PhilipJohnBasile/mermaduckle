@@ -49,4 +49,7 @@ jobs:
       - name: Verify public health endpoint
         if: steps.fly-token.outputs.available == 'true'
         shell: bash
-        run: curl --fail --silent --show-error --retry 10 --retry-delay 3 --retry-connrefused https://mermaduckle.fly.dev/health
+        run: |
+          response="$(curl --fail --silent --show-error --retry 10 --retry-delay 3 --retry-connrefused https://mermaduckle.fly.dev/api/health)"
+          echo "$response"
+          echo "$response" | grep -q '"database"'
