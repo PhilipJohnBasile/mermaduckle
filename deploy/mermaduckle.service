@@ -1,0 +1,19 @@
+[Unit]
+Description=Mermaduckle server
+After=network.target
+
+[Service]
+User=mermaduckle
+Group=mermaduckle
+WorkingDirectory=/opt/mermaduckle
+ExecStart=/opt/mermaduckle/mermaduckle-server
+Environment=DATABASE_PATH=/var/lib/mermaduckle/app.db
+Environment=PORT=3001
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
