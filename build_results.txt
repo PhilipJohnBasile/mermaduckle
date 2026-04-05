@@ -1,5 +1,0 @@
-error: failed to remove C:\Users\Phili\Git\mermaduckle\target\debug\deps\mermaduckle.06sljtdoedwbug4gqc55hhet3.0afqsr1.rcgu.o: The process cannot access the file because it is being used by another process. (os error 32)
-crates\server\src\models.rs:309:12: warning: struct `WebhookLogEntry` is never constructed
-error: could not compile `mermaduckle-cli` (bin "mermaduckle") due to 1 previous error
-error: failed to remove C:\Users\Phili\Git\mermaduckle\target\debug\deps\mermaduckle_server.dmksvw2yntj8nhzl2ujcxn4pz.16ndihu.rcgu.o: The process cannot access the file because it is being used by another process. (os error 32)
-error: could not compile `mermaduckle-server` (bin "mermaduckle-server") due to 1 previous error; 1 warning emitted

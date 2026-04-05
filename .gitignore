@@ -1,6 +1,10 @@
 target/
 **/*.rs.bk
-Cargo.lock
+
+# Build artifacts
+build_results.txt
+check_results.txt
+check.txt
 
 # Environment secrets (never commit)
 .env

@@ -153,9 +153,16 @@ async fn main() -> std::io::Result<()> {
 }
 
 async fn serve_index(req: actix_web::HttpRequest) -> actix_web::HttpResponse {
-    // Serve the marketing site at `/`, the docs hub at `/docs`, and the SPA at `/app`.
+    // Serve the marketing site at `/`, the public demo at `/demo`, the docs hub at `/docs`,
+    // and the hosted beta app at `/app`.
     let path = req.path();
-    if path.starts_with("/app") {
+    if path.starts_with("/demo") {
+        let html = include_str!("../static/demo/index.html");
+        actix_web::HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .insert_header(("Cache-Control", "no-cache, no-store, must-revalidate"))
+            .body(html)
+    } else if path.starts_with("/app") {
         let html = include_str!("../static/app/index.html");
         actix_web::HttpResponse::Ok()
             .content_type("text/html; charset=utf-8")

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mermaduckle Demo — Public Sandbox</title>
+  <meta
+    name="description"
+    content="Public Mermaduckle demo with sample workflows, approvals, audit data, and settings. No real secrets or production data."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v=3">
+  <link rel="stylesheet" href="/static/demo/demo.css">
+</head>
+<body>
+  <div class="app-layout" id="demo-app">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <span style="font-size:18px;font-weight:800;color:white;">M</span>
+        </div>
+        <div class="sidebar-logo-text">
+          <h1>Mermaduckle</h1>
+          <p>Public Demo</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-demo-page="dashboard" onclick="navigateDemo('dashboard')">
+          <span class="nav-left"><span>Dashboard</span></span>
+        </button>
+        <button class="nav-item" data-demo-page="workflows" onclick="navigateDemo('workflows')">
+          <span class="nav-left"><span>Workflows</span></span>
+        </button>
+        <button class="nav-item" data-demo-page="approvals" onclick="navigateDemo('approvals')">
+          <span class="nav-left"><span>Approvals</span></span>
+        </button>
+        <button class="nav-item" data-demo-page="agents" onclick="navigateDemo('agents')">
+          <span class="nav-left"><span>Agent Library</span></span>
+        </button>
+        <button class="nav-item" data-demo-page="audit" onclick="navigateDemo('audit')">
+          <span class="nav-left"><span>Audit</span></span>
+        </button>
+        <button class="nav-item" data-demo-page="settings" onclick="navigateDemo('settings')">
+          <span class="nav-left"><span>Settings</span></span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="demo-sidebar-card">
+          <div class="demo-sidebar-kicker">Sample data only</div>
+          <p>This environment resets often. Do not enter real credentials, secrets, or production data.</p>
+        </div>
+        <a href="/docs" class="nav-item" style="text-decoration:none;">
+          <span class="nav-left"><span>Deployment docs</span></span>
+        </a>
+        <a href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Hosted%20Beta%20Access" class="nav-item" style="text-decoration:none;">
+          <span class="nav-left"><span>Request beta access</span></span>
+        </a>
+        <div class="demo-sidebar-status">
+          <span class="demo-status-dot"></span>
+          <span>Public sandbox</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="demo-banner">
+        <div>
+          <strong>Public demo</strong>
+          <span>Dummy workflows, dummy audit history, dummy settings. The real hosted beta lives at <code>/app</code> for invited testers.</span>
+        </div>
+        <div class="demo-banner-actions">
+          <a class="btn-glass" href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Hosted%20Beta%20Access">Request beta access</a>
+          <a class="btn-primary" href="/docs">Deploy your own instance</a>
+        </div>
+      </section>
+
+      <div class="page-content" id="demo-page-content">
+        <div class="loading-page"><div class="spinner"></div><p>Loading demo...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/demo/demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+.demo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 1.25rem 0;
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.08)),
+    rgba(255, 255, 255, 0.03);
+}
+
+.demo-banner strong {
+  display: block;
+  color: white;
+  margin-bottom: 0.2rem;
+}
+
+.demo-banner span {
+  color: var(--slate-400);
+  font-size: 0.92rem;
+}
+
+.demo-banner-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.demo-sidebar-card {
+  padding: 0.95rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.demo-sidebar-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-300);
+  margin-bottom: 0.45rem;
+}
+
+.demo-sidebar-card p {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--slate-400);
+}
+
+.demo-sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem 0.1rem;
+  color: var(--slate-500);
+  font-size: 0.76rem;
+}
+
+.demo-status-dot {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 999px;
+  background: var(--primary-400);
+  box-shadow: 0 0 0 6px rgba(34, 211, 238, 0.1);
+}
+
+.demo-kpi-grid,
+.demo-card-grid,
+.demo-settings-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.demo-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.demo-card-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.demo-settings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.demo-kpi-card,
+.demo-data-card,
+.demo-surface-card {
+  padding: 1.25rem;
+}
+
+.demo-kpi-card strong {
+  display: block;
+  font-size: 1.7rem;
+  color: white;
+  margin-bottom: 0.2rem;
+}
+
+.demo-kpi-card span,
+.demo-data-card p,
+.demo-surface-card p,
+.demo-table td {
+  color: var(--slate-400);
+}
+
+.demo-kpi-card span {
+  font-size: 0.82rem;
+}
+
+.demo-section-note {
+  margin-top: 1rem;
+  color: var(--slate-500);
+  font-size: 0.84rem;
+}
+
+.demo-data-card h3,
+.demo-surface-card h3 {
+  color: white;
+  margin-bottom: 0.55rem;
+}
+
+.demo-list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  margin-top: 0.9rem;
+}
+
+.demo-list li {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.demo-list strong {
+  display: block;
+  color: white;
+}
+
+.demo-list small {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--slate-500);
+}
+
+.demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.58rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.demo-pill.info {
+  background: rgba(6, 182, 212, 0.14);
+  color: var(--primary-300);
+}
+
+.demo-pill.success {
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--emerald-400);
+}
+
+.demo-pill.warn {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--amber-400);
+}
+
+.demo-pill.muted {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--slate-300);
+}
+
+.demo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.9rem;
+}
+
+.demo-table th,
+.demo-table td {
+  padding: 0.8rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+  font-size: 0.84rem;
+}
+
+.demo-table th {
+  color: var(--slate-300);
+  font-weight: 600;
+}
+
+.demo-callout {
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border-left: 3px solid var(--primary-400);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--slate-400);
+}
+
+.demo-action-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .demo-kpi-grid,
+  .demo-card-grid,
+  .demo-settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .demo-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 1rem 1rem 0;
+  }
+
+  .demo-kpi-grid,
+  .demo-card-grid,
+  .demo-settings-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
