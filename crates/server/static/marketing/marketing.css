@@ -4,29 +4,26 @@ body.marketing-page * {
 }
 
 body.marketing-page {
-  --marketing-bg: #07111b;
-  --marketing-bg-strong: #0a1725;
-  --marketing-surface: rgba(22, 38, 58, 0.92);
-  --marketing-surface-soft: rgba(26, 42, 62, 0.85);
-  --marketing-surface-strong: rgba(18, 32, 50, 0.98);
-  --marketing-line: rgba(192, 208, 228, 0.18);
-  --marketing-line-strong: rgba(192, 208, 228, 0.32);
-  --marketing-text: #f0f4fa;
-  --marketing-muted: rgba(220, 230, 245, 0.88);
-  --marketing-faint: rgba(196, 212, 232, 0.72);
+  --marketing-bg: #0c1825;
+  --marketing-bg-strong: #101f2e;
+  --marketing-surface: #162030;
+  --marketing-surface-soft: #1a2638;
+  --marketing-surface-strong: #111c2a;
+  --marketing-line: rgba(255, 255, 255, 0.10);
+  --marketing-line-strong: rgba(255, 255, 255, 0.18);
+  --marketing-text: #e8eef8;
+  --marketing-muted: #b8c8dc;
+  --marketing-faint: #8aa0b8;
   --marketing-accent: #7fd8ff;
   --marketing-accent-strong: #3ea6d6;
   --marketing-warm: #f3bb86;
-  --marketing-shadow: 0 26px 70px rgba(2, 10, 18, 0.28);
+  --marketing-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
   margin: 0;
   overflow-x: hidden;
   font-family: "Manrope", var(--font-sans);
   color: var(--marketing-text);
-  background:
-    radial-gradient(circle at top left, rgba(243, 187, 134, 0.12), transparent 26rem),
-    radial-gradient(circle at top right, rgba(127, 216, 255, 0.1), transparent 30rem),
-    linear-gradient(180deg, #09131d 0%, #08131e 40%, #09111a 100%);
+  background: #0c1825;
 }
 
 body.marketing-page::before {
@@ -35,10 +32,10 @@ body.marketing-page::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 84px 84px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 84%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 60%);
 }
 
 body.marketing-page a {
@@ -77,11 +74,11 @@ body.marketing-page :not(pre) > code {
   gap: 1rem;
   padding: 0.95rem 1.05rem;
   margin-bottom: 2.5rem;
-  border: 1px solid var(--marketing-line);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 14px;
-  background: rgba(8, 16, 25, 0.82);
+  background: rgba(15, 26, 40, 0.95);
   backdrop-filter: blur(18px);
-  box-shadow: 0 18px 48px rgba(3, 10, 17, 0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .marketing-topbar-docs {
@@ -342,8 +339,7 @@ body.marketing-page main {
 .marketing-docs-hero p,
 .marketing-doc-heading p,
 .marketing-final-cta p {
-  color: var(--marketing-text);
-  opacity: 0.82;
+  color: var(--marketing-muted);
   line-height: 1.75;
 }
 
@@ -380,17 +376,14 @@ body.marketing-page main {
 .marketing-final-cta {
   border: 1px solid var(--marketing-line-strong);
   border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 28%),
-    var(--marketing-surface);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  background: var(--marketing-surface);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 .marketing-command-card {
   padding: 1.45rem;
   background:
-    radial-gradient(circle at top right, rgba(127, 216, 255, 0.1), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 28%),
+    radial-gradient(circle at top right, rgba(127, 216, 255, 0.08), transparent 30%),
     var(--marketing-surface-strong);
 }
 
@@ -403,9 +396,9 @@ body.marketing-page main {
 
 .marketing-command-pane,
 .marketing-doc-card {
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--marketing-surface-soft);
   padding: 1rem 1.05rem;
 }
 
@@ -445,8 +438,7 @@ body.marketing-page main {
 .marketing-compare-row p,
 .marketing-route-list,
 .marketing-doc-table span {
-  color: var(--marketing-text);
-  opacity: 0.82;
+  color: var(--marketing-muted);
 }
 
 .marketing-command-footer {
@@ -472,9 +464,9 @@ body.marketing-page main {
   flex-wrap: wrap;
   gap: 0.7rem;
   padding: 1rem;
-  border: 1px solid var(--marketing-line);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.025);
+  background: var(--marketing-surface);
 }
 
 .marketing-proof-strip span,
@@ -482,9 +474,8 @@ body.marketing-page main {
   padding: 0.7rem 0.95rem;
   border: 1px solid var(--marketing-line-strong);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--marketing-surface-soft);
   color: var(--marketing-text);
-  opacity: 0.85;
   text-decoration: none;
 }
 
@@ -519,10 +510,9 @@ body.marketing-page main {
 
 .marketing-story-card-accent,
 .marketing-commercial-card-featured {
-  border-color: rgba(127, 216, 255, 0.3);
+  border-color: rgba(127, 216, 255, 0.35);
   background:
-    radial-gradient(circle at top right, rgba(127, 216, 255, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(127, 216, 255, 0.1), transparent 34%),
     var(--marketing-surface-strong);
 }
 
@@ -591,17 +581,14 @@ body.marketing-page main {
   padding: 1.45rem;
   border: 1px solid var(--marketing-line-strong);
   border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 28%),
-    var(--marketing-surface);
-  box-shadow: var(--marketing-shadow);
+  background: var(--marketing-surface);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
 }
 
 .marketing-code-card {
   padding: 1.45rem;
   background:
-    radial-gradient(circle at top right, rgba(243, 187, 134, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 28%),
+    radial-gradient(circle at top right, rgba(243, 187, 134, 0.1), transparent 34%),
     var(--marketing-surface-strong);
 }
 
@@ -845,8 +832,7 @@ body.marketing-page main {
 
 .marketing-stat span {
   font-size: 0.82rem;
-  color: var(--marketing-text);
-  opacity: 0.72;
+  color: var(--marketing-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -874,8 +860,8 @@ body.marketing-page main {
 }
 
 .marketing-usecase-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--marketing-surface);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 16px;
   padding: 1.8rem 1.4rem;
   text-align: center;
@@ -901,8 +887,7 @@ body.marketing-page main {
 
 .marketing-usecase-card p {
   font-size: 0.9rem;
-  color: var(--marketing-text);
-  opacity: 0.78;
+  color: var(--marketing-muted);
   line-height: 1.5;
 }
 
@@ -931,8 +916,8 @@ body.marketing-page main {
 }
 
 .marketing-feature-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--marketing-surface);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 16px;
   padding: 2rem 1.6rem;
   transition: transform 0.2s, border-color 0.2s;
@@ -962,8 +947,7 @@ body.marketing-page main {
 
 .marketing-feature-card > p {
   font-size: 0.9rem;
-  color: var(--marketing-text);
-  opacity: 0.8;
+  color: var(--marketing-muted);
   line-height: 1.5;
   margin-bottom: 1rem;
 }
@@ -976,8 +960,7 @@ body.marketing-page main {
 
 .marketing-feature-bullets li {
   font-size: 0.82rem;
-  color: var(--marketing-text);
-  opacity: 0.78;
+  color: var(--marketing-muted);
   padding: 0.3rem 0;
   padding-left: 1.2rem;
   position: relative;
@@ -1009,9 +992,10 @@ body.marketing-page main {
 .marketing-compare-grid {
   max-width: 1100px;
   margin: 0 auto;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 16px;
   overflow: hidden;
+  background: var(--marketing-surface);
 }
 
 .marketing-compare-header,
@@ -1042,7 +1026,7 @@ body.marketing-page main {
 }
 
 .marketing-compare-item {
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid var(--marketing-line);
   font-size: 0.88rem;
   color: var(--marketing-text);
 }
@@ -1063,7 +1047,7 @@ body.marketing-page main {
 }
 
 .marketing-dim {
-  color: rgba(200, 218, 240, 0.45) !important;
+  color: var(--marketing-faint) !important;
   font-size: 0.78rem;
 }
 
@@ -1090,9 +1074,9 @@ body.marketing-page main {
 
 .marketing-preview-card {
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--marketing-line-strong);
   overflow: hidden;
-  background: rgba(0,0,0,0.3);
+  background: var(--marketing-surface-strong);
 }
 
 .marketing-preview-header {
@@ -1100,10 +1084,10 @@ body.marketing-page main {
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 1rem;
-  background: rgba(255,255,255,0.04);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: var(--marketing-surface-soft);
+  border-bottom: 1px solid var(--marketing-line-strong);
   font-size: 0.78rem;
-  color: var(--marketing-faint);
+  color: var(--marketing-muted);
 }
 
 .marketing-preview-dots {
@@ -1129,16 +1113,16 @@ body.marketing-page main {
 
 .marketing-preview-sidebar {
   width: 200px;
-  border-right: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid var(--marketing-line-strong);
   padding: 0.8rem 0;
   flex-shrink: 0;
+  background: var(--marketing-surface-strong);
 }
 
 .mp-nav-item {
   padding: 0.55rem 1rem;
   font-size: 0.82rem;
-  color: var(--marketing-text);
-  opacity: 0.65;
+  color: var(--marketing-muted);
   cursor: default;
 }
 
@@ -1161,12 +1145,11 @@ body.marketing-page main {
 }
 
 .mp-stat {
-  background: rgba(255,255,255,0.05);
+  background: var(--marketing-surface-soft);
   border-radius: 10px;
   padding: 1rem;
   font-size: 0.78rem;
-  color: var(--marketing-text);
-  opacity: 0.8;
+  color: var(--marketing-muted);
 }
 
 .mp-stat span {
@@ -1220,8 +1203,8 @@ body.marketing-page main {
   flex-direction: column;
   gap: 0.3rem;
   padding: 1.2rem 1.4rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--marketing-surface);
+  border: 1px solid var(--marketing-line-strong);
   border-radius: 12px;
   transition: border-color 0.2s;
 }
@@ -1237,8 +1220,7 @@ body.marketing-page main {
 
 .marketing-stack-item span {
   font-size: 0.82rem;
-  color: var(--marketing-text);
-  opacity: 0.72;
+  color: var(--marketing-muted);
 }
 
 @media (max-width: 700px) {
@@ -1273,8 +1255,7 @@ body.marketing-page main {
   padding: 0.35rem 0;
   padding-left: 1.2rem;
   position: relative;
-  color: var(--marketing-text);
-  opacity: 0.82;
+  color: var(--marketing-muted);
 }
 
 .marketing-commercial-card ul li::before {
