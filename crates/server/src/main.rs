@@ -24,7 +24,12 @@ async fn validator(
     });
     let client = match client {
         Ok(c) => c,
-        Err(_) => return Err((actix_web::error::ErrorInternalServerError("DB pool error"), req)),
+        Err(_) => {
+            return Err((
+                actix_web::error::ErrorInternalServerError("DB pool error"),
+                req,
+            ));
+        }
     };
     // Fetch active key hashes and verify using Argon2 via password-hash API
     let rows = client
@@ -63,9 +68,7 @@ async fn main() -> std::io::Result<()> {
 
     // Start background scheduler
     let scheduler_pool = std::sync::Arc::new(pool.clone());
-    tokio::spawn(async move {
-        scheduler::start_scheduler(scheduler_pool);
-    });
+    tokio::spawn(scheduler::start_scheduler(scheduler_pool));
 
     let host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".into());
     let port: u16 = std::env::var("PORT")

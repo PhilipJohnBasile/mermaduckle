@@ -6,12 +6,12 @@
     <title>Mermaduckle — Ship AI Workflows with Confidence</title>
     <meta
       name="description"
-      content="Open-source AI workflow platform. Build visually, approve high-stakes actions, audit every run, and deploy on a Postgres-backed architecture."
+      content="AI workflow control plane with a public demo, a limited hosted beta, and a private deployment path. Build visually, gate sensitive actions, and audit every run."
     />
     <meta property="og:title" content="Mermaduckle — Ship AI Workflows with Confidence" />
     <meta
       property="og:description"
-      content="Build, approve, run, and audit AI workflows. Open source, self-hostable, and designed for Postgres-backed production deployments."
+      content="Run AI workflows with approvals, audit, and operational control. Try the public demo, request hosted beta access, or deploy in your own environment."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -55,7 +55,7 @@
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right:0.4rem"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
             Star on GitHub
           </a>
-          <a class="marketing-button marketing-button-primary" href="/app">Try the app &rarr;</a>
+          <a class="marketing-button marketing-button-primary" href="/demo">Try the demo &rarr;</a>
         </div>
       </header>
 
@@ -63,30 +63,31 @@
         <!-- ═══ HERO ═══ -->
         <section class="marketing-hero" id="platform">
           <div class="marketing-hero-copy marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Open source &middot; Production-ready &middot; Self-hostable</div>
-            <h1>Ship AI workflows with confidence.</h1>
+            <div class="marketing-eyebrow">Hosted beta &middot; Public demo &middot; Private deployment</div>
+            <h1>The control plane for AI workflows in production.</h1>
             <p class="marketing-lede">
-              Build visual workflows, route sensitive actions through human approval,
-              manage agents and secrets, and audit every run &mdash; all in one open-source
-              Rust control plane designed for reliable Postgres-backed production deployments.
+              Mermaduckle gives teams a visual workflow builder, approval gates, agent
+              management, secrets handling, and audit trails in one Rust-based control plane.
+              Try the public demo with sample data, request access to the hosted beta, or run
+              the platform in your own environment.
             </p>
             <p class="marketing-hero-note">
-              Evaluate locally in minutes. Move the production data plane to Postgres when you are
-              ready for multi-machine deployment.
+              <code>/demo</code> is safe for public evaluation. <code>/app</code> is the real
+              hosted beta for invited testers and design partners.
             </p>
             <div class="marketing-cta-row">
-              <a class="marketing-button marketing-button-primary" href="/app"
-                >Try the live app</a
+              <a class="marketing-button marketing-button-primary" href="/demo"
+                >Try the public demo</a
               >
-              <a class="marketing-button marketing-button-secondary" href="https://github.com/PhilipJohnBasile/mermaduckle"
-                >View source on GitHub</a
+              <a class="marketing-button marketing-button-secondary" href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Hosted%20Beta%20Access"
+                >Request beta access</a
               >
             </div>
           </div>
 
           <aside class="marketing-command-card marketing-reveal" data-reveal>
             <div class="marketing-card-kicker">Get running in 60 seconds</div>
-            <h2>Rust control plane. Postgres-ready production path.</h2>
+            <h2>Public demo today. Hosted beta by invitation.</h2>
             <article class="marketing-code-card" style="border:none;padding:0;background:none;box-shadow:none;">
               <pre style="margin:0.8rem 0;"><code><span style="color:var(--marketing-faint)">$</span> git clone https://github.com/PhilipJohnBasile/mermaduckle
 <span style="color:var(--marketing-faint)">$</span> cd mermaduckle
@@ -95,14 +96,14 @@
             </article>
             <div class="marketing-command-grid" style="margin-top:0.8rem;">
               <article class="marketing-command-pane">
-                <span>Stack</span>
-                <strong>Rust + Postgres-ready architecture</strong>
-                <p>Rust app server today, moving to a production-safe relational data layer.</p>
+                <span>Access</span>
+                <strong><code>/demo</code> for sample data, <code>/app</code> for hosted beta</strong>
+                <p>Evaluate safely in public, then invite real beta users into the managed product surface.</p>
               </article>
               <article class="marketing-command-pane">
                 <span>Deploy</span>
-                <strong>Fly, Railway, or Docker</strong>
-                <p>Run the app tier anywhere and point it at Neon or platform Postgres.</p>
+                <strong>Fly, Railway, or Docker with Postgres</strong>
+                <p>Run the same Rust service privately and point it at Neon or platform Postgres.</p>
               </article>
             </div>
           </aside>
@@ -366,12 +367,13 @@
         <!-- ═══ PRODUCT DEPTH ═══ -->
         <section class="marketing-section" id="product">
           <div class="marketing-section-head marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Product depth</div>
-            <h2>Not a demo. A real product surface you can use today.</h2>
+            <div class="marketing-eyebrow">Access model</div>
+            <h2>See the product publicly. Use the real app selectively.</h2>
             <p>
-              The live app at <code>/app</code> is not a mock. Every feature listed
-              here is functional — build workflows, approve actions, inspect audit logs,
-              manage agents, configure secrets.
+              Mermaduckle separates public evaluation from real product access.
+              <code>/demo</code> runs sample workflows and dummy data for anyone to inspect.
+              <code>/app</code> is the live hosted beta for invited testers. Teams that need
+              stricter control can still deploy the same product in their own environment.
             </p>
           </div>
 
@@ -379,7 +381,7 @@
             <div class="marketing-preview-card">
               <div class="marketing-preview-header">
                 <div class="marketing-preview-dots"><span></span><span></span><span></span></div>
-                <span>mermaduckle.com/app</span>
+                <span>mermaduckle.com/demo</span>
                 <span></span>
               </div>
               <div class="marketing-preview-body">
@@ -418,38 +420,37 @@
         <section class="marketing-section" id="deploy">
           <div class="marketing-section-head marketing-reveal" data-reveal>
             <div class="marketing-eyebrow">Deployment</div>
-            <h2>Your infrastructure. Your data. Your rules.</h2>
+            <h2>Hosted beta now. Private deployment when control matters.</h2>
             <p>
-              Mermaduckle is moving to a Postgres-backed deployment model so the Rust control
-              plane can run reliably on Fly, Railway, or your own infrastructure without the
-              single-machine limits of embedded storage.
+              We use the hosted beta to learn with early users while keeping a clean path to
+              private, customer-owned deployments. The app tier runs in Rust, the data layer
+              runs on Postgres, and the service can move between Fly, Railway, or your own stack.
             </p>
           </div>
 
           <div class="marketing-delivery-grid">
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Self-host</span>
-              <h3>Own the control plane.</h3>
+              <span class="marketing-card-kicker">Public demo</span>
+              <h3>Explore the product without risking real data.</h3>
               <p>
-                Run the Rust service on your own infrastructure and connect it to customer-owned
-                Postgres. Local evaluation stays simple; production gets the durability of a shared
-                relational store.
+                The demo route is filled with sample workflows, approvals, audit activity, and
+                settings so buyers can see the product without entering production secrets.
               </p>
             </article>
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Neon Postgres</span>
-              <h3>Recommended shared database.</h3>
+              <span class="marketing-card-kicker">Hosted beta</span>
+              <h3>Run the real app with invited users.</h3>
               <p>
-                Use Neon when you want a free starting point, clean Postgres URLs, and the
-                flexibility to run the app itself on either Fly or Railway.
+                The hosted beta at <code>/app</code> is where we test the live control plane with
+                design partners while the product matures.
               </p>
             </article>
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Fly.io + Railway</span>
-              <h3>Portable app tier.</h3>
+              <span class="marketing-card-kicker">Private deployment</span>
+              <h3>Keep production under customer ownership.</h3>
               <p>
-                Keep the same Rust service and move between Fly, Railway, or another container
-                platform without rewriting the application layer.
+                When teams need stronger data ownership, run the same Rust service on Fly,
+                Railway, or another container platform against Postgres.
               </p>
             </article>
           </div>
@@ -470,7 +471,7 @@
                 <span>Recommended production topology</span>
               </div>
               <pre data-copyable><code><span style="color:var(--marketing-faint)"># App tier</span>
-Fly.io or Railway
+Fly.io, Railway, or customer infrastructure
 
 <span style="color:var(--marketing-faint)"># Data tier</span>
 Postgres (Neon recommended)
@@ -524,24 +525,25 @@ Rust service + GitHub Actions deploys</code></pre>
         <section class="marketing-section" id="pricing">
           <div class="marketing-section-head marketing-reveal" data-reveal>
             <div class="marketing-eyebrow">Pricing</div>
-            <h2>Free and open source. Pay only for support.</h2>
+            <h2>Open source by default. Hosted beta for early users.</h2>
             <p>
-              The full platform is free to use, self-host, and modify.
-              Commercial tiers exist for teams that want faster adoption or dedicated support.
+              The public demo is free, the codebase is open, the hosted beta is limited, and
+              private rollout support is available for teams that need help shipping.
             </p>
           </div>
 
           <div class="marketing-commercial-grid">
             <article class="marketing-commercial-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Community</span>
+              <span class="marketing-card-kicker">Open source</span>
               <h3>$0 / forever</h3>
               <p>
-                The complete platform. No feature limits. No usage caps.
+                Clone the repo, run the product locally, evaluate the public demo, and deploy
+                it in your own environment.
               </p>
               <ul>
-                <li>All 6 product surfaces included</li>
-                <li>Unlimited workflows, agents, and runs</li>
-                <li>Self-host on your own infrastructure</li>
+                <li>Public demo at <code>/demo</code></li>
+                <li>Source available on GitHub</li>
+                <li>Deploy privately with Postgres</li>
                 <li>Community support via GitHub issues</li>
               </ul>
               <div style="margin-top:auto;padding-top:1rem;">
@@ -552,32 +554,34 @@ Rust service + GitHub Actions deploys</code></pre>
               class="marketing-commercial-card marketing-commercial-card-featured marketing-reveal"
               data-reveal
             >
-              <span class="marketing-card-kicker">Launch with us</span>
-              <h3>Custom</h3>
+              <span class="marketing-card-kicker">Hosted beta</span>
+              <h3>By invitation</h3>
               <p>
-                Faster time to production with implementation support.
+                Limited access to the managed product environment while we work closely with
+                early testers and design partners.
               </p>
               <ul>
-                <li>Everything in Community</li>
-                <li>First workflow implementation &amp; environment setup</li>
-                <li>Operator onboarding and deployment support</li>
-                <li>Priority email support</li>
+                <li>Real app surface at <code>/app</code></li>
+                <li>Direct product feedback loop</li>
+                <li>Managed environment while the beta evolves</li>
+                <li>Priority access to upcoming features</li>
               </ul>
               <div style="margin-top:auto;padding-top:1rem;">
-                <a class="marketing-button marketing-button-primary" href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Launch%20Support" style="width:100%;text-align:center;">Contact us</a>
+                <a class="marketing-button marketing-button-primary" href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Hosted%20Beta%20Access" style="width:100%;text-align:center;">Request access</a>
               </div>
             </article>
             <article class="marketing-commercial-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Enterprise</span>
+              <span class="marketing-card-kicker">Private rollout</span>
               <h3>Custom</h3>
               <p>
-                For organizations that need ongoing operational support.
+                For teams that want the product running under their ownership with guided setup
+                and ongoing operational support.
               </p>
               <ul>
-                <li>Everything in Launch</li>
-                <li>SLA-backed response times</li>
-                <li>Environment reviews and upgrade support</li>
-                <li>Custom feature development</li>
+                <li>Deployment design and environment setup</li>
+                <li>Postgres and infrastructure guidance</li>
+                <li>Operator onboarding and upgrade support</li>
+                <li>Commercial support and roadmap alignment</li>
               </ul>
               <div style="margin-top:auto;padding-top:1rem;">
                 <a class="marketing-button marketing-button-secondary" href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Enterprise" style="width:100%;text-align:center;">Talk to us</a>
@@ -590,11 +594,11 @@ Rust service + GitHub Actions deploys</code></pre>
         <section class="marketing-final-cta marketing-reveal" data-reveal>
           <div>
             <div class="marketing-eyebrow">Ready to build?</div>
-            <h2>Try the live app or deploy your own instance in minutes.</h2>
+            <h2>Try the demo, request beta access, or deploy your own instance.</h2>
           </div>
           <div class="marketing-cta-row">
-            <a class="marketing-button marketing-button-primary" href="/app">Open the app &rarr;</a>
-            <a class="marketing-button marketing-button-secondary" href="https://github.com/PhilipJohnBasile/mermaduckle">Star on GitHub</a>
+            <a class="marketing-button marketing-button-primary" href="/demo">Open the demo &rarr;</a>
+            <a class="marketing-button marketing-button-secondary" href="mailto:pbasile@basilecom.com?subject=Mermaduckle%20Hosted%20Beta%20Access">Request beta access</a>
             <a
               class="marketing-button marketing-button-secondary"
               href="/docs"
@@ -608,8 +612,9 @@ Rust service + GitHub Actions deploys</code></pre>
         <p>&copy; 2026 Mermaduckle &middot; Open-source AI workflow platform</p>
         <div>
           <a href="/">Home</a>
+          <a href="/demo">Demo</a>
+          <a href="/app">Hosted beta</a>
           <a href="/docs">Docs</a>
-          <a href="/app">App</a>
           <a href="https://github.com/PhilipJohnBasile/mermaduckle">GitHub</a>
           <a href="mailto:pbasile@basilecom.com">Contact</a>
         </div>

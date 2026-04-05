@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mermaduckle — AI Agent Orchestration Platform</title>
-  <meta name="description" content="Build, orchestrate, govern, and deploy AI agent workflows at enterprise scale">
+  <title>Mermaduckle Hosted Beta — AI Workflow Platform</title>
+  <meta name="description" content="Hosted beta for Mermaduckle, the AI workflow control plane with approvals, audit, and operational controls.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css?v=3">
+  <link rel="stylesheet" href="/static/app/app-beta.css?v=1">
 </head>
 <body>
   <div class="app-layout" id="app">
@@ -20,7 +21,7 @@
         </div>
         <div class="sidebar-logo-text">
           <h1>Mermaduckle</h1>
-          <p>AI Agent Orchestration</p>
+          <p>Hosted Beta</p>
         </div>
       </div>
 
@@ -79,13 +80,23 @@
         </a>
         <div style="padding:0.5rem 0.75rem;display:flex;align-items:center;gap:0.5rem;">
           <span style="width:7px;height:7px;border-radius:50%;background:var(--emerald-400);display:inline-block;flex-shrink:0;"></span>
-          <span style="font-size:11px;color:var(--slate-500);">Self-hosted instance</span>
+          <span style="font-size:11px;color:var(--slate-500);">Hosted beta</span>
         </div>
       </div>
     </aside>
 
     <!-- Main Content -->
     <main class="main-content">
+      <section class="app-beta-banner">
+        <div>
+          <strong>Hosted beta</strong>
+          <span>This is the live managed product environment for you and invited testers. Use <code>/demo</code> for sample data and <code>/docs</code> for private deployment guidance.</span>
+        </div>
+        <div class="app-beta-banner-actions">
+          <a class="btn-glass" href="/demo">Open public demo</a>
+          <a class="btn-primary" href="/docs">Deployment docs</a>
+        </div>
+      </section>
       <div class="page-content" id="page-content">
         <div class="loading-page"><div class="spinner"></div><p>Loading dashboard...</p></div>
       </div>

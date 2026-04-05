@@ -1,6 +1,6 @@
-# Mermaduckle — Rust AI Agent Orchestration
+# Mermaduckle — Rust AI Workflow Control Plane
 
-Mermaduckle is a self-hosted AI agent orchestration platform implemented as a Rust Cargo workspace. It provides a lightweight Actix-web API server, a small SPA frontend, a workflow execution engine, and tooling for team and integration management.
+Mermaduckle is an open-source AI workflow control plane implemented as a Rust Cargo workspace. It includes a public demo, a limited hosted beta, a lightweight Actix-web API server, a small SPA frontend, a workflow execution engine, and tooling for approvals, audit, agents, and integrations.
 
 Quick links
 - Server crate: `crates/server`
@@ -11,14 +11,14 @@ Quick links
 
 Highlights
 - Backend: Rust + Actix-web + Tokio
-- DB: SQLite via `rusqlite` + `r2d2` (bundled build for quick local setup)
+- DB: PostgreSQL via `deadpool-postgres`
 - Frontend: Vanilla JS SPA served from `crates/server/static`
 - API key auth: one-time raw keys returned on creation; keys stored hashed (Argon2)
-- Simple migration tracker: `migrations` table with a baseline marker
+- Public demo route plus hosted beta route served from the same app
 
 Quick start (local development)
 
-Prerequisites: Rust toolchain (rustup + cargo), optionally Docker and Ollama if you need the LLM runtime.
+Prerequisites: Rust toolchain (rustup + cargo), a Postgres database exposed via `DATABASE_URL`, and optionally Docker and Ollama if you need the LLM runtime.
 
 Run the server locally (defaults to http://127.0.0.1:3001):
 
@@ -29,8 +29,9 @@ cargo run -p mermaduckle-server
 
 Routes:
 - Marketing site: `/`
+- Public demo: `/demo`
 - Docs hub: `/docs`
-- Control plane SPA: `/app`
+- Hosted beta SPA: `/app`
 - Static assets: `/static`
 
 Local development convenience
@@ -48,13 +49,19 @@ Health & readiness
 - Health endpoint: GET `/api/health` — useful for CI and readiness checks.
 
 Database & migrations
-- The server initializes the local SQLite database (`data/app.db` by default), creates required tables, and records a baseline migration in `migrations`. For production use, adopt a real migration tool and consider Postgres.
+- The server starts against the Postgres database provided in `DATABASE_URL`. Use Neon or your platform provider when you want a portable Postgres deployment for Fly, Railway, or your own infrastructure.
 
 Environment variables
-- `DATABASE_PATH` (default `data/app.db`)
+- `DATABASE_URL` (required)
 - `OLLAMA_URL` (default `http://localhost:11434`)
 - `HOST` (default `0.0.0.0`)
 - `PORT` (default `3001`)
+- `ADMIN_EMAILS` (optional comma-separated bootstrap admin emails)
+
+Secrets policy
+- Use `.env.example` as the template and keep real values in an untracked `.env`.
+- Use GitHub Actions secrets for CI, `fly secrets set` for Fly.io, and your platform secret store for hosted environments.
+- Do not commit live credentials, database dumps, customer data, or production config to this repository. See `SECURITY.md`.
 
 Building & testing
 
@@ -64,7 +71,9 @@ cargo test -p mermaduckle-server
 ```
 
 Development notes
-- Seed data includes realistic demo workflows, agents, and a small set of API keys for local testing — these are intended for developer ease only and should not be used in production.
+- The public demo at `/demo` is intended for sample data only.
+- The hosted beta at `/app` is the managed environment for invited users.
+- Production deployments should use customer-owned or team-owned infrastructure and Postgres.
 
 Deployment — Fly.io (recommended)
 
@@ -124,4 +133,3 @@ Files in this repo used for Fly deployments:
 - `docs/deploy/fly.md` — step-by-step Fly deploy and domain instructions.
 - `.github/workflows/fly-deploy.yml` — Fly deployment workflow for pushes to `main`.
 - `tools/deploy_fly.ps1` — local deployment helper for manual Fly releases.
-

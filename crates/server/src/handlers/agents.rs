@@ -165,10 +165,7 @@ pub async fn chat_with_agent(
     let client = pool.get().await.unwrap();
 
     let agent_result = client
-        .query_opt(
-            "SELECT model, prompt FROM agents WHERE id = $1",
-            &[&id],
-        )
+        .query_opt("SELECT model, prompt FROM agents WHERE id = $1", &[&id])
         .await;
 
     let (model, system_prompt) = match agent_result {

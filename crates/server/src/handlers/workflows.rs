@@ -117,8 +117,7 @@ pub async fn update_workflow(
 
     // Build dynamic UPDATE with numbered params
     let mut sets: Vec<String> = vec!["updated_at = $1".into()];
-    let mut values: Vec<Box<dyn tokio_postgres::types::ToSql + Sync>> =
-        vec![Box::new(now.clone())];
+    let mut values: Vec<Box<dyn tokio_postgres::types::ToSql + Sync>> = vec![Box::new(now.clone())];
     let mut idx = 2u32;
 
     if let Some(ref name) = body.name {
@@ -152,10 +151,7 @@ pub async fn update_workflow(
         idx += 1;
     }
 
-    let sql = format!(
-        "UPDATE workflows SET {} WHERE id = ${idx}",
-        sets.join(", ")
-    );
+    let sql = format!("UPDATE workflows SET {} WHERE id = ${idx}", sets.join(", "));
     values.push(Box::new(id.clone()));
 
     let params_refs: Vec<&(dyn tokio_postgres::types::ToSql + Sync)> =
@@ -245,12 +241,11 @@ pub async fn run_workflow(
         serde_json::to_value(&result.logs).unwrap_or(serde_json::json!([]));
     let context_json: serde_json::Value =
         serde_json::to_value(&result.context).unwrap_or(serde_json::json!({}));
-    let completed_at_opt: Option<String> =
-        if status == "completed" || status == "failed" {
-            Some(completed_at.clone())
-        } else {
-            None
-        };
+    let completed_at_opt: Option<String> = if status == "completed" || status == "failed" {
+        Some(completed_at.clone())
+    } else {
+        None
+    };
     let error_opt: Option<String> = if status == "failed" {
         Some(result.output.clone())
     } else {
@@ -326,7 +321,10 @@ pub async fn export_workflows(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
 
     let wf_rows = client
-        .query("SELECT id, name, description, status, nodes, edges, run_count FROM workflows", &[])
+        .query(
+            "SELECT id, name, description, status, nodes, edges, run_count FROM workflows",
+            &[],
+        )
         .await
         .unwrap_or_default();
     let workflows: Vec<serde_json::Value> = wf_rows
@@ -384,8 +382,10 @@ pub async fn import_workflows(
             .and_then(|v| v.as_str())
             .unwrap_or("Imported");
         let desc = wf.get("description").and_then(|v| v.as_str());
-        let nodes_val: serde_json::Value = wf.get("nodes").cloned().unwrap_or(serde_json::json!([]));
-        let edges_val: serde_json::Value = wf.get("edges").cloned().unwrap_or(serde_json::json!([]));
+        let nodes_val: serde_json::Value =
+            wf.get("nodes").cloned().unwrap_or(serde_json::json!([]));
+        let edges_val: serde_json::Value =
+            wf.get("edges").cloned().unwrap_or(serde_json::json!([]));
         client.execute(
             "INSERT INTO workflows (id, name, description, status, nodes, edges, created_at, updated_at) VALUES ($1,$2,$3,'draft',$4,$5,$6,$7) ON CONFLICT (id) DO UPDATE SET name=$2, description=$3, nodes=$4, edges=$5, updated_at=$7",
             &[&id, &name, &desc, &nodes_val, &edges_val, &now, &now],

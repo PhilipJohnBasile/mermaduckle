@@ -70,8 +70,8 @@ function showAuthScreen() {
             )
           )
         ),
-        h('h2', { class: 'auth-title' }, isLogin ? 'Sign in to Mermaduckle' : 'Create your account'),
-        h('p', { class: 'auth-subtitle' }, isLogin ? 'Enter your credentials to access the platform.' : 'Start orchestrating AI agent workflows for free.'),
+        h('h2', { class: 'auth-title' }, isLogin ? 'Sign in to the hosted beta' : 'Create your beta account'),
+        h('p', { class: 'auth-subtitle' }, isLogin ? 'Enter your credentials to access the managed Mermaduckle environment.' : 'Use the hosted environment while we work closely with early users.'),
         h('form', { class: 'auth-form', onSubmit: handleAuthSubmit },
           ...(isLogin ? [] : [
             h('label', { class: 'auth-label' }, 'Full name'),
@@ -362,10 +362,10 @@ async function renderDashboard(el) {
     el.innerHTML = '';
     el.className = 'page-content animate-fade-in';
     el.appendChild(h('div', { class: 'page-header' },
-      h('div', {},
-        h('h2', {}, 'Welcome to Mermaduckle'),
-        h('p', {}, 'Governed AI workflow operations — self-hosted control plane')
-      ),
+        h('div', {},
+          h('h2', {}, 'Welcome to Mermaduckle'),
+          h('p', {}, 'Governed AI workflow operations — hosted beta control plane')
+        ),
     ));
 
     el.appendChild(h('div', { class: 'glass-card', style: { padding: '2rem', maxWidth: '640px', marginBottom: '2rem' } },

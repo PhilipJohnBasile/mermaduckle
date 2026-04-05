@@ -34,7 +34,10 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
 
     // Check if email already exists
     let row = client
-        .query_one("SELECT COUNT(*)::bigint FROM users WHERE email = $1", &[&email])
+        .query_one(
+            "SELECT COUNT(*)::bigint FROM users WHERE email = $1",
+            &[&email],
+        )
         .await
         .ok();
     let exists: i64 = row.map(|r| r.get(0)).unwrap_or(0);
@@ -182,10 +185,7 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
 
     if db::is_bootstrap_admin_email(&user_email) && role != "admin" {
         client
-            .execute(
-                "UPDATE users SET role = 'admin' WHERE id = $1",
-                &[&user_id],
-            )
+            .execute("UPDATE users SET role = 'admin' WHERE id = $1", &[&user_id])
             .await
             .ok();
         role = "admin".to_string();
@@ -289,10 +289,7 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
 
             if db::is_bootstrap_admin_email(&email) && role != "admin" {
                 client
-                    .execute(
-                        "UPDATE users SET role = 'admin' WHERE id = $1",
-                        &[&user_id],
-                    )
+                    .execute("UPDATE users SET role = 'admin' WHERE id = $1", &[&user_id])
                     .await
                     .ok();
                 role = "admin".to_string();

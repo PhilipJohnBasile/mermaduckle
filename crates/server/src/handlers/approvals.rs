@@ -101,10 +101,13 @@ pub async fn handle_approval(
 
     let Some(next_node) = next_node_id else {
         let now = chrono::Utc::now().to_rfc3339();
-        client.execute(
-            "UPDATE workflow_runs SET status = 'completed', completed_at = $1 WHERE id = $2",
-            &[&now, &run_id],
-        ).await.ok();
+        client
+            .execute(
+                "UPDATE workflow_runs SET status = 'completed', completed_at = $1 WHERE id = $2",
+                &[&now, &run_id],
+            )
+            .await
+            .ok();
         return HttpResponse::Ok()
             .json(serde_json::json!({"success": true, "status": "completed"}));
     };
@@ -124,13 +127,16 @@ pub async fn handle_approval(
     .await;
 
     let completed_at = chrono::Utc::now().to_rfc3339();
-    let logs_json: serde_json::Value = serde_json::to_value(&result.logs).unwrap_or(serde_json::json!([]));
-    let context_json: serde_json::Value = serde_json::to_value(&result.context).unwrap_or(serde_json::json!({}));
-    let completed_at_opt: Option<String> = if result.status == "completed" || result.status == "failed" {
-        Some(completed_at)
-    } else {
-        None
-    };
+    let logs_json: serde_json::Value =
+        serde_json::to_value(&result.logs).unwrap_or(serde_json::json!([]));
+    let context_json: serde_json::Value =
+        serde_json::to_value(&result.context).unwrap_or(serde_json::json!({}));
+    let completed_at_opt: Option<String> =
+        if result.status == "completed" || result.status == "failed" {
+            Some(completed_at)
+        } else {
+            None
+        };
     let error_opt: Option<String> = if result.status == "failed" {
         Some(result.output.clone())
     } else {
