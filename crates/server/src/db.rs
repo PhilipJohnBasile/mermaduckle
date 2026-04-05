@@ -168,7 +168,10 @@ fn init_schema(conn: &rusqlite::Connection) {
 
     // Migrations for existing databases (will error if column already exists, which we ignore via .ok())
     let _ = conn.execute("ALTER TABLE workflows ADD COLUMN schedule TEXT", []);
-    let _ = conn.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'", []);
+    let _ = conn.execute(
+        "ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'",
+        [],
+    );
     // Promote the earliest registered user to admin (covers existing DBs before role column existed)
     let _ = conn.execute(
         "UPDATE users SET role = 'admin' WHERE id = (SELECT id FROM users ORDER BY created_at ASC LIMIT 1) AND role != 'admin'",

@@ -20,10 +20,7 @@ pub struct LoginRequest {
 }
 
 #[post("/auth/register")]
-pub async fn register(
-    pool: web::Data<DbPool>,
-    body: web::Json<RegisterRequest>,
-) -> HttpResponse {
+pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>) -> HttpResponse {
     let name = body.name.trim();
     let email = body.email.trim().to_lowercase();
     let password = &body.password;
@@ -62,7 +59,10 @@ pub async fn register(
         }
     };
 
-    let user_id = format!("usr_{}", uuid::Uuid::new_v4().to_string().replace('-', "")[..12].to_string());
+    let user_id = format!(
+        "usr_{}",
+        uuid::Uuid::new_v4().to_string().replace('-', "")[..12].to_string()
+    );
     let session_id = format!("ses_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
 
     // First registered user becomes admin, all others are regular users
@@ -122,10 +122,7 @@ pub async fn register(
 }
 
 #[post("/auth/login")]
-pub async fn login(
-    pool: web::Data<DbPool>,
-    body: web::Json<LoginRequest>,
-) -> HttpResponse {
+pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> HttpResponse {
     let email = body.email.trim().to_lowercase();
     let password = &body.password;
 

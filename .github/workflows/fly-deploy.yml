@@ -40,6 +40,21 @@ jobs:
           curl -fsSL https://fly.io/install.sh | sh
           echo "$HOME/.fly/bin" >> "$GITHUB_PATH"
 
+      - name: Ensure Fly volume exists
+        if: steps.fly-token.outputs.available == 'true'
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_APP_NAME: mermaduckle
+          FLY_VOLUME_NAME: mermaduckle_data
+          FLY_VOLUME_REGION: ewr
+        run: |
+          if flyctl volumes list -a "$FLY_APP_NAME" --json | grep -q "\"name\":\"$FLY_VOLUME_NAME\""; then
+            echo "Volume $FLY_VOLUME_NAME already exists."
+          else
+            flyctl volumes create "$FLY_VOLUME_NAME" -a "$FLY_APP_NAME" -r "$FLY_VOLUME_REGION" -n 1 --size 1
+          fi
+
       - name: Deploy to Fly
         if: steps.fly-token.outputs.available == 'true'
         run: flyctl deploy --remote-only --config fly.toml
