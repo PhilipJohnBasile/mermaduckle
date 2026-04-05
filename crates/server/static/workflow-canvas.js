@@ -108,6 +108,7 @@ window.initWorkflowCanvas = function(containerId, workflowData) {
       if (node.type === 'trigger') { borderColor = 'var(--amber-400)'; icon = '⚡'; }
       else if (node.type === 'agent') { borderColor = 'var(--primary-400)'; icon = '🤖'; }
       else if (node.type === 'condition') { borderColor = 'var(--cyan-400)'; icon = '🔀'; }
+      else if (node.type === 'approval') { borderColor = 'var(--violet-400)'; icon = '✅'; }
       else if (node.type === 'action') { borderColor = 'var(--emerald-400)'; icon = '🔨'; }
       
       el.style.borderLeft = `3px solid ${borderColor}`;
@@ -287,6 +288,18 @@ window.initWorkflowCanvas = function(containerId, workflowData) {
 
   window.getWorkflowNodes = () => nodes;
   window.getWorkflowEdges = () => edges;
+
+  window.zoomCanvas = (delta) => {
+    let newScale = transform.scale + delta;
+    newScale = Math.min(Math.max(0.1, newScale), 2);
+    transform.scale = newScale;
+    updateTransform();
+  };
+
+  window.resetCanvas = () => {
+    transform = { x: 0, y: 0, scale: 1 };
+    updateTransform();
+  };
 
   window.autoLayout = () => {
     if (nodes.length === 0) return;

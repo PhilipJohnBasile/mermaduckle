@@ -366,15 +366,15 @@
     // Node palette (draggable to canvas)
     var palette = h("div", { style: { width: "220px", background: "rgba(0,0,0,0.2)", borderRight: "1px solid rgba(255,255,255,0.06)", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem", overflowY: "auto" } },
       h("h3", { style: { fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--slate-500)", marginBottom: "0.25rem" } }, "Node Palette"),
-      makePaletteItem("\u26A1 Trigger", "var(--amber-400)", "Start event"),
-      makePaletteItem("\uD83E\uDD16 Agent", "var(--primary-400)", "LLM processing"),
-      makePaletteItem("\uD83D\uDC1D Swarm", "var(--primary-400)", "Parallel agents"),
-      makePaletteItem("\uD83D\uDD00 Condition", "var(--cyan-400)", "Branching gate"),
-      makePaletteItem("\uD83D\uDD04 Loop", "var(--orange-400)", "Iterative execution"),
-      makePaletteItem("\u23F1\uFE0F Delay", "var(--gray-400)", "Time-based pause"),
-      makePaletteItem("\u2705 Approval", "var(--violet-400)", "Human review"),
-      makePaletteItem("\uD83C\uDF10 HTTP", "var(--blue-400)", "API call"),
-      makePaletteItem("\uD83D\uDD28 Action", "var(--emerald-400)", "Integration point")
+      makePaletteItem("trigger", "\u26A1 Trigger", "var(--amber-400)", "Start event"),
+      makePaletteItem("agent", "\uD83E\uDD16 Agent", "var(--primary-400)", "LLM processing"),
+      makePaletteItem("agent", "\uD83D\uDC1D Swarm", "var(--primary-400)", "Parallel agents"),
+      makePaletteItem("condition", "\uD83D\uDD00 Condition", "var(--cyan-400)", "Branching gate"),
+      makePaletteItem("condition", "\uD83D\uDD04 Loop", "var(--orange-400)", "Iterative execution"),
+      makePaletteItem("action", "\u23F1\uFE0F Delay", "var(--gray-400)", "Time-based pause"),
+      makePaletteItem("approval", "\u2705 Approval", "var(--violet-400)", "Human review"),
+      makePaletteItem("action", "\uD83C\uDF10 HTTP", "var(--blue-400)", "API call"),
+      makePaletteItem("action", "\uD83D\uDD28 Action", "var(--emerald-400)", "Integration point")
     );
     builderLayout.appendChild(palette);
 
@@ -406,12 +406,12 @@
     });
   }
 
-  function makePaletteItem(label, color, desc) {
+  function makePaletteItem(type, label, color, desc) {
     return h("div", {
       class: "glass-card",
       style: { padding: "0.6rem 0.75rem", borderLeft: "3px solid " + color, cursor: "grab", fontSize: "12px" },
       draggable: "true",
-      onDragstart: function (e) { e.dataTransfer.setData("text/plain", label); }
+      onDragstart: function (e) { e.dataTransfer.setData("application/json", JSON.stringify({ type: type, label: label, color: color })); }
     },
       h("div", { style: { fontWeight: "600", color: "white" } }, label),
       h("div", { style: { fontSize: "10px", color: "var(--slate-500)", marginTop: "2px" } }, desc)
