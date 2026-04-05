@@ -1,0 +1,10 @@
+[app]
+app = "app-rough-dust-5178"
+
+[build]
+  # Use the provided Dockerfile for Fly builds
+  dockerfile = "deploy/Dockerfile.fly"
+
+[[services]]
+  internal_port = 3001
+  protocol = "tcp"
