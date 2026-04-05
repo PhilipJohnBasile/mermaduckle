@@ -55,29 +55,35 @@ impl Client {
     }
 
     pub async fn list_workflows(&self) -> Result<Vec<Workflow>, String> {
-        let res = self.http.get(format!("{}/api/workflows", self.url))
+        let res = self
+            .http
+            .get(format!("{}/api/workflows", self.url))
             .send()
             .await
             .map_err(|e| e.to_string())?;
-        
+
         res.json().await.map_err(|e| e.to_string())
     }
 
     pub async fn get_workflow(&self, id: &str) -> Result<Workflow, String> {
-        let res = self.http.get(format!("{}/api/workflows/{}", self.url, id))
+        let res = self
+            .http
+            .get(format!("{}/api/workflows/{}", self.url, id))
             .send()
             .await
             .map_err(|e| e.to_string())?;
-        
+
         res.json().await.map_err(|e| e.to_string())
     }
 
     pub async fn run_workflow(&self, id: &str) -> Result<WorkflowRunResult, String> {
-        let res = self.http.post(format!("{}/api/workflows/{}/run", self.url, id))
+        let res = self
+            .http
+            .post(format!("{}/api/workflows/{}/run", self.url, id))
             .send()
             .await
             .map_err(|e| e.to_string())?;
-        
+
         let data: WorkflowRunResponse = res.json().await.map_err(|e| e.to_string())?;
         if data.success {
             data.result.ok_or_else(|| "Missing result".into())
@@ -87,11 +93,13 @@ impl Client {
     }
 
     pub async fn list_agents(&self) -> Result<Vec<Agent>, String> {
-        let res = self.http.get(format!("{}/api/agents", self.url))
+        let res = self
+            .http
+            .get(format!("{}/api/agents", self.url))
             .send()
             .await
             .map_err(|e| e.to_string())?;
-        
+
         res.json().await.map_err(|e| e.to_string())
     }
 }

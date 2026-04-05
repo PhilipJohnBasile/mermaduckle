@@ -1,21 +1,20 @@
-use actix_web::{get, web, HttpResponse};
 use crate::db::DbPool;
-use crate::models::HealthStatus;
 use crate::models::HealthServices;
+use crate::models::HealthStatus;
+use actix_web::{HttpResponse, get, web};
 
 #[get("/api/health")]
 pub async fn health_check(pool: web::Data<DbPool>) -> HttpResponse {
     let db_status = match pool.get() {
-        Ok(conn) => {
-            match conn.query_row("SELECT 1", [], |_| Ok(())) {
-                Ok(()) => "ok".to_string(),
-                Err(_) => "error".to_string(),
-            }
-        }
+        Ok(conn) => match conn.query_row("SELECT 1", [], |_| Ok(())) {
+            Ok(()) => "ok".to_string(),
+            Err(_) => "error".to_string(),
+        },
         Err(_) => "error".to_string(),
     };
 
-    let ollama_url = std::env::var("OLLAMA_URL").unwrap_or_else(|_| "http://localhost:11434".into());
+    let ollama_url =
+        std::env::var("OLLAMA_URL").unwrap_or_else(|_| "http://localhost:11434".into());
     let ollama_status = match reqwest::get(format!("{ollama_url}/api/tags")).await {
         Ok(r) if r.status().is_success() => "ok".to_string(),
         Ok(r) => format!("error: status {}", r.status()),

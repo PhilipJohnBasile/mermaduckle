@@ -87,7 +87,7 @@ pub async fn call_ollama(url: &str, model: &str, prompt: String) -> Result<Strin
     let res_result = client
         .post(format!("{url}/api/generate"))
         .header("Content-Type", "application/json")
-        .timeout(std::time::Duration::from_secs(10)) 
+        .timeout(std::time::Duration::from_secs(10))
         .json(&body)
         .send()
         .await;
@@ -95,14 +95,25 @@ pub async fn call_ollama(url: &str, model: &str, prompt: String) -> Result<Strin
     let res = match res_result {
         Ok(r) => r,
         Err(e) => {
-            eprintln!("WARNING: Ollama connection failed ({e}). Falling back to simulated response for model: {model}");
-            return Ok(format!("[Simulated {} output]: Action completed successfully based on prompt context.", model));
+            eprintln!(
+                "WARNING: Ollama connection failed ({e}). Falling back to simulated response for model: {model}"
+            );
+            return Ok(format!(
+                "[Simulated {} output]: Action completed successfully based on prompt context.",
+                model
+            ));
         }
     };
 
     if !res.status().is_success() {
-        eprintln!("WARNING: Ollama API returned {}. Falling back to simulated response.", res.status());
-        return Ok(format!("[Simulated {} output]: Detected missing model or API error.", model));
+        eprintln!(
+            "WARNING: Ollama API returned {}. Falling back to simulated response.",
+            res.status()
+        );
+        return Ok(format!(
+            "[Simulated {} output]: Detected missing model or API error.",
+            model
+        ));
     }
 
     let data: OllamaResponse = res
@@ -110,7 +121,9 @@ pub async fn call_ollama(url: &str, model: &str, prompt: String) -> Result<Strin
         .await
         .map_err(|e| format!("Failed to parse Ollama response: {e}"))?;
 
-    Ok(data.response.unwrap_or_else(|| format!("[Simulated fallback] Empty block from model.")))
+    Ok(data
+        .response
+        .unwrap_or_else(|| format!("[Simulated fallback] Empty block from model.")))
 }
 
 // ── Workflow Execution Engine ──────────────────────────────
@@ -165,11 +178,8 @@ pub async fn execute_workflow_engine(
     }
 
     // Build node map
-    let node_map: HashMap<&str, &WorkflowNode> = workflow
-        .nodes
-        .iter()
-        .map(|n| (n.id.as_str(), n))
-        .collect();
+    let node_map: HashMap<&str, &WorkflowNode> =
+        workflow.nodes.iter().map(|n| (n.id.as_str(), n)).collect();
 
     // Find start node
     let start = if let Some(sid) = start_node_id {
@@ -206,7 +216,7 @@ pub async fn execute_workflow_engine(
             Some(n) => *n,
             None => break,
         };
-        
+
         if visited.contains(node.id.as_str()) {
             add_log(&mut logs, &node.id, "Loop detected, stopping execution");
             break;
@@ -221,16 +231,14 @@ pub async fn execute_workflow_engine(
         match nt {
             "trigger" => {
                 add_log(&mut logs, &node.id, &format!("Trigger executed: {label}"));
-                current_id = next_edges
-                    .first()
-                    .map(|e| e.target.clone());
+                current_id = next_edges.first().map(|e| e.target.clone());
             }
             "agent" => {
                 let model = cfg
                     .get("model")
                     .and_then(|v| v.as_str())
                     .unwrap_or("llama3.2");
-                
+
                 let base_prompt = cfg
                     .get("systemPrompt")
                     .or_else(|| cfg.get("prompt"))
@@ -245,7 +253,11 @@ pub async fn execute_workflow_engine(
                     base_prompt.to_string()
                 };
 
-                add_log(&mut logs, &node.id, &format!("Agent [{label}] calling {model}"));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Agent [{label}] calling {model}"),
+                );
 
                 match call_ollama(ollama, model, prompt).await {
                     Ok(result) => {
@@ -264,9 +276,7 @@ pub async fn execute_workflow_engine(
                     }
                 }
 
-                current_id = next_edges
-                    .first()
-                    .map(|e| e.target.clone());
+                current_id = next_edges.first().map(|e| e.target.clone());
             }
             "condition" => {
                 let expression = cfg
@@ -275,7 +285,11 @@ pub async fn execute_workflow_engine(
                     .unwrap_or("true");
 
                 let result = expression == "true" || expression == "1";
-                add_log(&mut logs, &node.id, &format!("Condition [{label}] result: {result}"));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Condition [{label}] result: {result}"),
+                );
 
                 let label_match = if result { "true" } else { "false" };
                 let matching_edge = next_edges
@@ -290,7 +304,11 @@ pub async fn execute_workflow_engine(
                 current_id = matching_edge.map(|e| e.target.clone());
             }
             "approval" => {
-                add_log(&mut logs, &node.id, &format!("Paused for manual approval: {label}"));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Paused for manual approval: {label}"),
+                );
                 return ExecutionResult {
                     status: "pending_approval".into(),
                     output,
@@ -300,22 +318,45 @@ pub async fn execute_workflow_engine(
                 };
             }
             "swarm" => {
-                let model = cfg.get("model").and_then(|v| v.as_str()).unwrap_or("llama3.2");
-                let sub_prompt = cfg.get("subPrompt").and_then(|v| v.as_str()).unwrap_or("Process this item: {{item}}");
+                let model = cfg
+                    .get("model")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("llama3.2");
+                let sub_prompt = cfg
+                    .get("subPrompt")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("Process this item: {{item}}");
                 let items_json = match cfg.get("items") {
                     Some(v) => Some(v.clone()),
                     None => {
-                        let key = cfg.get("itemsKey").and_then(|v| v.as_str()).unwrap_or("items");
-                        context.get(key).and_then(|s| serde_json::from_str::<serde_json::Value>(s).ok())
+                        let key = cfg
+                            .get("itemsKey")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("items");
+                        context
+                            .get(key)
+                            .and_then(|s| serde_json::from_str::<serde_json::Value>(s).ok())
                     }
                 };
 
-                let items = items_json.as_ref().and_then(|v| v.as_array()).cloned().unwrap_or_else(|| {
-                    // Fallback to splitting the current output if it looks like a list
-                    output.lines().filter(|l| !l.trim().is_empty()).map(|l| serde_json::json!(l.trim())).collect()
-                });
+                let items = items_json
+                    .as_ref()
+                    .and_then(|v| v.as_array())
+                    .cloned()
+                    .unwrap_or_else(|| {
+                        // Fallback to splitting the current output if it looks like a list
+                        output
+                            .lines()
+                            .filter(|l| !l.trim().is_empty())
+                            .map(|l| serde_json::json!(l.trim()))
+                            .collect()
+                    });
 
-                add_log(&mut logs, &node.id, &format!("Swarm [{label}] spawning {} parallel agents", items.len()));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Swarm [{label}] spawning {} parallel agents", items.len()),
+                );
 
                 let mut futures = Vec::new();
                 for item in items {
@@ -331,24 +372,46 @@ pub async fn execute_workflow_engine(
                             combined.push_str(&format!("Result {}: {}\n", i + 1, r));
                         }
                         Err(e) => {
-                            add_log(&mut logs, &node.id, &format!("Swarm sub-agent {} failed: {}", i, e));
+                            add_log(
+                                &mut logs,
+                                &node.id,
+                                &format!("Swarm sub-agent {} failed: {}", i, e),
+                            );
                         }
                     }
                 }
-                
+
                 current_id = next_edges.first().map(|e| e.target.clone());
             }
             "action" => {
-                let action_type = cfg.get("actionType").and_then(|v| v.as_str()).unwrap_or("log");
-                add_log(&mut logs, &node.id, &format!("Action [{label}] type: {action_type}"));
-                
+                let action_type = cfg
+                    .get("actionType")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("log");
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Action [{label}] type: {action_type}"),
+                );
+
                 current_id = next_edges.first().map(|e| e.target.clone());
             }
             "loop" => {
-                let iterations = cfg.get("iterations").and_then(|v| v.as_u64()).unwrap_or(1) as usize;
-                let loop_target = cfg.get("loopTarget").and_then(|v| v.as_str()).unwrap_or("start");
+                let iterations =
+                    cfg.get("iterations").and_then(|v| v.as_u64()).unwrap_or(1) as usize;
+                let loop_target = cfg
+                    .get("loopTarget")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("start");
 
-                add_log(&mut logs, &node.id, &format!("Loop [{label}] iterations: {}, target: {}", iterations, loop_target));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!(
+                        "Loop [{label}] iterations: {}, target: {}",
+                        iterations, loop_target
+                    ),
+                );
 
                 // For simplicity, repeat the next node multiple times
                 for i in 0..iterations {
@@ -363,7 +426,11 @@ pub async fn execute_workflow_engine(
                 let url = cfg.get("url").and_then(|v| v.as_str()).unwrap_or("");
                 let method = cfg.get("method").and_then(|v| v.as_str()).unwrap_or("GET");
 
-                add_log(&mut logs, &node.id, &format!("HTTP [{label}] {} {}", method, url));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("HTTP [{label}] {} {}", method, url),
+                );
 
                 let client = reqwest::Client::new();
                 let response = match method {
@@ -371,9 +438,13 @@ pub async fn execute_workflow_engine(
                     "POST" => {
                         let body = cfg.get("body").and_then(|v| v.as_str()).unwrap_or("");
                         client.post(url).body(body.to_string()).send().await
-                    },
+                    }
                     _ => {
-                        add_log(&mut logs, &node.id, &format!("Unsupported HTTP method: {}", method));
+                        add_log(
+                            &mut logs,
+                            &node.id,
+                            &format!("Unsupported HTTP method: {}", method),
+                        );
                         current_id = next_edges.first().map(|e| e.target.clone());
                         continue;
                     }
@@ -387,10 +458,18 @@ pub async fn execute_workflow_engine(
                                     context.insert(node.id.clone(), text.clone());
                                     output = text;
                                 }
-                                Err(e) => add_log(&mut logs, &node.id, &format!("Failed to read response: {}", e)),
+                                Err(e) => add_log(
+                                    &mut logs,
+                                    &node.id,
+                                    &format!("Failed to read response: {}", e),
+                                ),
                             }
                         } else {
-                            add_log(&mut logs, &node.id, &format!("HTTP error: {}", res.status()));
+                            add_log(
+                                &mut logs,
+                                &node.id,
+                                &format!("HTTP error: {}", res.status()),
+                            );
                         }
                     }
                     Err(e) => add_log(&mut logs, &node.id, &format!("HTTP request failed: {}", e)),
@@ -400,13 +479,24 @@ pub async fn execute_workflow_engine(
             }
             "delay" => {
                 let seconds = cfg.get("seconds").and_then(|v| v.as_u64()).unwrap_or(1);
-                add_log(&mut logs, &node.id, &format!("Delay [{label}] for {} seconds", seconds));
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Delay [{label}] for {} seconds", seconds),
+                );
                 tokio::time::sleep(tokio::time::Duration::from_secs(seconds)).await;
                 current_id = next_edges.first().map(|e| e.target.clone());
             }
             "data_transform" => {
-                let transform_type = cfg.get("transformType").and_then(|v| v.as_str()).unwrap_or("json_parse");
-                add_log(&mut logs, &node.id, &format!("Data Transform [{label}] type: {}", transform_type));
+                let transform_type = cfg
+                    .get("transformType")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("json_parse");
+                add_log(
+                    &mut logs,
+                    &node.id,
+                    &format!("Data Transform [{label}] type: {}", transform_type),
+                );
 
                 match transform_type {
                     "json_parse" => {
@@ -426,7 +516,11 @@ pub async fn execute_workflow_engine(
                         output = output.trim().to_string();
                     }
                     _ => {
-                        add_log(&mut logs, &node.id, &format!("Unknown transform type: {}", transform_type));
+                        add_log(
+                            &mut logs,
+                            &node.id,
+                            &format!("Unknown transform type: {}", transform_type),
+                        );
                     }
                 }
 
@@ -564,7 +658,12 @@ mod tests {
         };
         let result = rt.block_on(execute_workflow_engine(&workflow, None, None, None, false));
         assert_eq!(result.status, "completed");
-        assert!(result.logs.iter().any(|l| l.message.contains("Loop iteration")));
+        assert!(
+            result
+                .logs
+                .iter()
+                .any(|l| l.message.contains("Loop iteration"))
+        );
     }
 
     #[test]
@@ -665,6 +764,11 @@ mod tests {
         };
         let result = rt.block_on(execute_workflow_engine(&workflow, None, None, None, false));
         assert_eq!(result.status, "completed");
-        assert!(result.logs.iter().any(|l| l.message.contains("Data Transform")));
+        assert!(
+            result
+                .logs
+                .iter()
+                .any(|l| l.message.contains("Data Transform"))
+        );
     }
 }

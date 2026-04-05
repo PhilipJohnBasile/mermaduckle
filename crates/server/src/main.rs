@@ -4,23 +4,35 @@ mod models;
 mod scheduler;
 
 use actix_files as fs;
-use actix_web::{web, App, HttpServer, middleware, Error};
-use actix_web_httpauth::middleware::HttpAuthentication;
+use actix_web::{App, Error, HttpServer, middleware, web};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
-use argon2::{Argon2, PasswordVerifier};
+use actix_web_httpauth::middleware::HttpAuthentication;
 use argon2::password_hash::PasswordHash;
+use argon2::{Argon2, PasswordVerifier};
 
-async fn validator(req: actix_web::dev::ServiceRequest, credentials: BearerAuth) -> Result<actix_web::dev::ServiceRequest, (Error, actix_web::dev::ServiceRequest)> {
+async fn validator(
+    req: actix_web::dev::ServiceRequest,
+    credentials: BearerAuth,
+) -> Result<actix_web::dev::ServiceRequest, (Error, actix_web::dev::ServiceRequest)> {
     let token = credentials.token();
     let pool = req.app_data::<web::Data<db::DbPool>>().cloned().unwrap();
     let conn = pool.get().unwrap();
     // Fetch active key hashes and verify using Argon2 via password-hash API
-    let mut stmt = conn.prepare("SELECT key_hash FROM api_keys WHERE status = 'active'").unwrap();
+    let mut stmt = conn
+        .prepare("SELECT key_hash FROM api_keys WHERE status = 'active'")
+        .unwrap();
     let key_iter = stmt.query_map([], |row| row.get::<_, String>(0)).unwrap();
     for kh in key_iter.filter_map(|r| r.ok()) {
         if let Ok(parsed) = PasswordHash::new(&kh) {
-            if Argon2::default().verify_password(token.as_bytes(), &parsed).is_ok() {
-                conn.execute("UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE key_hash = ?1", [&kh]).ok();
+            if Argon2::default()
+                .verify_password(token.as_bytes(), &parsed)
+                .is_ok()
+            {
+                conn.execute(
+                    "UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE key_hash = ?1",
+                    [&kh],
+                )
+                .ok();
                 return Ok(req);
             }
         }
@@ -111,7 +123,7 @@ async fn main() -> std::io::Result<()> {
                     .service(handlers::approvals::list_pending_approvals)
                     .service(handlers::approvals::handle_approval)
                     // Architect
-                    .service(handlers::architect::generate_workflow_draft)
+                    .service(handlers::architect::generate_workflow_draft),
             )
             // ── Static Files & SPA Fallback ──
             .service(fs::Files::new("/static", &static_dir).show_files_listing())
@@ -145,11 +157,7 @@ async fn serve_index(req: actix_web::HttpRequest) -> actix_web::HttpResponse {
 
 fn find_static_dir() -> String {
     // Try multiple locations for the static directory
-    for candidate in &[
-        "crates/server/static",
-        "static",
-        "../static",
-    ] {
+    for candidate in &["crates/server/static", "static", "../static"] {
         if std::path::Path::new(candidate).exists() {
             return candidate.to_string();
         }

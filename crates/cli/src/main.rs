@@ -4,7 +4,11 @@ use indicatif::{ProgressBar, ProgressStyle};
 use mermaduckle_sdk::Client;
 
 #[derive(Parser, Debug)]
-#[command(name = "mermaduckle", version = "0.1.0", about = "CLI for Mermaduckle AI Agent Orchestration")]
+#[command(
+    name = "mermaduckle",
+    version = "0.1.0",
+    about = "CLI for Mermaduckle AI Agent Orchestration"
+)]
 struct Cli {
     #[arg(long, default_value = "http://localhost:3000")]
     url: String,
@@ -39,7 +43,12 @@ async fn main() -> Result<(), String> {
                 println!("No workflows found.");
             } else {
                 for wf in workflows {
-                    println!("{} ({}) - [{}]", wf.name.green().bold(), wf.id.dimmed(), wf.status.blue());
+                    println!(
+                        "{} ({}) - [{}]",
+                        wf.name.green().bold(),
+                        wf.id.dimmed(),
+                        wf.status.blue()
+                    );
                 }
             }
         }

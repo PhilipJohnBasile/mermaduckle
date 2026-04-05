@@ -70,12 +70,7 @@ impl GovernanceEngine {
         }
     }
 
-    pub fn check_rate_limit(
-        &mut self,
-        key: &str,
-        limit: u64,
-        window_ms: u64,
-    ) -> RateLimitResult {
+    pub fn check_rate_limit(&mut self, key: &str, limit: u64, window_ms: u64) -> RateLimitResult {
         let now = now_ms();
         let record = self.rate_limit_store.get(key);
 
@@ -123,10 +118,7 @@ impl GovernanceEngine {
 
     pub fn check_content_filter(&self, text: &str) -> ContentFilterResult {
         let bad_words = regex::Regex::new(r"(?i)\b(spam|abuse|hate|violence)\b").unwrap();
-        let matches: Vec<&str> = bad_words
-            .find_iter(text)
-            .map(|m| m.as_str())
-            .collect();
+        let matches: Vec<&str> = bad_words.find_iter(text).map(|m| m.as_str()).collect();
 
         if matches.is_empty() {
             ContentFilterResult {
@@ -139,10 +131,7 @@ impl GovernanceEngine {
             unique.dedup();
             ContentFilterResult {
                 flagged: true,
-                reason: Some(format!(
-                    "Contains forbidden terms: {}",
-                    unique.join(", ")
-                )),
+                reason: Some(format!("Contains forbidden terms: {}", unique.join(", "))),
             }
         }
     }
@@ -163,10 +152,7 @@ impl Default for GovernanceEngine {
 /// Evaluate a list of policies against a context.
 /// Each policy evaluates to passed=true if the context satisfies its conditions.
 /// This is a simple key-existence check; in production, you'd use a rule engine.
-pub fn evaluate_policies(
-    policies: &[Policy],
-    _context: &PolicyContext,
-) -> Vec<PolicyResult> {
+pub fn evaluate_policies(policies: &[Policy], _context: &PolicyContext) -> Vec<PolicyResult> {
     policies
         .iter()
         .map(|policy| PolicyResult {
@@ -228,10 +214,7 @@ mod tests {
         let engine = GovernanceEngine::new();
         let result = engine.check_content_filter("This contains spam and abuse");
         assert!(result.flagged);
-        assert!(result
-            .reason
-            .unwrap()
-            .contains("spam"));
+        assert!(result.reason.unwrap().contains("spam"));
     }
 
     #[test]

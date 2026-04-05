@@ -1,9 +1,9 @@
-use std::time::Duration;
-use tokio::time::interval;
 use crate::db::DbPool;
 use crate::models::Workflow;
-use mermaduckle_engine::execute_workflow_engine;
 use chrono::Utc;
+use mermaduckle_engine::execute_workflow_engine;
+use std::time::Duration;
+use tokio::time::interval;
 
 pub async fn start_scheduler(pool: DbPool) {
     let mut interval = interval(Duration::from_secs(60));
@@ -12,7 +12,7 @@ pub async fn start_scheduler(pool: DbPool) {
     loop {
         interval.tick().await;
         let pool = pool.clone();
-        
+
         tokio::spawn(async move {
             if let Err(e) = check_and_run_schedules(pool).await {
                 eprintln!("❌ Scheduler error: {:?}", e);
@@ -25,7 +25,7 @@ async fn check_and_run_schedules(pool: DbPool) -> Result<(), Box<dyn std::error:
     let workflows: Vec<Workflow> = {
         let conn = pool.get()?;
         let mut stmt = conn.prepare("SELECT id, name, nodes, edges, schedule, last_run_at FROM workflows WHERE schedule IS NOT NULL AND status = 'active'")?;
-        
+
         let rows = stmt.query_map([], |row| {
             // Read all columns in strict order to satisfy Rusqlite's buffer reuse safety
             let id: String = row.get(0)?;
@@ -49,7 +49,7 @@ async fn check_and_run_schedules(pool: DbPool) -> Result<(), Box<dyn std::error:
                 updated_at: None,
             })
         })?;
-        
+
         // Materialize results to avoid borrow checker/iterator issues outside the block
         let mut collection = Vec::new();
         for res in rows {
@@ -77,7 +77,14 @@ fn should_run(wf: &Workflow) -> bool {
     };
 
     let last_run = match &wf.last_run_at {
-        Some(t) => Utc::now().signed_duration_since(chrono::DateTime::parse_from_rfc3339(t).unwrap().with_timezone(&Utc)).to_std().unwrap_or(Duration::from_secs(0)),
+        Some(t) => Utc::now()
+            .signed_duration_since(
+                chrono::DateTime::parse_from_rfc3339(t)
+                    .unwrap()
+                    .with_timezone(&Utc),
+            )
+            .to_std()
+            .unwrap_or(Duration::from_secs(0)),
         None => return true, // Never run before
     };
 
@@ -95,8 +102,18 @@ fn should_run(wf: &Workflow) -> bool {
     last_run >= interval
 }
 
-async fn run_scheduled_workflow(pool: DbPool, wf: Workflow) -> Result<(), Box<dyn std::error::Error>> {
-    let run_id = format!("run_{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
+async fn run_scheduled_workflow(
+    pool: DbPool,
+    wf: Workflow,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let run_id = format!(
+        "run_{}",
+        uuid::Uuid::new_v4()
+            .to_string()
+            .split('-')
+            .next()
+            .unwrap_or("x")
+    );
     // 1. Create run record
     {
         let conn = pool.get()?;
@@ -107,9 +124,14 @@ async fn run_scheduled_workflow(pool: DbPool, wf: Workflow) -> Result<(), Box<dy
     }
 
     // 2. Execute engine
-    let engine_nodes: Vec<mermaduckle_engine::WorkflowNode> = serde_json::from_value(wf.nodes.clone()).unwrap_or_default();
-    let engine_edges: Vec<mermaduckle_engine::WorkflowEdge> = serde_json::from_value(wf.edges.clone()).unwrap_or_default();
-    let engine_wf = mermaduckle_engine::Workflow { nodes: engine_nodes, edges: engine_edges };
+    let engine_nodes: Vec<mermaduckle_engine::WorkflowNode> =
+        serde_json::from_value(wf.nodes.clone()).unwrap_or_default();
+    let engine_edges: Vec<mermaduckle_engine::WorkflowEdge> =
+        serde_json::from_value(wf.edges.clone()).unwrap_or_default();
+    let engine_wf = mermaduckle_engine::Workflow {
+        nodes: engine_nodes,
+        edges: engine_edges,
+    };
 
     let result = execute_workflow_engine(&engine_wf, None, None, None, false).await;
 
@@ -117,8 +139,12 @@ async fn run_scheduled_workflow(pool: DbPool, wf: Workflow) -> Result<(), Box<dy
     {
         let conn = pool.get()?;
         let now = Utc::now().to_rfc3339();
-        let status = if result.paused_node_id.is_some() { "paused" } else { "completed" };
-        
+        let status = if result.paused_node_id.is_some() {
+            "paused"
+        } else {
+            "completed"
+        };
+
         conn.execute(
             "UPDATE workflow_runs SET status = ?1, completed_at = ?2, output = ?3, logs = ?4, context = ?5, paused_node_id = ?6 WHERE id = ?7",
             rusqlite::params![

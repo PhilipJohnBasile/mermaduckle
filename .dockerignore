@@ -1,0 +1,11 @@
+.git
+.github
+target
+data
+docs
+tools
+build_results.txt
+check_results.txt
+check.txt
+docker-compose.yml
+download_cli.ps1

@@ -1,7 +1,7 @@
-use actix_web::{delete, get, post, put, web, HttpResponse};
-use rusqlite::params;
 use crate::db::{DbPool, add_audit_event};
 use crate::models::*;
+use actix_web::{HttpResponse, delete, get, post, put, web};
+use rusqlite::params;
 
 #[get("/api/workflows")]
 pub async fn list_workflows(pool: web::Data<DbPool>) -> HttpResponse {
@@ -67,8 +67,18 @@ pub async fn get_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -> H
 }
 
 #[post("/api/workflows")]
-pub async fn create_workflow(pool: web::Data<DbPool>, body: web::Json<CreateWorkflowRequest>) -> HttpResponse {
-    let id = format!("wf_{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
+pub async fn create_workflow(
+    pool: web::Data<DbPool>,
+    body: web::Json<CreateWorkflowRequest>,
+) -> HttpResponse {
+    let id = format!(
+        "wf_{}",
+        uuid::Uuid::new_v4()
+            .to_string()
+            .split('-')
+            .next()
+            .unwrap_or("x")
+    );
     let now = chrono::Utc::now().to_rfc3339();
     let nodes = body.nodes.clone().unwrap_or(serde_json::json!([]));
     let edges = body.edges.clone().unwrap_or(serde_json::json!([]));
@@ -82,13 +92,28 @@ pub async fn create_workflow(pool: web::Data<DbPool>, body: web::Json<CreateWork
         params![id, body.name, body.description, status, nodes.to_string(), edges.to_string(), schedule, now, now],
     ).ok();
 
-    add_audit_event(&conn, "workflow_created", "low", "usr_1", "System", "system@mermaduckle.io", "workflow", &id, &body.name, &serde_json::json!({}));
+    add_audit_event(
+        &conn,
+        "workflow_created",
+        "low",
+        "usr_1",
+        "System",
+        "system@mermaduckle.io",
+        "workflow",
+        &id,
+        &body.name,
+        &serde_json::json!({}),
+    );
 
     HttpResponse::Ok().json(serde_json::json!({"id": id, "name": body.name}))
 }
 
 #[put("/api/workflows/{id}")]
-pub async fn update_workflow(pool: web::Data<DbPool>, path: web::Path<String>, body: web::Json<UpdateWorkflowRequest>) -> HttpResponse {
+pub async fn update_workflow(
+    pool: web::Data<DbPool>,
+    path: web::Path<String>,
+    body: web::Json<UpdateWorkflowRequest>,
+) -> HttpResponse {
     let id = path.into_inner();
     let now = chrono::Utc::now().to_rfc3339();
     let conn = pool.get().unwrap();
@@ -142,16 +167,21 @@ pub async fn update_workflow(pool: web::Data<DbPool>, path: web::Path<String>, b
 pub async fn delete_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let conn = pool.get().unwrap();
-    conn.execute("DELETE FROM workflows WHERE id = ?1", params![id]).ok();
-    conn.execute("DELETE FROM workflow_runs WHERE workflow_id = ?1", params![id]).ok();
+    conn.execute("DELETE FROM workflows WHERE id = ?1", params![id])
+        .ok();
+    conn.execute(
+        "DELETE FROM workflow_runs WHERE workflow_id = ?1",
+        params![id],
+    )
+    .ok();
     HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }
 
 #[post("/api/workflows/{id}/run")]
 pub async fn run_workflow(
-    pool: web::Data<DbPool>, 
+    pool: web::Data<DbPool>,
     path: web::Path<String>,
-    body: web::Json<serde_json::Value>
+    body: web::Json<serde_json::Value>,
 ) -> HttpResponse {
     let id = path.into_inner();
     let debug_mode = body.get("debug").and_then(|v| v.as_bool()).unwrap_or(false);
@@ -171,14 +201,20 @@ pub async fn run_workflow(
 
     let (nodes_str, edges_str, name) = match result {
         Ok(v) => v,
-        Err(_) => return HttpResponse::NotFound().json(serde_json::json!({"error": "Workflow not found"})),
+        Err(_) => {
+            return HttpResponse::NotFound()
+                .json(serde_json::json!({"error": "Workflow not found"}));
+        }
     };
 
-    let nodes: Vec<mermaduckle_engine::WorkflowNode> = serde_json::from_str(&nodes_str).unwrap_or_default();
-    let edges: Vec<mermaduckle_engine::WorkflowEdge> = serde_json::from_str(&edges_str).unwrap_or_default();
+    let nodes: Vec<mermaduckle_engine::WorkflowNode> =
+        serde_json::from_str(&nodes_str).unwrap_or_default();
+    let edges: Vec<mermaduckle_engine::WorkflowEdge> =
+        serde_json::from_str(&edges_str).unwrap_or_default();
 
     let workflow = mermaduckle_engine::Workflow { nodes, edges };
-    let ollama_url = std::env::var("OLLAMA_URL").unwrap_or_else(|_| "http://localhost:11434".into());
+    let ollama_url =
+        std::env::var("OLLAMA_URL").unwrap_or_else(|_| "http://localhost:11434".into());
 
     // Create run record
     let run_id = format!("run_{}", chrono::Utc::now().timestamp_millis());
@@ -189,7 +225,14 @@ pub async fn run_workflow(
     ).ok();
 
     // Execute
-    let result = mermaduckle_engine::execute_workflow_engine(&workflow, Some(&ollama_url), None, None, debug_mode).await;
+    let result = mermaduckle_engine::execute_workflow_engine(
+        &workflow,
+        Some(&ollama_url),
+        None,
+        None,
+        debug_mode,
+    )
+    .await;
 
     let completed_at = chrono::Utc::now().to_rfc3339();
     let status = &result.status;
@@ -199,11 +242,11 @@ pub async fn run_workflow(
     conn.execute(
         "UPDATE workflow_runs SET status = ?1, completed_at = ?2, output = ?3, error = ?4, logs = ?5, context = ?6, paused_node_id = ?7 WHERE id = ?8",
         params![
-            status, 
-            if status == "completed" || status == "failed" { Some(completed_at.clone()) } else { None }, 
-            result.output, 
-            if status == "failed" { Some(result.output.clone()) } else { None }, 
-            logs_json, 
+            status,
+            if status == "completed" || status == "failed" { Some(completed_at.clone()) } else { None },
+            result.output,
+            if status == "failed" { Some(result.output.clone()) } else { None },
+            logs_json,
             context_json,
             result.paused_node_id,
             run_id
@@ -216,7 +259,18 @@ pub async fn run_workflow(
     ).ok();
 
     let severity = if status == "failed" { "high" } else { "low" };
-    add_audit_event(&conn, "workflow_run", severity, "usr_1", "System", "system@mermaduckle.io", "workflow", &id, &name, &serde_json::json!({"runId": run_id}));
+    add_audit_event(
+        &conn,
+        "workflow_run",
+        severity,
+        "usr_1",
+        "System",
+        "system@mermaduckle.io",
+        "workflow",
+        &id,
+        &name,
+        &serde_json::json!({"runId": run_id}),
+    );
 
     HttpResponse::Ok().json(serde_json::json!({
         "success": status == "completed" || status == "pending_approval",
@@ -263,7 +317,9 @@ pub async fn get_workflow_runs(pool: web::Data<DbPool>, path: web::Path<String>)
 pub async fn export_workflows(pool: web::Data<DbPool>) -> HttpResponse {
     let conn = pool.get().unwrap();
 
-    let mut wf_stmt = conn.prepare("SELECT id, name, description, status, nodes, edges, run_count FROM workflows").unwrap();
+    let mut wf_stmt = conn
+        .prepare("SELECT id, name, description, status, nodes, edges, run_count FROM workflows")
+        .unwrap();
     let workflows: Vec<serde_json::Value> = wf_stmt.query_map([], |row| {
         let nodes_str: String = row.get(4)?;
         let edges_str: String = row.get(5)?;
@@ -299,16 +355,28 @@ pub async fn export_workflows(pool: web::Data<DbPool>) -> HttpResponse {
 }
 
 #[post("/api/workflows/import")]
-pub async fn import_workflows(pool: web::Data<DbPool>, body: web::Json<ImportRequest>) -> HttpResponse {
+pub async fn import_workflows(
+    pool: web::Data<DbPool>,
+    body: web::Json<ImportRequest>,
+) -> HttpResponse {
     let conn = pool.get().unwrap();
     let now = chrono::Utc::now().to_rfc3339();
 
     for wf in &body.workflows {
         let id = wf.get("id").and_then(|v| v.as_str()).unwrap_or("imported");
-        let name = wf.get("name").and_then(|v| v.as_str()).unwrap_or("Imported");
+        let name = wf
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("Imported");
         let desc = wf.get("description").and_then(|v| v.as_str());
-        let nodes_str = wf.get("nodes").map(|v| v.to_string()).unwrap_or_else(|| "[]".into());
-        let edges_str = wf.get("edges").map(|v| v.to_string()).unwrap_or_else(|| "[]".into());
+        let nodes_str = wf
+            .get("nodes")
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "[]".into());
+        let edges_str = wf
+            .get("edges")
+            .map(|v| v.to_string())
+            .unwrap_or_else(|| "[]".into());
         conn.execute(
             "INSERT OR REPLACE INTO workflows (id, name, description, status, nodes, edges, created_at, updated_at) VALUES (?1,?2,?3,'draft',?4,?5,?6,?7)",
             params![id, name, desc, nodes_str, edges_str, now, now],
@@ -317,7 +385,10 @@ pub async fn import_workflows(pool: web::Data<DbPool>, body: web::Json<ImportReq
 
     for ag in &body.agents {
         let id = ag.get("id").and_then(|v| v.as_str()).unwrap_or("imported");
-        let name = ag.get("name").and_then(|v| v.as_str()).unwrap_or("Imported");
+        let name = ag
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("Imported");
         let desc = ag.get("description").and_then(|v| v.as_str());
         let model = ag.get("model").and_then(|v| v.as_str());
         conn.execute(
@@ -355,12 +426,24 @@ pub async fn export_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -
 }
 
 #[post("/api/workflows/import")]
-pub async fn import_workflow(pool: web::Data<DbPool>, body: web::Json<serde_json::Value>) -> HttpResponse {
+pub async fn import_workflow(
+    pool: web::Data<DbPool>,
+    body: web::Json<serde_json::Value>,
+) -> HttpResponse {
     let id = format!("wf_{}", chrono::Utc::now().timestamp_millis());
-    let name = body.get("name").and_then(|v| v.as_str()).unwrap_or("Imported Workflow");
+    let name = body
+        .get("name")
+        .and_then(|v| v.as_str())
+        .unwrap_or("Imported Workflow");
     let desc = body.get("description").and_then(|v| v.as_str());
-    let nodes = body.get("nodes").unwrap_or(&serde_json::json!([])).to_string();
-    let edges = body.get("edges").unwrap_or(&serde_json::json!([])).to_string();
+    let nodes = body
+        .get("nodes")
+        .unwrap_or(&serde_json::json!([]))
+        .to_string();
+    let edges = body
+        .get("edges")
+        .unwrap_or(&serde_json::json!([]))
+        .to_string();
     let now = chrono::Utc::now().to_rfc3339();
 
     let conn = pool.get().unwrap();
