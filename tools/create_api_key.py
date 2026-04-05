@@ -3,7 +3,7 @@ import urllib.request
 import urllib.error
 import sys
 
-URL = 'http://127.0.0.1:3000/api/settings/api-keys'
+URL = 'http://127.0.0.1:3001/api/settings/api-keys'
 # Seeded dev key present in the codebase
 API_TOKEN = 'sk_dev_qwe456**********************'
 
