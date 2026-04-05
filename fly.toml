@@ -4,6 +4,13 @@ app = "mermaduckle"
   # Use the provided Dockerfile for Fly builds
   dockerfile = "deploy/Dockerfile.fly"
 
+[mounts]
+  source = "mermaduckle_data"
+  destination = "/app/data"
+
+[env]
+  DATABASE_PATH = "/app/data/app.db"
+
 [[services]]
   internal_port = 3001
   protocol = "tcp"
