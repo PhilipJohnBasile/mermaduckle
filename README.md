@@ -20,7 +20,7 @@ Quick start (local development)
 
 Prerequisites: Rust toolchain (rustup + cargo), optionally Docker and Ollama if you need the LLM runtime.
 
-Run the server locally (defaults to http://127.0.0.1:3000):
+Run the server locally (defaults to http://127.0.0.1:3001):
 
 ```powershell
 # from repo root
@@ -50,7 +50,7 @@ Environment variables
 - `DATABASE_PATH` (default `data/app.db`)
 - `OLLAMA_URL` (default `http://localhost:11434`)
 - `HOST` (default `0.0.0.0`)
-- `PORT` (default `3000`)
+- `PORT` (default `3001`)
 
 Building & testing
 
@@ -63,5 +63,46 @@ Development notes
 - Seed data includes realistic demo workflows, agents, and a small set of API keys for local testing — these are intended for developer ease only and should not be used in production.
 
 If you want me to, I can also add a short walkthrough showing how to create an API key and paste it into the SPA (or automatically create one for you during local dev). Please tell me which you'd prefer.
+
+Deployment — Fly.io (recommended)
+
+This repository includes Fly.io deployment artifacts to run `mermaduckle` as a service in the Fly platform. Using Docker on Fly is the simplest way to deploy Rust services with consistent builds and automatic TLS.
+
+Quick steps (full instructions in `docs/deploy/fly.md`):
+
+- Create or select a Fly app (example: `app-rough-dust-5178`).
+- Ensure `flyctl` is installed and you're authenticated: `flyctl auth login` (or use an access token).
+- The repo contains `deploy/Dockerfile.fly` and a minimal `fly.toml` for builds. To build and deploy:
+
+```bash
+flyctl deploy -a <app-name> --dockerfile deploy/Dockerfile.fly
+```
+
+- To add your custom domain `mermaduckle.com` to the app:
+
+```bash
+flyctl domains add mermaduckle.com -a <app-name>
+```
+
+Fly will print exact DNS records to add at your registrar. For an apex/root domain you may need to allocate static IPv4 addresses and create A records:
+
+```bash
+flyctl ips allocate-v4 -a <app-name>
+# then add A records to your registrar pointing to the returned IP(s)
+```
+
+- After DNS is configured and propagated, request TLS certificates via Fly (managed for you):
+
+```bash
+flyctl certs create mermaduckle.com -a <app-name>
+```
+
+Files in this repo used for Fly deployments:
+
+- `deploy/Dockerfile.fly` — multi-stage Dockerfile that builds a release binary and packages it in a minimal runtime image.
+- `fly.toml` — minimal Fly app configuration (app name and service port).
+- `docs/deploy/fly.md` — step-by-step Fly deploy and domain instructions.
+
+If you want, I can run the Fly domain commands and provision certificates for `mermaduckle.com` now (I already have an access token saved), or prepare a GitHub Actions workflow to build and deploy on push.
 
 

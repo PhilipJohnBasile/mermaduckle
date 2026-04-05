@@ -1,0 +1,18 @@
+#########################################################################
+# Fly.io Dockerfile (multi-stage build)
+# Builds a release binary and packages it in a minimal runtime image.
+#########################################################################
+
+FROM rust:1 as builder
+WORKDIR /usr/src/mermaduckle
+COPY . .
+
+# Build release binary for the server crate
+RUN cargo build --release -p mermaduckle-server
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/src/mermaduckle/target/release/mermaduckle-server /usr/local/bin/mermaduckle-server
+EXPOSE 3001
+ENV PORT=3001
+CMD ["/usr/local/bin/mermaduckle-server"]
