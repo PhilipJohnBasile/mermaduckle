@@ -49,8 +49,9 @@ jobs:
           FLY_VOLUME_NAME: mermaduckle_data
           FLY_VOLUME_REGION: ewr
         run: |
-          if flyctl volumes list -a "$FLY_APP_NAME" --json | grep -q "\"name\":\"$FLY_VOLUME_NAME\""; then
-            echo "Volume $FLY_VOLUME_NAME already exists."
+          COUNT=$(flyctl volumes list -a "$FLY_APP_NAME" --json | python3 -c "import sys,json; vols=json.load(sys.stdin); print(len([v for v in vols if v.get('name')==\"$FLY_VOLUME_NAME\"]))")
+          if [ "$COUNT" -gt "0" ]; then
+            echo "Volume $FLY_VOLUME_NAME already exists ($COUNT found). Skipping create."
           else
             flyctl volumes create "$FLY_VOLUME_NAME" -a "$FLY_APP_NAME" -r "$FLY_VOLUME_REGION" -n 1 --size 1
           fi
