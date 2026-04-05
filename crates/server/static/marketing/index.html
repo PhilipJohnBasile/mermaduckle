@@ -3,40 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle | Governed AI Workflow Operations</title>
+    <title>Mermaduckle | Production Control for AI Workflows</title>
     <meta
       name="description"
-      content="Mermaduckle gives teams a governed control plane for AI workflows, with approvals, audit trails, runtime controls, and flexible deployment across self-hosted and managed environments."
+      content="Mermaduckle helps teams build, approve, run, and audit AI workflows in production with a self-hosted core, a public sandbox, and optional rollout support."
     />
-    <meta property="og:title" content="Mermaduckle | Governed AI Workflow Operations" />
+    <meta property="og:title" content="Mermaduckle | Production Control for AI Workflows" />
     <meta
       property="og:description"
-      content="Run AI workflows with approvals, audit trails, and production control."
+      content="The operating layer for AI workflows that touch real systems."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link href="/static/style.css" rel="stylesheet" />
     <link href="/static/marketing/marketing.css" rel="stylesheet" />
   </head>
   <body class="marketing-page">
-    <div class="marketing-progress-bar" data-scroll-progress></div>
-    <div class="marketing-backdrop" aria-hidden="true">
-      <span class="marketing-halo marketing-halo-one"></span>
-      <span class="marketing-halo marketing-halo-two"></span>
-      <span class="marketing-halo marketing-halo-three"></span>
-    </div>
-
     <div class="marketing-shell">
       <header class="marketing-topbar">
         <a class="marketing-brand" href="/">
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>AI workflow operations</span>
+            <span>Production AI operations</span>
           </span>
         </a>
         <button
@@ -52,470 +45,402 @@
         </button>
         <nav class="marketing-nav">
           <a href="#platform">Platform</a>
-          <a href="#model">Deployment</a>
-          <a href="#why-us">Why Mermaduckle</a>
-          <a href="#commercial">Pricing</a>
-          <a href="#deploy">Docs</a>
-          <a href="/docs">Guide</a>
+          <a href="#comparison">Comparison</a>
+          <a href="#deployment">Deployment</a>
+          <a href="#commercial">Plans</a>
+          <a href="/docs">Docs</a>
         </nav>
         <div class="marketing-nav-actions">
-          <a class="marketing-link-chip" href="#commercial">Pricing</a>
-          <a class="marketing-button marketing-button-primary" href="/app">Open console</a>
+          <a class="marketing-link-chip" href="https://github.com/PhilipJohnBasile/mermaduckle"
+            >GitHub</a
+          >
+          <a class="marketing-button marketing-button-primary" href="/app">Open sandbox</a>
         </div>
       </header>
 
       <main>
         <section class="marketing-hero" id="platform">
           <div class="marketing-hero-copy marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Governed AI workflow operations</div>
-            <h1>Run AI workflows with approvals, audit trails, and production control.</h1>
+            <div class="marketing-eyebrow">Production control for AI workflows</div>
+            <h1>Build fast. Ship carefully. Operate AI workflows like production software.</h1>
             <p class="marketing-lede">
-              Mermaduckle is the control plane for teams that need more than a workflow builder.
-              Design and run workflows, route sensitive actions through human approval, manage
-              agents and runtime settings, and keep a clean operating record from trigger to
-              outcome. Deploy it in your own environment or operate it as a managed service.
+              Mermaduckle is the operating layer for AI workflows that touch customers, revenue,
+              or internal systems. Build visual flows, route high-impact actions through human
+              approval, manage agents and secrets, keep an audit trail for every run, and deploy
+              the same Rust service in your own environment or with rollout support.
             </p>
-
             <div class="marketing-cta-row">
-              <a class="marketing-button marketing-button-primary" href="/app">Open the console</a>
-              <a class="marketing-button marketing-button-secondary" href="#commercial">View pricing</a>
-            </div>
-
-            <div class="marketing-proof-row">
-              <span>Approval gates and audit events</span>
-              <span>Workflow studio and AI architect</span>
-              <span>Secrets, schedules, webhooks, and integrations</span>
-              <span>Self-hosted or managed deployment</span>
-            </div>
-          </div>
-
-          <div class="marketing-console marketing-reveal" data-reveal data-spotlight>
-            <div class="marketing-console-topline">
-              <div>
-                <span class="marketing-console-label">Product surface</span>
-                <h2>The operating console for production workflows.</h2>
-              </div>
-              <div class="marketing-console-pips" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
-
-            <div class="marketing-console-tabs" role="tablist" aria-label="Product views">
-              <button
-                class="is-active"
-                type="button"
-                role="tab"
-                aria-selected="true"
-                data-console-tab="builder"
+              <a class="marketing-button marketing-button-primary" href="/app"
+                >Open product sandbox</a
               >
-                Builder
-              </button>
-              <button type="button" role="tab" aria-selected="false" data-console-tab="governance">
-                Governance
-              </button>
-              <button type="button" role="tab" aria-selected="false" data-console-tab="deploy">
-                Deployment
-              </button>
+              <a class="marketing-button marketing-button-secondary" href="/docs"
+                >Read deployment guide</a
+              >
             </div>
-
-            <section class="marketing-console-panel is-active" data-console-panel="builder">
-              <div class="marketing-console-chip-row">
-                <span>workflow import</span>
-                <span>AI architect</span>
-                <span>run and debug</span>
-              </div>
-              <div class="marketing-console-flow">
-                <div class="marketing-console-node">
-                  <strong>Webhook</strong>
-                  <span>Triggers the workflow from an external system</span>
-                </div>
-                <div class="marketing-console-node">
-                  <strong>Agent</strong>
-                  <span>Executes model and tool logic inside the run</span>
-                </div>
-                <div class="marketing-console-node">
-                  <strong>Approval</strong>
-                  <span>Routes sensitive actions through a human checkpoint</span>
-                </div>
-                <div class="marketing-console-node">
-                  <strong>Action</strong>
-                  <span>Publishes the final side effect only after review</span>
-                </div>
-              </div>
-              <div class="marketing-console-footer">
-                <div>
-                  <span class="marketing-console-stat-label">Core capability</span>
-                  <strong>Design quickly without losing operational control.</strong>
-                </div>
-                <p>
-                  The current product already supports workflow editing, import and export, draft
-                  generation, debugging, scheduled execution, and runtime visibility.
-                </p>
-              </div>
-            </section>
-
-            <section class="marketing-console-panel" data-console-panel="governance" hidden>
-              <div class="marketing-governance-rail">
-                <div class="marketing-console-log">
-                  <span class="marketing-console-log-state is-warning">Pending approval</span>
-                  <strong>High-impact workflow paused before the external action</strong>
-                  <p>Human review is built into the runtime path, not bolted on after the fact.</p>
-                </div>
-                <div class="marketing-console-audit-list">
-                  <div>
-                    <span>audit trail</span>
-                    <strong>workflow event stream</strong>
-                    <p>Track actor, timing, status, and outcome for each run.</p>
-                  </div>
-                  <div>
-                    <span>reporting</span>
-                    <strong>workflow summary</strong>
-                    <p>Generate a readable record for stakeholders and operators.</p>
-                  </div>
-                  <div>
-                    <span>recovery</span>
-                    <strong>patch and retry</strong>
-                    <p>Use logs and context to recover runs without starting blind.</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="marketing-console-panel" data-console-panel="deploy" hidden>
-              <div class="marketing-deploy-stack">
-                <div class="marketing-deploy-snippet">
-                  <span class="marketing-console-stat-label">Production path</span>
-                  <pre><code>flyctl deploy --remote-only --config fly.toml</code></pre>
-                </div>
-                <div class="marketing-deploy-checks">
-                  <div>
-                    <strong>Deploy in your own environment</strong>
-                    <p>Ship the same Rust service into Fly or your preferred infrastructure.</p>
-                  </div>
-                  <div>
-                    <strong>Operate with managed support</strong>
-                    <p>Use a managed rollout when speed and operating support matter more than setup work.</p>
-                  </div>
-                  <div>
-                    <strong>Verify health through the API</strong>
-                    <p>Production readiness is checked against <code>/api/health</code>.</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-        </section>
-
-        <section class="marketing-proofband marketing-reveal" data-reveal>
-          <div>Rust + Actix-web</div>
-          <div>Workflow, agent, and runtime operations</div>
-          <div>Approval and audit controls</div>
-          <div>Secrets, webhooks, schedules, and integrations</div>
-          <div>Fly-ready deployment artifacts</div>
-        </section>
-
-        <section class="marketing-section" id="model">
-          <div class="marketing-section-heading marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Deployment options</div>
-            <h2>Adopt the product in the operating model that fits your team.</h2>
-            <p>
-              Mermaduckle is available for product teams that want to self-host, for organizations
-              that prefer an operated control plane, and for buyers evaluating the product before a
-              broader rollout.
+            <p class="marketing-hero-note">
+              This domain includes a public sandbox at <code>/app</code>. Customer production
+              deployments can run as separate self-hosted or supported environments.
             </p>
           </div>
 
-          <div class="marketing-mode-grid">
-            <article class="marketing-mode-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Hosted instance</span>
-              <h3>Explore the console on this deployment</h3>
-              <p>
-                This site runs the full Mermaduckle stack on Fly.io. Open the product console to
-                navigate workflow, approval, agent, and audit surfaces. Use Settings to configure
-                an API key and unlock live data.
-              </p>
-              <a class="marketing-link-chip" href="/app" style="display:inline-flex;margin-top:1rem;">Open console &rarr;</a>
-            </article>
-            <article class="marketing-mode-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Self-hosted</span>
-              <h3>Deploy in your own environment</h3>
-              <p>
-                Use the repository, Dockerfile, and deployment guide to run Mermaduckle in your own
-                Fly app or infrastructure stack.
-              </p>
-            </article>
-            <article class="marketing-mode-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Managed service</span>
-              <h3>Operate with implementation support</h3>
-              <p>
-                Use a managed rollout when you want the product in production quickly and need an
-                operating partner for the first implementation.
-              </p>
-            </article>
-          </div>
+          <aside class="marketing-command-card marketing-reveal" data-reveal>
+            <div class="marketing-card-kicker">What ships today</div>
+            <h2>A real product surface, not a promise deck.</h2>
+            <div class="marketing-command-grid">
+              <article class="marketing-command-pane">
+                <span>Build</span>
+                <strong>Workflow studio</strong>
+                <p>Visual builder, import and export, AI architect, run and debug tools.</p>
+              </article>
+              <article class="marketing-command-pane">
+                <span>Operate</span>
+                <strong>Schedules and webhooks</strong>
+                <p>Run from cadence or external events with health checks and run history.</p>
+              </article>
+              <article class="marketing-command-pane">
+                <span>Govern</span>
+                <strong>Approvals and audit</strong>
+                <p>Pause sensitive actions for review and keep an inspectable operating record.</p>
+              </article>
+              <article class="marketing-command-pane">
+                <span>Control</span>
+                <strong>Agents, secrets, integrations</strong>
+                <p>Manage agent behavior, API keys, secrets, notifications, and providers.</p>
+              </article>
+            </div>
+            <div class="marketing-command-footer">
+              <div>
+                <span class="marketing-command-label">This domain</span>
+                <ul class="marketing-route-list">
+                  <li><code>/</code> marketing site</li>
+                  <li><code>/app</code> public sandbox</li>
+                  <li><code>/docs</code> self-hosted guide</li>
+                </ul>
+              </div>
+              <div>
+                <span class="marketing-command-label">Core stack</span>
+                <ul class="marketing-route-list">
+                  <li>Rust and Actix-web backend</li>
+                  <li>Vanilla JavaScript product UI</li>
+                  <li>Fly-ready deployment path</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="marketing-proof-strip marketing-reveal" data-reveal>
+          <span>Self-hosted core</span>
+          <span>Public sandbox for evaluation</span>
+          <span>Human approvals in the runtime path</span>
+          <span>Audit and reporting built into the app</span>
+          <span>Rust backend with Fly deployment artifacts</span>
         </section>
 
         <section class="marketing-section" id="why-us">
-          <div class="marketing-section-heading marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Why Mermaduckle</div>
-            <h2>Built for operations, not just prototyping.</h2>
+          <div class="marketing-section-head marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">Why it exists</div>
+            <h2>Mermaduckle sits between workflow prototyping and production operations.</h2>
             <p>
-              Many platforms are optimized either for graph design or for connector volume.
-              Mermaduckle is designed for the moment an AI workflow touches production systems and
-              needs approval, traceability, runtime ownership, and a clean deployment path.
+              Most teams start with a tool that is optimized either for visual flow design or for
+              broad automation across external services. The gap appears later, when an AI workflow
+              needs review gates, auditability, runtime ownership, and a deployment model the
+              infrastructure team can live with.
             </p>
           </div>
 
-          <div class="marketing-compare-grid">
-            <article class="marketing-compare-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Workflow builders</span>
-              <h3>Strong for rapid assembly</h3>
-              <p>Useful when the priority is composing prompts, chains, and agent graphs quickly.</p>
-              <ul>
-                <li>Fast visual design for AI flows</li>
-                <li>Great for experimentation and prototyping</li>
-                <li>Operational controls are often a secondary concern</li>
-              </ul>
-            </article>
-
-            <article class="marketing-compare-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Automation platforms</span>
-              <h3>Strong for integration breadth</h3>
-              <p>Useful when the priority is moving events and data across many external systems.</p>
-              <ul>
-                <li>Broad connector coverage</li>
-                <li>Good for SaaS-heavy automation workloads</li>
-                <li>AI governance is usually not the product center</li>
-              </ul>
-            </article>
-
-            <article class="marketing-compare-card marketing-compare-card-featured marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Mermaduckle</span>
-              <h3>Designed for production control</h3>
+          <div class="marketing-story-grid">
+            <article class="marketing-story-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Agent builders</span>
+              <h3>Great when the job is getting to a working flow quickly.</h3>
               <p>
-                A governed control plane for AI workflows that need review, traceability, runtime
-                settings, and an operating model that can survive real teams and production traffic.
+                Visual agent builders are strong for composition, prompting, and iteration. They
+                are not always the place teams want to manage production review and operational
+                accountability.
               </p>
-              <ul>
-                <li>Approval checkpoints and audit events in the core product</li>
-                <li>Workflow, agent, and run visibility in one place</li>
-                <li>Flexible deployment across self-hosted and managed environments</li>
+            </article>
+            <article class="marketing-story-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Automation clouds</span>
+              <h3>Great when the job is moving data across many services.</h3>
+              <p>
+                Automation platforms win on connector breadth and event plumbing. They are a less
+                natural fit when the core requirement is governed AI workflow execution.
+              </p>
+            </article>
+            <article class="marketing-story-card marketing-story-card-accent marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Mermaduckle</span>
+              <h3>Built for the moment AI automation becomes operational software.</h3>
+              <p>
+                The product centers on workflow runtime, approval, audit, agent operations, and a
+                deployment model that can move from evaluation into customer-owned environments.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="marketing-section" id="comparison">
+          <div class="marketing-section-head marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">Competitive position</div>
+            <h2>A clearer fit than generic &quot;AI automation&quot; positioning.</h2>
+            <p>
+              Public competitor positioning points to three dominant patterns in the market:
+              connector-heavy automation, visual agent composition, and developer-first event
+              orchestration. Mermaduckle is strongest in the operating layer those products usually
+              leave to custom process.
+            </p>
+          </div>
+
+          <div class="marketing-compare-table marketing-reveal" data-reveal>
+            <div class="marketing-compare-table-head">
+              <span>Platform</span>
+              <span>What it is optimized for</span>
+              <span>Where Mermaduckle is different</span>
+            </div>
+            <article class="marketing-compare-row">
+              <div class="marketing-compare-platform">
+                <strong>n8n</strong>
+                <span>automation platform</span>
+              </div>
+              <p>Broad automation, connector coverage, and code-plus-visual workflow assembly.</p>
+              <p>
+                Mermaduckle is the tighter fit when approval gates, audit history, and AI workflow
+                ownership are the first-order requirement.
+              </p>
+            </article>
+            <article class="marketing-compare-row">
+              <div class="marketing-compare-platform">
+                <strong>Langflow / Flowise</strong>
+                <span>visual AI builders</span>
+              </div>
+              <p>Rapid composition of agents, chains, prompts, RAG flows, and experiments.</p>
+              <p>
+                Mermaduckle is the better operational fit when teams need review, reporting,
+                runtime visibility, and a product built around governed execution.
+              </p>
+            </article>
+            <article class="marketing-compare-row">
+              <div class="marketing-compare-platform">
+                <strong>Pipedream</strong>
+                <span>developer automation</span>
+              </div>
+              <p>API-first event automation, integrations, and fast developer workflows.</p>
+              <p>
+                Mermaduckle is more focused when the problem is running AI workflows safely rather
+                than maximizing integration and event breadth.
+              </p>
+            </article>
+            <article class="marketing-compare-row marketing-compare-row-accent">
+              <div class="marketing-compare-platform">
+                <strong>Mermaduckle</strong>
+                <span>production AI operations</span>
+              </div>
+              <p>
+                Workflow studio, approval queue, audit trail, agent operations, secrets,
+                integrations, and deployment in one product surface.
+              </p>
+              <p>
+                Use it when the workflow itself is part of the product, the process, or the risk
+                surface.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="marketing-section" id="product">
+          <div class="marketing-section-head marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">Platform depth</div>
+            <h2>The app already covers the surfaces operators actually need.</h2>
+            <p>
+              The live product is not a shell around one builder screen. It already includes the
+              workflow, agent, approval, audit, settings, and deployment-adjacent surfaces teams
+              use once workflows stay in production.
+            </p>
+          </div>
+
+          <div class="marketing-capability-grid">
+            <article class="marketing-capability-card marketing-reveal" data-reveal>
+              <span class="marketing-feature-index">01</span>
+              <h3>Workflow studio</h3>
+              <p>Create, edit, import, export, debug, and run workflows from one visual canvas.</p>
+            </article>
+            <article class="marketing-capability-card marketing-reveal" data-reveal>
+              <span class="marketing-feature-index">02</span>
+              <h3>AI architect</h3>
+              <p>Generate a draft workflow from a prompt, then refine it as an operator.</p>
+            </article>
+            <article class="marketing-capability-card marketing-reveal" data-reveal>
+              <span class="marketing-feature-index">03</span>
+              <h3>Approval queue</h3>
+              <p>Route high-impact steps through explicit human review before continuing the run.</p>
+            </article>
+            <article class="marketing-capability-card marketing-reveal" data-reveal>
+              <span class="marketing-feature-index">04</span>
+              <h3>Audit and reports</h3>
+              <p>Inspect historical events, export audit output, and keep a durable run record.</p>
+            </article>
+            <article class="marketing-capability-card marketing-reveal" data-reveal>
+              <span class="marketing-feature-index">05</span>
+              <h3>Agent and runtime control</h3>
+              <p>Manage agent configs, test prompts, store secrets, issue API keys, and review health.</p>
+            </article>
+            <article class="marketing-capability-card marketing-reveal" data-reveal>
+              <span class="marketing-feature-index">06</span>
+              <h3>Webhooks, schedules, integrations</h3>
+              <p>Trigger from external systems, run on cadence, and connect the workflow to the rest of the stack.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="marketing-section" id="deployment">
+          <div class="marketing-section-head marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">Deployment model</div>
+            <h2>A simple story: public sandbox here, customer environments there.</h2>
+            <p>
+              One of the current points of confusion was treating the public app on this domain and
+              the self-hosted product as if they were different things. They are not. This site
+              hosts a sandbox. The same service can be deployed separately for a customer-owned or
+              supported environment.
+            </p>
+          </div>
+
+          <div class="marketing-delivery-grid">
+            <article class="marketing-delivery-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Public sandbox</span>
+              <h3>Use this domain to evaluate the product.</h3>
+              <p>
+                Open <code>/app</code> to inspect the current workflow, approval, agent, and audit
+                surfaces without having to deploy your own environment first.
+              </p>
+            </article>
+            <article class="marketing-delivery-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Self-hosted core</span>
+              <h3>Deploy the same service in your own infrastructure.</h3>
+              <p>
+                The repository includes the Fly deploy path, Dockerfile, and runtime configuration
+                you need to launch a separate customer-owned instance.
+              </p>
+            </article>
+            <article class="marketing-delivery-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Supported rollout</span>
+              <h3>Use Mermaduckle with implementation help.</h3>
+              <p>
+                Teams that want faster adoption can use a supported rollout for the first workflow,
+                the first production environment, and the first operating handoff.
+              </p>
+            </article>
+          </div>
+
+          <div class="marketing-deployment-panel marketing-reveal" data-reveal>
+            <div class="marketing-deployment-route-card">
+              <span class="marketing-command-label">Routes on this domain</span>
+              <ul class="marketing-route-list">
+                <li><code>/</code> company and product overview</li>
+                <li><code>/app</code> live sandbox of the current product</li>
+                <li><code>/docs</code> deployment guide for self-hosted rollout</li>
+                <li><code>/api/health</code> service readiness endpoint</li>
               </ul>
+            </div>
+            <article class="marketing-code-card">
+              <div class="marketing-code-header">
+                <span>Self-hosted deploy</span>
+                <a href="/docs#fly-deploy">Open the guide</a>
+              </div>
+              <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --remote-only --config fly.toml</code></pre>
+              <p class="marketing-card-note">
+                The repo includes a multi-stage Dockerfile, GitHub Actions workflow, and PowerShell
+                helper for customer-owned Fly deployments.
+              </p>
             </article>
           </div>
         </section>
 
         <section class="marketing-section" id="commercial">
-          <div class="marketing-section-heading marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Pricing</div>
-            <h2>Simple, transparent pricing for every stage.</h2>
+          <div class="marketing-section-head marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">How teams buy</div>
+            <h2>Start with the software. Add rollout and support when the workflow matters.</h2>
             <p>
-              Start free with the open-source self-hosted edition. Add managed hosting or
-              enterprise support when your team needs it. All plans include the full product —
-              no feature gating.
+              Mermaduckle is easiest to adopt when the buying model matches the product model:
+              start in a self-hosted environment, then add help where production ownership becomes
+              expensive. The point is not feature gating. The point is faster rollout, better
+              operating discipline, and clearer support once workflows matter.
             </p>
           </div>
 
           <div class="marketing-commercial-grid">
             <article class="marketing-commercial-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Community</span>
-              <h3>Free &amp; open-source</h3>
-              <p style="font-size:2.4rem;font-weight:700;letter-spacing:-0.04em;margin:0.75rem 0;">$0</p>
-              <p style="color:var(--marketing-muted);font-size:0.92rem;">Self-hosted, forever free</p>
+              <span class="marketing-card-kicker">Self-host</span>
+              <h3>Start with the software.</h3>
+              <p>
+                Use the open-source product for evaluation, internal pilots, and customer-owned
+                deployments that your team wants to run directly.
+              </p>
               <ul>
-                <li>Full platform — workflows, agents, approvals, audit</li>
-                <li>Unlimited users and workflow runs</li>
-                <li>Docker &amp; Fly deployment artifacts included</li>
-                <li>Community support via GitHub Issues</li>
+                <li>Builder, approvals, audit, agents, and settings in one app</li>
+                <li>Runs in the same Rust service you can inspect in the repo</li>
+                <li>Best for teams that want full infrastructure ownership</li>
               </ul>
-              <a class="marketing-button marketing-button-secondary" href="/app" style="margin-top:1.5rem;width:100%;text-decoration:none;text-align:center;">Open the console</a>
             </article>
-            <article class="marketing-commercial-card marketing-commercial-card-featured marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Managed Cloud</span>
-              <h3>We run it for you</h3>
-              <p style="font-size:2.4rem;font-weight:700;letter-spacing:-0.04em;margin:0.75rem 0;">$490<span style="font-size:1rem;font-weight:400;color:var(--marketing-muted);">/mo</span></p>
-              <p style="color:var(--marketing-muted);font-size:0.92rem;">Billed annually &middot; 14-day free trial</p>
+            <article
+              class="marketing-commercial-card marketing-commercial-card-featured marketing-reveal"
+              data-reveal
+            >
+              <span class="marketing-card-kicker">Launch with us</span>
+              <h3>Pay for faster time to production.</h3>
+              <p>
+                Bring Mermaduckle into production with implementation help, operating guidance, and
+                a faster path through the first governed workflow.
+              </p>
               <ul>
-                <li>Managed hosting, TLS, backups, and uptime SLA</li>
-                <li>Onboarding call and first-workflow setup assist</li>
-                <li>Priority email support (1 business-day response)</li>
-                <li>All updates and infrastructure patches applied for you</li>
+                <li>Initial workflow implementation and environment setup</li>
+                <li>Operator onboarding, deployment support, and launch reviews</li>
+                <li>Best for teams that want speed without giving up deployment choice</li>
               </ul>
-              <a class="marketing-button marketing-button-primary" href="mailto:hello@mermaduckle.io?subject=Managed%20Cloud%20trial" style="margin-top:1.5rem;width:100%;text-decoration:none;text-align:center;">Start free trial</a>
             </article>
             <article class="marketing-commercial-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Enterprise</span>
-              <h3>Custom deployment &amp; support</h3>
-              <p style="font-size:2.4rem;font-weight:700;letter-spacing:-0.04em;margin:0.75rem 0;">Custom</p>
-              <p style="color:var(--marketing-muted);font-size:0.92rem;">Annual contract &middot; volume pricing</p>
-              <ul>
-                <li>Private cloud or on-prem deployment with your infra team</li>
-                <li>SSO / SAML integration and role-based access</li>
-                <li>Dedicated Slack channel and implementation partner</li>
-                <li>Custom SLA, audit export, and compliance documentation</li>
-              </ul>
-              <a class="marketing-button marketing-button-secondary" href="mailto:hello@mermaduckle.io?subject=Enterprise%20inquiry" style="margin-top:1.5rem;width:100%;text-decoration:none;text-align:center;">Contact sales</a>
-            </article>
-          </div>
-        </section>
-
-        <section class="marketing-section marketing-section-dark" id="governance">
-          <div class="marketing-section-heading marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Governance</div>
-            <h2>Human review, traceability, and recovery are built into the product.</h2>
-            <p>
-              Mermaduckle includes the operating controls teams need once workflows affect external
-              systems: a pending approvals queue, audit events, reporting endpoints, and recovery
-              paths tied to the run history itself.
-            </p>
-          </div>
-
-          <div class="marketing-ops-grid">
-            <article class="marketing-ops-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">01</span>
-              <h3>Approval checkpoints</h3>
-              <p>Pause at <code>pending_approval</code> and require an explicit decision before continuing.</p>
-            </article>
-            <article class="marketing-ops-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">02</span>
-              <h3>Audit trail</h3>
-              <p>Track workflow, approval, and agent activity with event types, timing, and outcome metadata.</p>
-            </article>
-            <article class="marketing-ops-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">03</span>
-              <h3>Recovery workflow</h3>
-              <p>Use logs and context to patch and retry runs without losing the operating record.</p>
-            </article>
-          </div>
-
-          <div class="marketing-pathway marketing-reveal" data-reveal>
-            <div class="marketing-path-step">
-              <span>1</span>
-              <div>
-                <strong>Trigger from a webhook or schedule</strong>
-                <p>Start the workflow from an external event or a timed run.</p>
-              </div>
-            </div>
-            <div class="marketing-path-step">
-              <span>2</span>
-              <div>
-                <strong>Execute under runtime policy</strong>
-                <p>Run agents, tools, and external actions with managed settings and visibility.</p>
-              </div>
-            </div>
-            <div class="marketing-path-step">
-              <span>3</span>
-              <div>
-                <strong>Review, audit, and report</strong>
-                <p>Keep a durable record of the decision, the output, and the workflow history.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="marketing-section" id="product">
-          <div class="marketing-section-heading marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Platform capabilities</div>
-            <h2>One control plane across design, runtime, and governance.</h2>
-            <p>
-              Mermaduckle brings workflow creation, runtime settings, agent operations, approvals,
-              audit visibility, and deployment infrastructure into one product surface.
-            </p>
-          </div>
-
-          <div class="marketing-feature-matrix">
-            <article class="marketing-capability-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">01</span>
-              <h3>Workflow studio</h3>
-              <p>Create, edit, import, export, debug, and run flows on a visual canvas.</p>
-            </article>
-            <article class="marketing-capability-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">02</span>
-              <h3>AI architect</h3>
-              <p>Turn workflow requirements into a generated starting graph for operators to refine.</p>
-            </article>
-            <article class="marketing-capability-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">03</span>
-              <h3>Agent operations</h3>
-              <p>Configure agents, inspect recent runs, and interact with the control plane in one place.</p>
-            </article>
-            <article class="marketing-capability-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">04</span>
-              <h3>Runtime controls</h3>
-              <p>Manage API keys, environment secrets, integrations, notifications, and webhook endpoints.</p>
-            </article>
-            <article class="marketing-capability-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">05</span>
-              <h3>Schedules and webhooks</h3>
-              <p>Run workflows on cadence or trigger them from external systems in production.</p>
-            </article>
-            <article class="marketing-capability-card marketing-reveal" data-reveal>
-              <span class="marketing-feature-index">06</span>
-              <h3>Reporting and visibility</h3>
-              <p>Expose dashboard metrics, audit timelines, workflow reports, and service status in one app.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="marketing-section" id="deploy">
-          <div class="marketing-deploy-layout">
-            <div class="marketing-section-heading marketing-reveal" data-reveal>
-              <div class="marketing-eyebrow">Deployment guide</div>
-              <h2>Ship the same service from local development to production.</h2>
+              <span class="marketing-card-kicker">Support and operations</span>
+              <h3>Keep production ownership clear.</h3>
               <p>
-                The repository includes a Fly Dockerfile, a working <code>fly.toml</code>, a GitHub
-                Actions deployment workflow, and a PowerShell helper script so teams can move from
-                evaluation into customer-owned deployment without changing stacks.
+                Once the workflow matters to the business, the relationship shifts toward response
+                commitments, environment reviews, upgrades, and operational support.
               </p>
-            </div>
-
-            <article class="marketing-code-card marketing-reveal" data-reveal>
-              <div class="marketing-code-header">
-                <span>Deploy to Fly</span>
-                <a href="/docs#fly-deploy">Open the deployment guide</a>
-              </div>
-              <pre data-copyable><code>flyctl deploy -a mermaduckle --remote-only --config fly.toml</code></pre>
-              <p class="marketing-card-note">
-                Push to <code>main</code> for GitHub-driven deployments, or use the included helper
-                script for manual releases.
-              </p>
-            </article>
-
-            <article class="marketing-checklist-card marketing-reveal" data-reveal>
-              <span class="marketing-card-kicker">Included in the repository</span>
-              <h3>Everything required for a production rollout</h3>
               <ul>
-                <li><code>deploy/Dockerfile.fly</code> for multi-stage Rust builds</li>
-                <li><code>fly.toml</code> with HTTP and TLS ports plus health checks</li>
-                <li><code>.github/workflows/fly-deploy.yml</code> for push-to-main deployment</li>
-                <li><code>tools/deploy_fly.ps1</code> for local production releases</li>
-                <li><code>/api/health</code> for deployment verification</li>
+                <li>Priority issue response and rollout advisory</li>
+                <li>Environment reviews and production operating support</li>
+                <li>Best for customer-owned or supported long-lived deployments</li>
               </ul>
             </article>
+          </div>
+
+          <div class="marketing-commercial-note marketing-reveal" data-reveal>
+            <strong>Pricing principle:</strong> the product should be sold around deployment and
+            operating ownership, not on per-step gimmicks or vague AI credits.
           </div>
         </section>
 
         <section class="marketing-final-cta marketing-reveal" data-reveal>
           <div>
             <div class="marketing-eyebrow">Get started</div>
-            <h2>Deploy it yourself or let us run it for you.</h2>
+            <h2>Review the sandbox, then decide whether you want to self-host or launch with support.</h2>
           </div>
           <div class="marketing-cta-row">
-            <a class="marketing-button marketing-button-primary" href="/app">Open console</a>
-            <a class="marketing-button marketing-button-secondary" href="mailto:hello@mermaduckle.io?subject=Mermaduckle%20inquiry">Talk to us</a>
+            <a class="marketing-button marketing-button-primary" href="/app">Open sandbox</a>
+            <a class="marketing-button marketing-button-secondary" href="/docs">Deployment guide</a>
+            <a
+              class="marketing-button marketing-button-secondary"
+              href="https://github.com/PhilipJohnBasile/mermaduckle"
+              >View repository</a
+            >
           </div>
         </section>
       </main>
 
       <footer class="marketing-footer">
-        <p>&copy; 2026 Mermaduckle &middot; Governed AI workflow operations</p>
+        <p>&copy; 2026 Mermaduckle &middot; Production control for AI workflows</p>
         <div>
           <a href="/">Home</a>
           <a href="/docs">Docs</a>
-          <a href="/app">Console</a>
-          <a href="mailto:hello@mermaduckle.io">Contact</a>
+          <a href="/app">Sandbox</a>
+          <a href="https://github.com/PhilipJohnBasile/mermaduckle">GitHub</a>
         </div>
       </footer>
     </div>

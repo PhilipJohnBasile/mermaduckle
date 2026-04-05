@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle Docs | Deployment Guide</title>
+    <title>Mermaduckle Docs | Self-Hosted Deployment Guide</title>
     <meta
       name="description"
-      content="Deploy Mermaduckle in your own environment with the self-hosted deployment guide for local development, Fly.io, GitHub Actions, and runtime configuration."
+      content="Deploy Mermaduckle in your own environment. This guide explains the public sandbox, the self-hosted deployment path, Fly.io setup, GitHub Actions, and runtime configuration."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link href="/static/style.css" rel="stylesheet" />
@@ -24,12 +24,12 @@
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>Deployment guide</span>
+            <span>Self-hosted deployment guide</span>
           </span>
         </a>
         <div class="marketing-nav-actions">
           <a class="marketing-link-chip" href="/">Marketing site</a>
-          <a class="marketing-button marketing-button-primary" href="/app">View product</a>
+          <a class="marketing-button marketing-button-primary" href="/app">Open sandbox</a>
         </div>
       </header>
 
@@ -37,38 +37,40 @@
         <section class="marketing-docs-hero marketing-reveal" data-reveal>
           <div class="marketing-docs-hero-grid">
             <div class="marketing-docs-hero-copy">
-              <div class="marketing-eyebrow">Deployment guide</div>
-              <h1>Deploy Mermaduckle in your environment.</h1>
+              <div class="marketing-eyebrow">Self-hosted guide</div>
+              <h1>Self-host the same product you see in the public sandbox.</h1>
               <p>
-                This guide covers the self-hosted deployment path for Mermaduckle. A live product
-                environment is available at <code>/app</code> for evaluation, while customer
-                deployments can run in Fly or other infrastructure with either self-managed or
+                This domain hosts three things: the marketing site, a public sandbox at
+                <code>/app</code>, and this deployment guide. Customer production environments use
+                the same Rust service, but run as separate deployments under your ownership or as a
                 supported rollout.
               </p>
               <div class="marketing-cta-row">
-                <a class="marketing-button marketing-button-primary" href="/app">View product</a>
-                <a class="marketing-button marketing-button-secondary" href="#fly-deploy">Deploy on Fly</a>
+                <a class="marketing-button marketing-button-primary" href="/app">Open sandbox</a>
+                <a class="marketing-button marketing-button-secondary" href="#fly-deploy"
+                  >Jump to Fly deploy</a
+                >
               </div>
             </div>
 
             <aside class="marketing-docs-hero-card">
-              <span class="marketing-card-kicker">Deployment options</span>
-              <h2>Evaluate, deploy, or operate with support.</h2>
+              <span class="marketing-card-kicker">What lives here</span>
+              <h2>One product, three public routes.</h2>
               <div class="marketing-docs-mode-stack">
                 <div>
-                  <span>Product environment</span>
-                  <strong>Review the live product surface at <code>/app</code>.</strong>
-                  <p>Use the hosted environment to inspect workflows, approvals, and runtime operations.</p>
+                  <span>Marketing site</span>
+                  <strong><code>/</code> explains the product and the commercial model.</strong>
+                  <p>Use it for product narrative, positioning, and deployment model clarity.</p>
                 </div>
                 <div>
-                  <span>Self-hosted deployment</span>
-                  <strong>Run the same service in your own environment.</strong>
-                  <p>Use the repository, Dockerfile, and deployment workflow to launch a customer-owned instance.</p>
+                  <span>Public sandbox</span>
+                  <strong><code>/app</code> shows the live workflow, approval, and audit surface.</strong>
+                  <p>Use it to evaluate the UI before planning a customer-owned deployment.</p>
                 </div>
                 <div>
-                  <span>Managed service</span>
-                  <strong>Operate with implementation and production support.</strong>
-                  <p>Use a supported rollout when you want faster adoption and operating help.</p>
+                  <span>Deployment guide</span>
+                  <strong><code>/docs</code> covers the self-hosted path and release workflow.</strong>
+                  <p>Use it when you are ready to run the same service in your own environment.</p>
                 </div>
               </div>
             </aside>
@@ -80,7 +82,7 @@
           <a class="marketing-doc-link" href="#local-start">Local start</a>
           <a class="marketing-doc-link" href="#fly-deploy">Fly deploy</a>
           <a class="marketing-doc-link" href="#github-actions">GitHub Actions</a>
-          <a class="marketing-doc-link" href="#local-script">Local script</a>
+          <a class="marketing-doc-link" href="#domains">Domains and TLS</a>
           <a class="marketing-doc-link" href="#env-vars">Env vars</a>
         </nav>
 
@@ -88,25 +90,28 @@
           <div class="marketing-doc-heading">
             <div class="marketing-doc-step">01</div>
             <div>
-              <h2>Deployment options</h2>
-              <p>Mermaduckle supports live evaluation, self-hosted deployment, and managed rollout.</p>
+              <h2>Deployment model</h2>
+              <p>
+                The public sandbox and the self-hosted product are the same service in different
+                deployment contexts.
+              </p>
             </div>
           </div>
-          <div class="marketing-mode-grid">
-            <article class="marketing-mode-card">
-              <span class="marketing-card-kicker">Live product environment</span>
-              <h3>Evaluate the product</h3>
-              <p>Use <code>/app</code> to review the UI and operating model before deployment planning.</p>
+          <div class="marketing-doc-grid">
+            <article class="marketing-doc-card">
+              <span class="marketing-card-kicker">Evaluate</span>
+              <h3>Use the sandbox on this domain.</h3>
+              <p>Review the workflow, approval, audit, and settings surfaces before deployment work starts.</p>
             </article>
-            <article class="marketing-mode-card">
-              <span class="marketing-card-kicker">Self-hosted</span>
-              <h3>Deploy in your own environment</h3>
-              <p>Use this guide to run the same service in Fly or your preferred infrastructure stack.</p>
+            <article class="marketing-doc-card">
+              <span class="marketing-card-kicker">Self-host</span>
+              <h3>Deploy a separate customer-owned environment.</h3>
+              <p>Run the same service in Fly or your own infrastructure stack with repo-provided artifacts.</p>
             </article>
-            <article class="marketing-mode-card">
-              <span class="marketing-card-kicker">Managed service</span>
-              <h3>Operate with support</h3>
-              <p>Use a supported rollout when implementation speed and operating help are the priority.</p>
+            <article class="marketing-doc-card">
+              <span class="marketing-card-kicker">Supported rollout</span>
+              <h3>Launch with implementation help.</h3>
+              <p>Use a supported rollout when the team wants faster adoption and operational guidance.</p>
             </article>
           </div>
         </section>
@@ -116,15 +121,15 @@
             <div class="marketing-doc-step">02</div>
             <div>
               <h2>Local start</h2>
-              <p>Run a local instance from the repository root and open the product in the browser.</p>
+              <p>Run a local instance from the repository root and inspect every public route.</p>
             </div>
           </div>
           <pre data-copyable><code>cargo run -p mermaduckle-server</code></pre>
           <ul>
-            <li>Marketing site: <code>/</code></li>
-            <li>Product UI: <code>/app</code></li>
-            <li>Deployment guide: <code>/docs</code></li>
-            <li>Health endpoint: <code>/api/health</code></li>
+            <li><code>/</code> marketing site</li>
+            <li><code>/app</code> sandbox UI</li>
+            <li><code>/docs</code> deployment guide</li>
+            <li><code>/api/health</code> service readiness endpoint</li>
           </ul>
         </section>
 
@@ -133,13 +138,16 @@
             <div class="marketing-doc-step">03</div>
             <div>
               <h2>Deploy to Fly.io</h2>
-              <p>The repository already includes the deployment artifacts required for a Fly rollout.</p>
+              <p>
+                The repository already includes the Dockerfile and <code>fly.toml</code> required
+                for a Fly rollout.
+              </p>
             </div>
           </div>
           <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --remote-only --config fly.toml</code></pre>
           <p class="marketing-doc-note">
-            The current repository configuration uses <code>app = "mermaduckle"</code> and serves
-            the application on internal port <code>3001</code>.
+            The current repo is configured around a single service that serves the marketing site,
+            sandbox, docs, and API from internal port <code>3001</code>.
           </p>
         </section>
 
@@ -148,37 +156,23 @@
             <div class="marketing-doc-step">04</div>
             <div>
               <h2>GitHub Actions deploys</h2>
-              <p>Use an app-scoped deploy token to ship to Fly automatically on pushes to <code>main</code>.</p>
+              <p>Push to <code>main</code> to trigger Fly deployment after CI passes.</p>
             </div>
           </div>
           <pre data-copyable><code>fly tokens create deploy --app &lt;app-name&gt;</code></pre>
           <ul>
-            <li>Add the returned token as the repository secret <code>FLY_API_TOKEN</code>.</li>
+            <li>Add the token as the repository secret <code>FLY_API_TOKEN</code>.</li>
             <li>The deployment workflow lives in <code>.github/workflows/fly-deploy.yml</code>.</li>
-            <li>The workflow executes <code>flyctl deploy --remote-only --config fly.toml</code>.</li>
+            <li>The workflow runs <code>flyctl deploy --remote-only --config fly.toml</code>.</li>
           </ul>
         </section>
 
-        <section class="marketing-doc-block marketing-reveal" id="local-script" data-reveal>
+        <section class="marketing-doc-block marketing-reveal" id="domains" data-reveal>
           <div class="marketing-doc-heading">
             <div class="marketing-doc-step">05</div>
             <div>
-              <h2>Local deployment script</h2>
-              <p>Use the included PowerShell helper when you want to release from your own machine.</p>
-            </div>
-          </div>
-          <pre data-copyable><code>pwsh -File tools/deploy_fly.ps1 -AppName mermaduckle -RemoteOnly</code></pre>
-          <p class="marketing-doc-note">
-            Add <code>-BuildOnly</code> if you want to build and push the image without releasing it immediately.
-          </p>
-        </section>
-
-        <section class="marketing-doc-block marketing-reveal" data-reveal>
-          <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">06</div>
-            <div>
-              <h2>Domain and certificate workflow</h2>
-              <p>Use these Fly commands when configuring a production domain and managed TLS.</p>
+              <h2>Domains and TLS</h2>
+              <p>Use these Fly commands when mapping a production domain and issuing certificates.</p>
             </div>
           </div>
           <pre data-copyable><code>flyctl domains add mermaduckle.com -a &lt;app-name&gt;
@@ -188,10 +182,10 @@ flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
 
         <section class="marketing-doc-block marketing-reveal" id="env-vars" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">07</div>
+            <div class="marketing-doc-step">06</div>
             <div>
               <h2>Environment variables</h2>
-              <p>These values are read by the server at runtime.</p>
+              <p>These runtime values are read by the server when the deployment starts.</p>
             </div>
           </div>
           <div class="marketing-doc-table">
@@ -204,18 +198,18 @@ flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
 
         <section class="marketing-doc-block marketing-reveal" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">08</div>
+            <div class="marketing-doc-step">07</div>
             <div>
-              <h2>Repository deployment artifacts</h2>
-              <p>These are the key files involved in a Fly deployment and production rollout.</p>
+              <h2>Deployment artifacts in the repository</h2>
+              <p>These files are the key parts of the current Fly deployment and release workflow.</p>
             </div>
           </div>
           <ul>
             <li><code>deploy/Dockerfile.fly</code></li>
             <li><code>fly.toml</code></li>
-            <li><code>docs/deploy/fly.md</code></li>
             <li><code>.github/workflows/fly-deploy.yml</code></li>
             <li><code>tools/deploy_fly.ps1</code></li>
+            <li><code>docs/deploy/fly.md</code></li>
             <li><code>README.md</code></li>
           </ul>
         </section>
