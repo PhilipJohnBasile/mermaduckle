@@ -348,23 +348,18 @@ pub async fn logout(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
 
 // ── Admin: user management ─────────────────────────────────
 
-async fn require_admin(
-    req: &HttpRequest,
-    pool: &web::Data<DbPool>,
-) -> Result<(), HttpResponse> {
+async fn require_admin(req: &HttpRequest, pool: &web::Data<DbPool>) -> Result<(), HttpResponse> {
     let session_id = req
         .headers()
         .get("Authorization")
         .and_then(|v| v.to_str().ok())
         .and_then(|v| v.strip_prefix("Bearer "))
         .ok_or_else(|| {
-            HttpResponse::Unauthorized()
-                .json(serde_json::json!({"error": "No session token."}))
+            HttpResponse::Unauthorized().json(serde_json::json!({"error": "No session token."}))
         })?;
 
     let client = pool.get().await.map_err(|_| {
-        HttpResponse::InternalServerError()
-            .json(serde_json::json!({"error": "DB error"}))
+        HttpResponse::InternalServerError().json(serde_json::json!({"error": "DB error"}))
     })?;
 
     let row = client
@@ -374,18 +369,17 @@ async fn require_admin(
         )
         .await
         .map_err(|_| {
-            HttpResponse::InternalServerError()
-                .json(serde_json::json!({"error": "DB error"}))
+            HttpResponse::InternalServerError().json(serde_json::json!({"error": "DB error"}))
         })?
         .ok_or_else(|| {
-            HttpResponse::Unauthorized()
-                .json(serde_json::json!({"error": "Invalid session."}))
+            HttpResponse::Unauthorized().json(serde_json::json!({"error": "Invalid session."}))
         })?;
 
     let role: String = row.get(0);
     if role != "admin" {
-        return Err(HttpResponse::Forbidden()
-            .json(serde_json::json!({"error": "Admin access required."})));
+        return Err(
+            HttpResponse::Forbidden().json(serde_json::json!({"error": "Admin access required."}))
+        );
     }
     Ok(())
 }
