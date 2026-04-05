@@ -1,5 +1,4 @@
-[app]
-app = "app-rough-dust-5178"
+app = "mermaduckle"
 
 [build]
   # Use the provided Dockerfile for Fly builds

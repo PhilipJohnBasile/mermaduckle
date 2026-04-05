@@ -122,11 +122,20 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-async fn serve_index() -> actix_web::HttpResponse {
-    let html = include_str!("../static/index.html");
-    actix_web::HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(html)
+async fn serve_index(req: actix_web::HttpRequest) -> actix_web::HttpResponse {
+    // Serve the marketing site at `/` and the SPA at `/app` (SPA supports client-side routing).
+    let path = req.path();
+    if path.starts_with("/app") {
+        let html = include_str!("../static/app/index.html");
+        actix_web::HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .body(html)
+    } else {
+        let html = include_str!("../static/marketing/index.html");
+        actix_web::HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .body(html)
+    }
 }
 
 fn find_static_dir() -> String {
