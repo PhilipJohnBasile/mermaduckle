@@ -1768,8 +1768,9 @@ function exportAuditCsv(events) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // If user has no session, show sign-in screen
-  if (!session || !apiKey) {
+  // Restore auth from the session token alone. API keys are optional and can
+  // be regenerated from the in-app settings flow.
+  if (!session) {
     showAuthScreen();
     return;
   }
@@ -1785,7 +1786,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentUser = user;
     localStorage.setItem('currentUser', JSON.stringify(user));
   } catch (e) {
-    // If offline or server unreachable, allow cached session to proceed
+    // If offline or server unreachable, allow the cached user to proceed.
+    if (!currentUser) {
+      showAuthScreen();
+      return;
+    }
   }
 
   updateUserDisplay();
