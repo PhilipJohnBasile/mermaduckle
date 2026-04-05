@@ -56,7 +56,7 @@ Environment variables
 - `OLLAMA_URL` (default `http://localhost:11434`)
 - `HOST` (default `0.0.0.0`)
 - `PORT` (default `3001`)
-- `ADMIN_EMAILS` (optional comma-separated bootstrap admin emails)
+- `ADMIN_EMAILS` (optional comma-separated bootstrap admin emails; first registered user is auto-promoted to admin regardless)
 
 Secrets policy
 - Use `.env.example` as the template and keep real values in an untracked `.env`.

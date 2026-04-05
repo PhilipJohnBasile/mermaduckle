@@ -48,6 +48,19 @@ function apiFetch(url, options = {}) {
   });
 }
 
+function adminFetch(url, options = {}) {
+  if (!session) return Promise.reject(new Error('No session'));
+  const headers = { ...options.headers };
+  headers['Authorization'] = `Bearer ${session}`;
+  return fetch(url, { ...options, headers }).then(async (res) => {
+    if (!res.ok) {
+      const text = await res.text().catch(() => res.statusText);
+      return Promise.reject(new Error(text || res.statusText));
+    }
+    return res;
+  });
+}
+
 /* ── Auth Screen ── */
 function showAuthScreen() {
   const app = $('#app');
@@ -120,6 +133,31 @@ function showAuthScreen() {
         errEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = isLogin ? 'Sign in' : 'Create account';
+        return;
+      }
+      // Account pending admin approval
+      if (data.pending) {
+        const card = form.closest('.auth-card');
+        const toggle = card.querySelector('.auth-toggle');
+        form.style.display = 'none';
+        if (toggle) toggle.style.display = 'none';
+        const existing = card.querySelector('.auth-pending');
+        if (existing) existing.remove();
+        card.appendChild(h('div', { class: 'auth-pending', style: { textAlign: 'center', padding: '1rem 0' } },
+          h('div', { style: { fontSize: '48px', marginBottom: '1rem' } }, '⏳'),
+          h('h3', { style: { color: 'white', marginBottom: '0.5rem' } }, 'Account pending approval'),
+          h('p', { style: { color: 'var(--slate-400)', lineHeight: '1.6', marginBottom: '1.5rem' } },
+            'Your registration has been received. An administrator will review and approve your account. You\'ll be able to sign in once approved.'),
+          h('button', { class: 'auth-btn', style: { width: '100%' }, onClick: () => {
+            card.querySelector('.auth-pending').remove();
+            form.style.display = '';
+            if (toggle) toggle.style.display = '';
+            btn.disabled = false;
+            btn.textContent = 'Sign in';
+            isLogin = true;
+            render();
+          } }, 'Back to sign in')
+        ));
         return;
       }
       // Store auth state
@@ -558,6 +596,16 @@ async function renderWorkflows(el) {
   el.appendChild(grid);
 }
 
+function filterWorkflowCards() {
+  const query = (document.getElementById('wf-search') || {}).value;
+  if (query == null) return;
+  const q = query.toLowerCase();
+  document.querySelectorAll('#wf-grid .workflow-card').forEach(card => {
+    const name = card.getAttribute('data-name') || '';
+    card.style.display = name.includes(q) ? '' : 'none';
+  });
+}
+
 function makeStatCard(label, value, color = '') {
   const borderColor = color === 'emerald' ? 'rgba(16,185,129,0.2)' : color === 'amber' ? 'rgba(245,158,11,0.2)' : '';
   const valColor = color === 'emerald' ? 'var(--emerald-400)' : color === 'amber' ? 'var(--amber-400)' : 'white';
@@ -688,26 +736,6 @@ async function renderBuilder(el, workflowId) {
     }
   });
 
-async function runWorkflow(id, isDebug = false) {
-  showToast(isDebug ? 'Initializing debugger...' : 'Executing workflow...', 'info');
-  try {
-    const res = await apiFetch(`/api/workflows/${id}/run`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ debug: isDebug })
-    });
-    const data = await res.json();
-    if (isDebug) {
-      window.activeDebugRunId = data.result.runId;
-      showDebugControls(data.result);
-    } else {
-      showToast('Workflow execution started');
-    }
-  } catch (e) {
-    showToast('Failed to start workflow', 'error');
-  }
-}
-
 function showDebugControls(result) {
   const controls = $('#debug-controls');
   controls.style.display = 'flex';
@@ -726,17 +754,21 @@ function showDebugControls(result) {
 async function stepWorkflow() {
   const runId = window.activeDebugRunId;
   showToast('Advancing to next node...', 'info');
-  const res = await fetch(`/api/approvals/${runId}/action`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'approve' })
-  });
-  const data = await res.json();
-  if (data.status === 'paused') {
-    highlightNode(data.paused_node_id);
-  } else {
-    stopDebug();
-    showToast('Workflow completed', 'success');
+  try {
+    const res = await apiFetch(`/api/approvals/${runId}/action`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'approve' })
+    });
+    const data = await res.json();
+    if (data.status === 'paused') {
+      highlightNode(data.paused_node_id);
+    } else {
+      stopDebug();
+      showToast('Workflow completed', 'success');
+    }
+  } catch (e) {
+    showToast('Debug step failed', 'error');
   }
 }
 
@@ -768,8 +800,22 @@ async function pollActivityStream() {
   setTimeout(pollActivityStream, 5000);
 }
 
-function exportWorkflow(id) {
-  window.location.href = `/api/workflows/${id}/export`;
+async function exportWorkflow(id) {
+  try {
+    const res = await apiFetch(`/api/workflows/${id}/export`);
+    const data = await res.json();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workflow-${id}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    showToast('Failed to export workflow', 'error');
+  }
 }
 
 function importWorkflowDialog() {
@@ -955,7 +1001,15 @@ function showHealSuggestionModal(data, runId, nodeId) {
 }
 
 async function reportWorkflow(id) {
-  window.open(`/api/reporting/audit/${id}`, '_blank');
+  try {
+    const res = await apiFetch(`/api/reporting/audit/${id}`);
+    const text = await res.text();
+    const blob = new Blob([text], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  } catch (e) {
+    showToast('Failed to generate report', 'error');
+  }
 }
 
 /* ── Agent Library ──────────────────────────────────────── */
@@ -1253,8 +1307,9 @@ async function renderSettings(el) {
     )
   ));
 
-  const tabs = h('div', { class: 'flex gap-6 mb-8', style: { borderBottom: '1px solid rgba(255,255,255,0.06)' } },
-    h('button', { class: 'settings-tab active', onClick: (e) => switchSettingsTab(e, 'api') }, 'API Keys'),
+  const tabs = h('div', { class: 'flex gap-6 mb-8', style: { borderBottom: '1px solid rgba(255,255,255,0.06)', flexWrap: 'wrap' } },
+    h('button', { class: 'settings-tab active', onClick: (e) => switchSettingsTab(e, 'users') }, 'User Management'),
+    h('button', { class: 'settings-tab', onClick: (e) => switchSettingsTab(e, 'api') }, 'API Keys'),
     h('button', { class: 'settings-tab', onClick: (e) => switchSettingsTab(e, 'client') }, 'Client Config'),
     h('button', { class: 'settings-tab', onClick: (e) => switchSettingsTab(e, 'team') }, 'Team Members'),
     h('button', { class: 'settings-tab', onClick: (e) => switchSettingsTab(e, 'secrets') }, 'Secret Vault'),
@@ -1267,18 +1322,94 @@ async function renderSettings(el) {
   el.appendChild(content);
 
   // Initial tab
-  renderApiKeysTab(content);
+  renderUsersTab(content);
 
   function switchSettingsTab(e, tab) {
     $$('.settings-tab').forEach(t => t.classList.remove('active'));
     e.target.classList.add('active');
     content.innerHTML = '';
-    if (tab === 'api') renderApiKeysTab(content);
+    if (tab === 'users') renderUsersTab(content);
+    else if (tab === 'api') renderApiKeysTab(content);
     else if (tab === 'client') renderClientTab(content);
     else if (tab === 'team') renderTeamTab(content);
     else if (tab === 'secrets') renderSecretsTab(content);
     else if (tab === 'integrations') renderIntegrationsTab(content);
     else if (tab === 'notifications') renderNotificationsTab(content);
+  }
+}
+
+async function renderUsersTab(container) {
+  try {
+    const users = await adminFetch('/auth/admin/users').then(r => r.json());
+    container.innerHTML = '';
+    const pending = users.filter(u => u.status === 'pending');
+    const active = users.filter(u => u.status === 'active');
+
+    container.appendChild(h('div', { class: 'animate-fade-in' },
+      h('div', { class: 'mb-6' },
+        h('h3', { style: { color: 'white' } }, 'User Management'),
+        h('p', { style: { fontSize: '13px', color: 'var(--slate-500)' } }, 'Approve or reject beta access requests')
+      ),
+      pending.length > 0 ? h('div', { class: 'mb-8' },
+        h('h4', { style: { color: 'var(--amber-400)', marginBottom: '1rem', fontSize: '14px' } }, `Pending Approval (${pending.length})`),
+        h('div', { class: 'glass-card' },
+          h('table', { class: 'data-table' },
+            h('thead', {}, h('tr', {},
+              h('th', {}, 'Name'),
+              h('th', {}, 'Email'),
+              h('th', {}, 'Registered'),
+              h('th', {}, 'Actions')
+            )),
+            h('tbody', {}, ...pending.map(u => h('tr', {},
+              h('td', { style: { color: 'white', fontWeight: '500' } }, u.name),
+              h('td', { style: { fontSize: '13px', color: 'var(--slate-400)' } }, u.email),
+              h('td', { style: { fontSize: '12px', color: 'var(--slate-500)' } }, fmtDate(u.createdAt)),
+              h('td', {},
+                h('div', { class: 'flex gap-2' },
+                  h('button', { class: 'btn-primary', style: { fontSize: '12px', padding: '4px 12px' }, onClick: async () => {
+                    await adminFetch(`/auth/admin/users/${u.id}/approve`, { method: 'POST' });
+                    showToast(`${u.name} approved`);
+                    renderUsersTab(container);
+                  } }, 'Approve'),
+                  h('button', { class: 'btn-glass', style: { fontSize: '12px', padding: '4px 12px', color: 'var(--red-400)' }, onClick: async () => {
+                    if (confirm(`Reject and remove ${u.name}?`)) {
+                      await adminFetch(`/auth/admin/users/${u.id}/reject`, { method: 'POST' });
+                      showToast(`${u.name} rejected`);
+                      renderUsersTab(container);
+                    }
+                  } }, 'Reject')
+                )
+              )
+            )))
+          )
+        )
+      ) : h('div', { class: 'glass-card mb-8', style: { padding: '2rem', textAlign: 'center' } },
+        h('p', { style: { color: 'var(--slate-500)' } }, 'No pending access requests')
+      ),
+      h('h4', { style: { color: 'var(--emerald-400)', marginBottom: '1rem', fontSize: '14px' } }, `Active Users (${active.length})`),
+      h('div', { class: 'glass-card' },
+        h('table', { class: 'data-table' },
+          h('thead', {}, h('tr', {},
+            h('th', {}, 'Name'),
+            h('th', {}, 'Email'),
+            h('th', {}, 'Role'),
+            h('th', {}, 'Since')
+          )),
+          h('tbody', {}, ...active.map(u => h('tr', {},
+            h('td', { style: { color: 'white', fontWeight: '500' } }, u.name),
+            h('td', { style: { fontSize: '13px', color: 'var(--slate-400)' } }, u.email),
+            h('td', {}, h('span', { class: u.role === 'admin' ? 'badge-info' : 'badge-success' }, u.role)),
+            h('td', { style: { fontSize: '12px', color: 'var(--slate-500)' } }, fmtDate(u.createdAt))
+          )))
+        )
+      )
+    ));
+  } catch (e) {
+    container.innerHTML = '';
+    container.appendChild(h('div', { class: 'empty-state' },
+      h('h3', {}, 'Could not load users'),
+      h('p', {}, e.message)
+    ));
   }
 }
 
@@ -1567,12 +1698,20 @@ function showCreatedKeyModal(key) {
   document.body.appendChild(overlay);
 }
 
-async function runWorkflow(id) {
+async function runWorkflow(id, isDebug = false) {
+  showToast(isDebug ? 'Initializing debugger...' : 'Executing workflow...', 'info');
   try {
-    const res = await apiFetch(`/api/workflows/${id}/run`, { method: 'POST' });
+    const res = await apiFetch(`/api/workflows/${id}/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ debug: isDebug })
+    });
     const data = await res.json();
-    if (data.success) {
-      showToast('Workflow started effectively', 'success');
+    if (isDebug && data.result) {
+      window.activeDebugRunId = data.result.runId;
+      showDebugControls(data.result);
+    } else if (data.success) {
+      showToast('Workflow executed successfully', 'success');
     }
   } catch (err) {
     showToast('Failed to start workflow', 'error');

@@ -65,23 +65,21 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
     );
     let session_id = format!("ses_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
 
-    // First registered user becomes admin
+    // First registered user or bootstrap admin is auto-approved; everyone else is pending
     let count_row = client
         .query_one("SELECT COUNT(*)::bigint FROM users", &[])
         .await
         .ok();
     let user_count: i64 = count_row.map(|r| r.get(0)).unwrap_or(0);
-    let role = if user_count == 0 || db::is_bootstrap_admin_email(&email) {
-        "admin"
-    } else {
-        "user"
-    };
+    let is_privileged = user_count == 0 || db::is_bootstrap_admin_email(&email);
+    let role = if is_privileged { "admin" } else { "user" };
+    let status = if is_privileged { "active" } else { "pending" };
 
     // Insert user
     if client
         .execute(
-            "INSERT INTO users (id, name, email, password_hash, role) VALUES ($1, $2, $3, $4, $5)",
-            &[&user_id, &name, &email, &password_hash, &role],
+            "INSERT INTO users (id, name, email, password_hash, role, status) VALUES ($1, $2, $3, $4, $5, $6)",
+            &[&user_id, &name, &email, &password_hash, &role, &status],
         )
         .await
         .is_err()
@@ -91,7 +89,15 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
         }));
     }
 
-    // Create session
+    // Pending users don't get a session or API key — they must wait for admin approval
+    if status == "pending" {
+        return HttpResponse::Ok().json(serde_json::json!({
+            "pending": true,
+            "message": "Your account has been submitted for approval."
+        }));
+    }
+
+    // Create session for approved users
     client
         .execute(
             "INSERT INTO sessions (id, user_id) VALUES ($1, $2)",
@@ -144,7 +150,7 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
 
     let user = client
         .query_opt(
-            "SELECT id, name, email, password_hash, role FROM users WHERE email = $1",
+            "SELECT id, name, email, password_hash, role, COALESCE(status, 'active') FROM users WHERE email = $1",
             &[&email],
         )
         .await;
@@ -163,6 +169,7 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
     let user_email: String = row.get(2);
     let stored_hash: String = row.get(3);
     let mut role: String = row.get(4);
+    let mut status: String = row.get(5);
 
     // Verify password
     let parsed = match PasswordHash::new(&stored_hash) {
@@ -183,12 +190,26 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
         }));
     }
 
-    if db::is_bootstrap_admin_email(&user_email) && role != "admin" {
-        client
-            .execute("UPDATE users SET role = 'admin' WHERE id = $1", &[&user_id])
-            .await
-            .ok();
-        role = "admin".to_string();
+    // Bootstrap admins are always promoted and activated
+    if db::is_bootstrap_admin_email(&user_email) {
+        if role != "admin" || status != "active" {
+            client
+                .execute(
+                    "UPDATE users SET role = 'admin', status = 'active' WHERE id = $1",
+                    &[&user_id],
+                )
+                .await
+                .ok();
+            role = "admin".to_string();
+            status = "active".to_string();
+        }
+    }
+
+    // Block users who haven't been approved yet
+    if status != "active" {
+        return HttpResponse::Forbidden().json(serde_json::json!({
+            "error": "Your account is pending approval. An administrator will review your registration."
+        }));
     }
 
     // Create session
@@ -323,4 +344,123 @@ pub async fn logout(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
             .ok();
     }
     HttpResponse::Ok().json(serde_json::json!({ "success": true }))
+}
+
+// ── Admin: user management ─────────────────────────────────
+
+async fn require_admin(
+    req: &HttpRequest,
+    pool: &web::Data<DbPool>,
+) -> Result<(), HttpResponse> {
+    let session_id = req
+        .headers()
+        .get("Authorization")
+        .and_then(|v| v.to_str().ok())
+        .and_then(|v| v.strip_prefix("Bearer "))
+        .ok_or_else(|| {
+            HttpResponse::Unauthorized()
+                .json(serde_json::json!({"error": "No session token."}))
+        })?;
+
+    let client = pool.get().await.map_err(|_| {
+        HttpResponse::InternalServerError()
+            .json(serde_json::json!({"error": "DB error"}))
+    })?;
+
+    let row = client
+        .query_opt(
+            "SELECT u.role FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = $1",
+            &[&session_id.to_string()],
+        )
+        .await
+        .map_err(|_| {
+            HttpResponse::InternalServerError()
+                .json(serde_json::json!({"error": "DB error"}))
+        })?
+        .ok_or_else(|| {
+            HttpResponse::Unauthorized()
+                .json(serde_json::json!({"error": "Invalid session."}))
+        })?;
+
+    let role: String = row.get(0);
+    if role != "admin" {
+        return Err(HttpResponse::Forbidden()
+            .json(serde_json::json!({"error": "Admin access required."})));
+    }
+    Ok(())
+}
+
+#[get("/auth/admin/users")]
+pub async fn list_all_users(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
+    if let Err(resp) = require_admin(&req, &pool).await {
+        return resp;
+    }
+    let client = pool.get().await.unwrap();
+    let rows = client
+        .query(
+            "SELECT id, name, email, role, COALESCE(status, 'active'), created_at FROM users ORDER BY created_at DESC",
+            &[],
+        )
+        .await
+        .unwrap_or_default();
+
+    let users: Vec<serde_json::Value> = rows
+        .iter()
+        .map(|row| {
+            serde_json::json!({
+                "id": row.get::<_, String>(0),
+                "name": row.get::<_, String>(1),
+                "email": row.get::<_, String>(2),
+                "role": row.get::<_, String>(3),
+                "status": row.get::<_, String>(4),
+                "createdAt": row.get::<_, Option<String>>(5),
+            })
+        })
+        .collect();
+
+    HttpResponse::Ok().json(users)
+}
+
+#[post("/auth/admin/users/{id}/approve")]
+pub async fn approve_user(
+    req: HttpRequest,
+    pool: web::Data<DbPool>,
+    path: web::Path<String>,
+) -> HttpResponse {
+    if let Err(resp) = require_admin(&req, &pool).await {
+        return resp;
+    }
+    let user_id = path.into_inner();
+    let client = pool.get().await.unwrap();
+    client
+        .execute(
+            "UPDATE users SET status = 'active' WHERE id = $1",
+            &[&user_id],
+        )
+        .await
+        .ok();
+    HttpResponse::Ok().json(serde_json::json!({"success": true}))
+}
+
+#[post("/auth/admin/users/{id}/reject")]
+pub async fn reject_user(
+    req: HttpRequest,
+    pool: web::Data<DbPool>,
+    path: web::Path<String>,
+) -> HttpResponse {
+    if let Err(resp) = require_admin(&req, &pool).await {
+        return resp;
+    }
+    let user_id = path.into_inner();
+    let client = pool.get().await.unwrap();
+    // Delete associated sessions and the user record
+    client
+        .execute("DELETE FROM sessions WHERE user_id = $1", &[&user_id])
+        .await
+        .ok();
+    client
+        .execute("DELETE FROM users WHERE id = $1", &[&user_id])
+        .await
+        .ok();
+    HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }

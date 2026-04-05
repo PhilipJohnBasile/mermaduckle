@@ -203,7 +203,7 @@ pub async fn list_integrations(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(integrations)
 }
 
-#[patch("/api/settings/integrations")]
+#[patch("/settings/integrations")]
 pub async fn update_integration(
     pool: web::Data<DbPool>,
     body: web::Json<UpdateIntegrationRequest>,
@@ -252,7 +252,7 @@ pub async fn get_notifications(pool: web::Data<DbPool>) -> HttpResponse {
     }
 }
 
-#[patch("/api/settings/notifications")]
+#[patch("/settings/notifications")]
 pub async fn update_notifications(
     pool: web::Data<DbPool>,
     body: web::Json<UpdateNotificationsRequest>,

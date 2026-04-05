@@ -91,6 +91,10 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::auth::login)
             .service(handlers::auth::me)
             .service(handlers::auth::logout)
+            // Admin routes (session-authenticated, admin only)
+            .service(handlers::auth::list_all_users)
+            .service(handlers::auth::approve_user)
+            .service(handlers::auth::reject_user)
             // Dev-only unprotected key creation (local dev convenience)
             .service(handlers::settings::create_api_key_dev)
             // Protected API routes

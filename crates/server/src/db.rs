@@ -4,7 +4,6 @@ use deadpool_postgres::{Config, Pool, Runtime};
 use rand::rngs::OsRng;
 
 pub type DbPool = Pool;
-const DEFAULT_BOOTSTRAP_ADMIN_EMAILS: &[&str] = &["pbasile@basilecom.com"];
 
 pub async fn create_pool(database_url: &str) -> DbPool {
     let mut cfg = Config::new();
@@ -190,6 +189,15 @@ async fn init_schema(client: &deadpool_postgres::Client) {
         .await
         .ok();
 
+    // Migrate: add status column to users table
+    client
+        .batch_execute(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
+             UPDATE users SET status = 'active' WHERE status IS NULL;",
+        )
+        .await
+        .ok();
+
     prune_password_reset_tokens(client).await;
     ensure_bootstrap_admins(client).await;
 
@@ -223,13 +231,6 @@ fn parse_bootstrap_admin_emails(config: Option<&str>) -> Vec<String> {
         .filter(|email| !email.is_empty())
         .collect();
 
-    if emails.is_empty() {
-        emails = DEFAULT_BOOTSTRAP_ADMIN_EMAILS
-            .iter()
-            .map(|email| email.to_string())
-            .collect();
-    }
-
     emails.sort();
     emails.dedup();
     emails
@@ -249,7 +250,7 @@ pub fn is_bootstrap_admin_email(email: &str) -> bool {
 pub async fn ensure_bootstrap_admins(client: &deadpool_postgres::Client) {
     let _ = client
         .execute(
-            "UPDATE users SET role = 'admin' WHERE id = (SELECT id FROM users ORDER BY created_at ASC LIMIT 1) AND role != 'admin'",
+            "UPDATE users SET role = 'admin', status = 'active' WHERE id = (SELECT id FROM users ORDER BY created_at ASC LIMIT 1) AND role != 'admin'",
             &[],
         )
         .await;
@@ -257,7 +258,7 @@ pub async fn ensure_bootstrap_admins(client: &deadpool_postgres::Client) {
     for email in configured_bootstrap_admin_emails() {
         let _ = client
             .execute(
-                "UPDATE users SET role = 'admin' WHERE lower(email) = $1 AND role != 'admin'",
+                "UPDATE users SET role = 'admin', status = 'active' WHERE lower(email) = $1 AND (role != 'admin' OR status != 'active')",
                 &[&email],
             )
             .await;
