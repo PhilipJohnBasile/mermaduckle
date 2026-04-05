@@ -63,12 +63,16 @@
         <!-- ═══ HERO ═══ -->
         <section class="marketing-hero" id="platform">
           <div class="marketing-hero-copy marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Open source &middot; Postgres-backed &middot; Self-hostable</div>
+            <div class="marketing-eyebrow">Open source &middot; Production-ready &middot; Self-hostable</div>
             <h1>Ship AI workflows with confidence.</h1>
             <p class="marketing-lede">
               Build visual workflows, route sensitive actions through human approval,
               manage agents and secrets, and audit every run &mdash; all in one open-source
               Rust control plane designed for reliable Postgres-backed production deployments.
+            </p>
+            <p class="marketing-hero-note">
+              Evaluate locally in minutes. Move the production data plane to Postgres when you are
+              ready for multi-machine deployment.
             </p>
             <div class="marketing-cta-row">
               <a class="marketing-button marketing-button-primary" href="/app"
@@ -82,7 +86,7 @@
 
           <aside class="marketing-command-card marketing-reveal" data-reveal>
             <div class="marketing-card-kicker">Get running in 60 seconds</div>
-            <h2>Rust control plane. Postgres where it counts.</h2>
+            <h2>Rust control plane. Postgres-ready production path.</h2>
             <article class="marketing-code-card" style="border:none;padding:0;background:none;box-shadow:none;">
               <pre style="margin:0.8rem 0;"><code><span style="color:var(--marketing-faint)">$</span> git clone https://github.com/PhilipJohnBasile/mermaduckle
 <span style="color:var(--marketing-faint)">$</span> cd mermaduckle
@@ -92,8 +96,8 @@
             <div class="marketing-command-grid" style="margin-top:0.8rem;">
               <article class="marketing-command-pane">
                 <span>Stack</span>
-                <strong>Rust + Postgres</strong>
-                <p>Rust app server with a production-safe relational data layer.</p>
+                <strong>Rust + Postgres-ready architecture</strong>
+                <p>Rust app server today, moving to a production-safe relational data layer.</p>
               </article>
               <article class="marketing-command-pane">
                 <span>Deploy</span>
@@ -428,7 +432,8 @@
               <h3>Own the control plane.</h3>
               <p>
                 Run the Rust service on your own infrastructure and connect it to customer-owned
-                Postgres. Keep the app tier portable while the data tier stays durable.
+                Postgres. Local evaluation stays simple; production gets the durability of a shared
+                relational store.
               </p>
             </article>
             <article class="marketing-delivery-card marketing-reveal" data-reveal>
@@ -494,7 +499,7 @@ Rust service + GitHub Actions deploys</code></pre>
             </div>
             <div class="marketing-stack-item">
               <strong>PostgreSQL</strong>
-              <span>Production-safe relational storage for multi-machine deployments</span>
+              <span>Target production storage for multi-machine deployments</span>
             </div>
             <div class="marketing-stack-item">
               <strong>Neon</strong>

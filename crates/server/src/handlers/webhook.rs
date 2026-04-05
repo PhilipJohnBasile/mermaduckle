@@ -1,7 +1,7 @@
 use crate::db::DbPool;
 use actix_web::{HttpRequest, HttpResponse, get, post, web};
 
-#[post("/api/webhook/{path:.*}")]
+#[post("/webhook/{path:.*}")]
 pub async fn handle_webhook(
     pool: web::Data<DbPool>,
     req: HttpRequest,
@@ -68,7 +68,7 @@ pub async fn handle_webhook(
     }))
 }
 
-#[get("/api/webhook-logs")]
+#[get("/webhook-logs")]
 pub async fn list_webhook_logs(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client

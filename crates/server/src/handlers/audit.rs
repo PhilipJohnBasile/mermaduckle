@@ -2,7 +2,7 @@ use crate::db::DbPool;
 use crate::models::*;
 use actix_web::{HttpResponse, get, web};
 
-#[get("/api/audit")]
+#[get("/audit")]
 pub async fn list_audit_events(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client

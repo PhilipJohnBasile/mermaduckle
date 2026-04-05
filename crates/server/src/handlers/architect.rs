@@ -2,7 +2,7 @@ use crate::models::{ArchitectRequest, ArchitectResponse};
 use actix_web::{HttpResponse, post, web};
 use mermaduckle_engine::call_ollama;
 
-#[post("/api/architect/generate")]
+#[post("/architect/generate")]
 pub async fn generate_workflow_draft(body: web::Json<ArchitectRequest>) -> HttpResponse {
     let ollama_url =
         std::env::var("OLLAMA_URL").unwrap_or_else(|_| "http://localhost:11434".into());

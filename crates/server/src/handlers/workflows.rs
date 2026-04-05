@@ -2,7 +2,7 @@ use crate::db::{DbPool, add_audit_event};
 use crate::models::*;
 use actix_web::{HttpResponse, delete, get, post, put, web};
 
-#[get("/api/workflows")]
+#[get("/workflows")]
 pub async fn list_workflows(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -30,7 +30,7 @@ pub async fn list_workflows(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(workflows)
 }
 
-#[get("/api/workflows/{id}")]
+#[get("/workflows/{id}")]
 pub async fn get_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -62,7 +62,7 @@ pub async fn get_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -> H
     }
 }
 
-#[post("/api/workflows")]
+#[post("/workflows")]
 pub async fn create_workflow(
     pool: web::Data<DbPool>,
     body: web::Json<CreateWorkflowRequest>,
@@ -105,7 +105,7 @@ pub async fn create_workflow(
     HttpResponse::Ok().json(serde_json::json!({"id": id, "name": body.name}))
 }
 
-#[put("/api/workflows/{id}")]
+#[put("/workflows/{id}")]
 pub async fn update_workflow(
     pool: web::Data<DbPool>,
     path: web::Path<String>,
@@ -165,7 +165,7 @@ pub async fn update_workflow(
     HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }
 
-#[delete("/api/workflows/{id}")]
+#[delete("/workflows/{id}")]
 pub async fn delete_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -180,7 +180,7 @@ pub async fn delete_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -
     HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }
 
-#[post("/api/workflows/{id}/run")]
+#[post("/workflows/{id}/run")]
 pub async fn run_workflow(
     pool: web::Data<DbPool>,
     path: web::Path<String>,
@@ -293,7 +293,7 @@ pub async fn run_workflow(
     }))
 }
 
-#[get("/api/workflows/{id}/runs")]
+#[get("/workflows/{id}/runs")]
 pub async fn get_workflow_runs(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -321,7 +321,7 @@ pub async fn get_workflow_runs(pool: web::Data<DbPool>, path: web::Path<String>)
     HttpResponse::Ok().json(runs)
 }
 
-#[get("/api/workflows/export")]
+#[get("/workflows/export")]
 pub async fn export_workflows(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
 
@@ -369,7 +369,7 @@ pub async fn export_workflows(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(serde_json::json!({ "workflows": workflows, "agents": agents }))
 }
 
-#[post("/api/workflows/import")]
+#[post("/workflows/import")]
 pub async fn import_workflows(
     pool: web::Data<DbPool>,
     body: web::Json<ImportRequest>,
@@ -409,7 +409,7 @@ pub async fn import_workflows(
     HttpResponse::Ok().json(serde_json::json!({"success": true, "workflows": body.workflows.len(), "agents": body.agents.len()}))
 }
 
-#[get("/api/workflows/{id}/export")]
+#[get("/workflows/{id}/export")]
 pub async fn export_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -434,7 +434,7 @@ pub async fn export_workflow(pool: web::Data<DbPool>, path: web::Path<String>) -
     }
 }
 
-#[post("/api/workflows/import-single")]
+#[post("/workflows/import-single")]
 pub async fn import_workflow(
     pool: web::Data<DbPool>,
     body: web::Json<serde_json::Value>,

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle Docs | Postgres Deployment Guide</title>
+    <title>Mermaduckle Docs | Deployment Guide</title>
     <meta
       name="description"
-      content="Deploy Mermaduckle in your own environment. This guide explains the public sandbox, the Postgres-backed deployment path, Fly.io setup, GitHub Actions, and runtime configuration."
+      content="Deploy Mermaduckle in your own environment. This guide explains the public sandbox, the current runtime, the Postgres production target, Fly.io setup, GitHub Actions, and runtime configuration."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,7 +24,7 @@
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>Postgres deployment guide</span>
+            <span>Deployment guide</span>
           </span>
         </a>
         <div class="marketing-nav-actions">
@@ -38,13 +38,13 @@
           <div class="marketing-docs-hero-grid">
             <div class="marketing-docs-hero-copy">
               <div class="marketing-eyebrow">Production deployment guide</div>
-              <h1>Deploy the Rust control plane with Postgres behind it.</h1>
+              <h1>Run the Rust control plane today. Plan the Postgres production path.</h1>
               <p>
                 This domain hosts three things: the marketing site, a public sandbox at
                 <code>/app</code>, and this deployment guide. Customer production environments use
-                the same Rust service, but run as separate deployments backed by Postgres. We
-                recommend Neon when you want one database that works cleanly with both Fly and
-                Railway.
+                the same Rust service, but run as separate deployments under your ownership. The
+                production architecture is moving to Postgres, and we recommend Neon when you want
+                one database that works cleanly with both Fly and Railway.
               </p>
               <div class="marketing-cta-row">
                 <a class="marketing-button marketing-button-primary" href="/app">Open sandbox</a>
@@ -70,7 +70,7 @@
                 </div>
                 <div>
                   <span>Deployment guide</span>
-                  <strong><code>/docs</code> covers the Postgres deployment path and release workflow.</strong>
+                  <strong><code>/docs</code> covers the current runtime, the Postgres target, and the release workflow.</strong>
                   <p>Use it when you are ready to run the same service in your own environment.</p>
                 </div>
               </div>
@@ -94,8 +94,8 @@
               <h2>Deployment model</h2>
               <p>
                 The public sandbox and the self-hosted product are the same service in different
-                deployment contexts. Production deployments are moving to a dedicated
-                Postgres-backed architecture.
+                deployment contexts. The current app is still in transition, and the production
+                target is a dedicated Postgres-backed architecture.
               </p>
             </div>
           </div>
@@ -108,12 +108,12 @@
             <article class="marketing-doc-card">
               <span class="marketing-card-kicker">Self-host</span>
               <h3>Deploy a separate customer-owned environment.</h3>
-              <p>Run the same service in Fly, Railway, or your own infrastructure stack with a dedicated Postgres database.</p>
+              <p>Run the same service in Fly, Railway, or your own infrastructure stack, with Postgres as the production target.</p>
             </article>
             <article class="marketing-doc-card">
               <span class="marketing-card-kicker">Supported rollout</span>
               <h3>Launch with implementation help.</h3>
-              <p>Use a supported rollout when the team wants faster adoption, Neon setup help, and operational guidance.</p>
+              <p>Use a supported rollout when the team wants faster adoption, migration help, and operational guidance.</p>
             </article>
           </div>
         </section>
@@ -145,16 +145,18 @@
             <div>
               <h2>Deploy to Fly.io</h2>
               <p>
-                Use Fly for the app tier and connect it to managed Postgres. The repository already
-                includes the Dockerfile and <code>fly.toml</code> required for a Fly rollout.
+                Use Fly for the app tier today. The repository already includes the Dockerfile and
+                <code>fly.toml</code> required for a Fly rollout, with Postgres as the production
+                target architecture.
               </p>
             </div>
           </div>
           <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --remote-only --config fly.toml</code></pre>
           <p class="marketing-doc-note">
             The current repo is configured around a single Rust service that serves the marketing
-            site, sandbox, docs, and API from internal port <code>3001</code>. Pair that service
-            with Neon or another managed Postgres provider for production data.
+            site, sandbox, docs, and API from internal port <code>3001</code>. The production
+            target is a shared Postgres data tier, with Neon as the recommended default when you
+            want Fly and Railway portability.
           </p>
         </section>
 
@@ -169,7 +171,7 @@
           <pre data-copyable><code>fly tokens create deploy --app &lt;app-name&gt;</code></pre>
           <ul>
             <li>Add the token as the repository secret <code>FLY_API_TOKEN</code>.</li>
-            <li>Store your Postgres connection string as an environment secret for the deployed app.</li>
+            <li>Plan to store your Postgres connection string as an environment secret when the migration lands.</li>
             <li>The deployment workflow lives in <code>.github/workflows/fly-deploy.yml</code>.</li>
             <li>The workflow runs <code>flyctl deploy --remote-only --config fly.toml</code>.</li>
           </ul>
@@ -197,15 +199,16 @@ flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
             </div>
           </div>
           <div class="marketing-doc-table">
-            <div><strong>DATABASE_URL</strong><span><code>postgresql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;/&lt;db&gt;</code></span></div>
+            <div><strong>DATABASE_PATH</strong><span><code>data/app.db</code> current runtime</span></div>
+            <div><strong>DATABASE_URL</strong><span><code>postgresql://&lt;user&gt;:&lt;password&gt;@&lt;host&gt;/&lt;db&gt;</code> production target</span></div>
             <div><strong>OLLAMA_URL</strong><span><code>http://localhost:11434</code></span></div>
             <div><strong>HOST</strong><span><code>0.0.0.0</code></span></div>
             <div><strong>PORT</strong><span><code>3001</code></span></div>
           </div>
           <p class="marketing-doc-note">
-            Production deployments are moving from file-based SQLite configuration to
-            <code>DATABASE_URL</code>-driven Postgres connectivity. Keep the app tier portable and
-            the data tier shared.
+            The current runtime still reads <code>DATABASE_PATH</code>. The production architecture
+            is moving toward <code>DATABASE_URL</code>-driven Postgres connectivity so the app tier
+            stays portable and the data tier stays shared.
           </p>
         </section>
 

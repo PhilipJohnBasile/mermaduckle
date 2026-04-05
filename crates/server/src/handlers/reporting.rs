@@ -1,7 +1,7 @@
 use crate::db::DbPool;
 use actix_web::{HttpResponse, get, web};
 
-#[get("/api/reporting/audit/{workflow_id}")]
+#[get("/reporting/audit/{workflow_id}")]
 pub async fn generate_workflow_report(
     pool: web::Data<DbPool>,
     path: web::Path<String>,

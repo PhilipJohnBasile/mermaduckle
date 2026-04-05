@@ -3,7 +3,7 @@ use crate::models::{HealRequest, HealResponse};
 use actix_web::{HttpResponse, post, web};
 use mermaduckle_engine::call_ollama;
 
-#[post("/api/recovery/heal")]
+#[post("/recovery/heal")]
 pub async fn self_heal_node(pool: web::Data<DbPool>, body: web::Json<HealRequest>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let run_id = &body.run_id;

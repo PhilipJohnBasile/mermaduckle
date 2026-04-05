@@ -2,7 +2,7 @@ use crate::db::{DbPool, add_audit_event};
 use crate::models::*;
 use actix_web::{HttpResponse, delete, get, post, put, web};
 
-#[get("/api/agents")]
+#[get("/agents")]
 pub async fn list_agents(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -34,7 +34,7 @@ pub async fn list_agents(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(agents)
 }
 
-#[get("/api/agents/{id}")]
+#[get("/agents/{id}")]
 pub async fn get_agent(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -70,7 +70,7 @@ pub async fn get_agent(pool: web::Data<DbPool>, path: web::Path<String>) -> Http
     }
 }
 
-#[post("/api/agents")]
+#[post("/agents")]
 pub async fn create_agent(
     pool: web::Data<DbPool>,
     body: web::Json<CreateAgentRequest>,
@@ -117,7 +117,7 @@ pub async fn create_agent(
     HttpResponse::Ok().json(serde_json::json!({"id": id, "name": body.name}))
 }
 
-#[put("/api/agents/{id}")]
+#[put("/agents/{id}")]
 pub async fn update_agent(
     pool: web::Data<DbPool>,
     path: web::Path<String>,
@@ -144,7 +144,7 @@ pub async fn update_agent(
     HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }
 
-#[delete("/api/agents/{id}")]
+#[delete("/agents/{id}")]
 pub async fn delete_agent(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -155,7 +155,7 @@ pub async fn delete_agent(pool: web::Data<DbPool>, path: web::Path<String>) -> H
     HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }
 
-#[post("/api/agents/{id}/chat")]
+#[post("/agents/{id}/chat")]
 pub async fn chat_with_agent(
     pool: web::Data<DbPool>,
     path: web::Path<String>,

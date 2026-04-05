@@ -4,7 +4,7 @@ use actix_web::{HttpResponse, delete, get, patch, post, web};
 
 // ── API Keys ───────────────────────────────────────────────
 
-#[get("/api/settings/api-keys")]
+#[get("/settings/api-keys")]
 pub async fn list_api_keys(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -26,7 +26,7 @@ pub async fn list_api_keys(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(keys)
 }
 
-#[post("/api/settings/api-keys")]
+#[post("/settings/api-keys")]
 pub async fn create_api_key(
     pool: web::Data<DbPool>,
     body: web::Json<CreateApiKeyRequest>,
@@ -85,7 +85,7 @@ pub async fn create_api_key_dev(
     HttpResponse::Ok().json(serde_json::json!({"id": id, "key": raw_key}))
 }
 
-#[delete("/api/settings/api-keys/{id}")]
+#[delete("/settings/api-keys/{id}")]
 pub async fn delete_api_key(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -96,7 +96,7 @@ pub async fn delete_api_key(pool: web::Data<DbPool>, path: web::Path<String>) ->
     HttpResponse::Ok().json(serde_json::json!({"success": true}))
 }
 
-#[post("/api/settings/api-keys/{id}/rotate")]
+#[post("/settings/api-keys/{id}/rotate")]
 pub async fn rotate_api_key(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let raw_key = format!(
@@ -117,7 +117,7 @@ pub async fn rotate_api_key(pool: web::Data<DbPool>, path: web::Path<String>) ->
 
 // ── Team Members ───────────────────────────────────────────
 
-#[get("/api/settings/team")]
+#[get("/settings/team")]
 pub async fn list_team(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -141,7 +141,7 @@ pub async fn list_team(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(members)
 }
 
-#[post("/api/settings/team")]
+#[post("/settings/team")]
 pub async fn add_team_member(
     pool: web::Data<DbPool>,
     body: web::Json<CreateTeamMemberRequest>,
@@ -167,7 +167,7 @@ pub async fn add_team_member(
     HttpResponse::Ok().json(serde_json::json!({"id": id}))
 }
 
-#[delete("/api/settings/team/{id}")]
+#[delete("/settings/team/{id}")]
 pub async fn remove_team_member(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();
@@ -180,7 +180,7 @@ pub async fn remove_team_member(pool: web::Data<DbPool>, path: web::Path<String>
 
 // ── Integrations ───────────────────────────────────────────
 
-#[get("/api/settings/integrations")]
+#[get("/settings/integrations")]
 pub async fn list_integrations(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -228,7 +228,7 @@ pub async fn update_integration(
 
 // ── Notifications ──────────────────────────────────────────
 
-#[get("/api/settings/notifications")]
+#[get("/settings/notifications")]
 pub async fn get_notifications(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     match client
@@ -278,7 +278,7 @@ pub async fn update_notifications(
 
 // ── Secret Vault ───────────────────────────────────────────
 
-#[get("/api/settings/secrets")]
+#[get("/settings/secrets")]
 pub async fn list_secrets(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -300,7 +300,7 @@ pub async fn list_secrets(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(secrets)
 }
 
-#[post("/api/settings/secrets")]
+#[post("/settings/secrets")]
 pub async fn create_secret(
     pool: web::Data<DbPool>,
     body: web::Json<CreateSecretRequest>,
@@ -324,7 +324,7 @@ pub async fn create_secret(
     HttpResponse::Ok().json(serde_json::json!({"id": id}))
 }
 
-#[delete("/api/settings/secrets/{id}")]
+#[delete("/settings/secrets/{id}")]
 pub async fn delete_secret(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();
     let client = pool.get().await.unwrap();

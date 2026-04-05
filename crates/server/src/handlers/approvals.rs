@@ -3,7 +3,7 @@ use crate::models::*;
 use actix_web::{HttpResponse, get, post, web};
 use mermaduckle_engine::{Workflow, WorkflowEdge, WorkflowNode, execute_workflow_engine};
 
-#[get("/api/approvals")]
+#[get("/approvals")]
 pub async fn list_pending_approvals(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client
@@ -30,7 +30,7 @@ pub async fn list_pending_approvals(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(runs)
 }
 
-#[post("/api/approvals/{id}/action")]
+#[post("/approvals/{id}/action")]
 pub async fn handle_approval(
     pool: web::Data<DbPool>,
     path: web::Path<String>,

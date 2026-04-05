@@ -2,7 +2,7 @@ use crate::db::DbPool;
 use crate::models::*;
 use actix_web::{HttpResponse, get, web};
 
-#[get("/api/dashboard")]
+#[get("/dashboard")]
 pub async fn get_dashboard(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
 
@@ -85,7 +85,7 @@ pub async fn get_dashboard(pool: web::Data<DbPool>) -> HttpResponse {
     HttpResponse::Ok().json(metrics)
 }
 
-#[get("/api/logs/stream")]
+#[get("/logs/stream")]
 pub async fn list_recent_activity(pool: web::Data<DbPool>) -> HttpResponse {
     let client = pool.get().await.unwrap();
     let rows = client

@@ -4,12 +4,9 @@ services:
   mermaduckle:
     build: .
     ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_PATH=/data/app.db
-      - OLLAMA_URL=http://ollama:11434
-    volumes:
-      - ./data:/data
+      - "3001:3001"
+    env_file:
+      - .env
     depends_on:
       - ollama
     networks:
