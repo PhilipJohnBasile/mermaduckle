@@ -6,6 +6,7 @@ use rand::rngs::OsRng;
 use rusqlite::params;
 
 pub type DbPool = Pool<SqliteConnectionManager>;
+const DEFAULT_BOOTSTRAP_ADMIN_EMAILS: &[&str] = &["pbasile@basilecom.com"];
 
 pub fn create_pool(db_path: &str) -> DbPool {
     // Ensure parent directory exists
@@ -172,11 +173,7 @@ fn init_schema(conn: &rusqlite::Connection) {
         "ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'",
         [],
     );
-    // Promote the earliest registered user to admin (covers existing DBs before role column existed)
-    let _ = conn.execute(
-        "UPDATE users SET role = 'admin' WHERE id = (SELECT id FROM users ORDER BY created_at ASC LIMIT 1) AND role != 'admin'",
-        [],
-    );
+    ensure_bootstrap_admins(conn);
 
     // Simple migrations tracking table. Record a baseline migration representing
     // the current schema so future migrations can be applied idempotently.
@@ -206,6 +203,52 @@ fn init_schema(conn: &rusqlite::Connection) {
             params![baseline_id, ts],
         )
         .ok();
+    }
+}
+
+fn parse_bootstrap_admin_emails(config: Option<&str>) -> Vec<String> {
+    let mut emails: Vec<String> = config
+        .unwrap_or("")
+        .split(',')
+        .map(|email| email.trim().to_lowercase())
+        .filter(|email| !email.is_empty())
+        .collect();
+
+    if emails.is_empty() {
+        emails = DEFAULT_BOOTSTRAP_ADMIN_EMAILS
+            .iter()
+            .map(|email| email.to_string())
+            .collect();
+    }
+
+    emails.sort();
+    emails.dedup();
+    emails
+}
+
+pub fn configured_bootstrap_admin_emails() -> Vec<String> {
+    parse_bootstrap_admin_emails(std::env::var("ADMIN_EMAILS").ok().as_deref())
+}
+
+pub fn is_bootstrap_admin_email(email: &str) -> bool {
+    let normalized_email = email.trim().to_lowercase();
+    configured_bootstrap_admin_emails()
+        .iter()
+        .any(|candidate| candidate == &normalized_email)
+}
+
+pub fn ensure_bootstrap_admins(conn: &rusqlite::Connection) {
+    // Preserve the original bootstrap behavior for older databases.
+    let _ = conn.execute(
+        "UPDATE users SET role = 'admin' WHERE id = (SELECT id FROM users ORDER BY created_at ASC LIMIT 1) AND role != 'admin'",
+        [],
+    );
+
+    for email in configured_bootstrap_admin_emails() {
+        let _ = conn.execute(
+            "UPDATE users SET role = 'admin' WHERE lower(email) = ?1 AND role != 'admin'",
+            params![email],
+        );
     }
 }
 
@@ -649,6 +692,26 @@ mod tests {
             Argon2::default()
                 .verify_password(raw.as_bytes(), &parsed)
                 .is_ok()
+        );
+    }
+
+    #[test]
+    fn test_parse_bootstrap_admin_emails_defaults_when_empty() {
+        let admins = parse_bootstrap_admin_emails(None);
+        assert_eq!(admins, vec!["pbasile@basilecom.com".to_string()]);
+    }
+
+    #[test]
+    fn test_parse_bootstrap_admin_emails_normalizes_values() {
+        let admins = parse_bootstrap_admin_emails(Some(
+            "  PBASILE@BASILECOM.COM, ops@example.com, ops@example.com ",
+        ));
+        assert_eq!(
+            admins,
+            vec![
+                "ops@example.com".to_string(),
+                "pbasile@basilecom.com".to_string()
+            ]
         );
     }
 }

@@ -69,7 +69,11 @@ pub async fn register(pool: web::Data<DbPool>, body: web::Json<RegisterRequest>)
     let user_count: i64 = conn
         .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
         .unwrap_or(0);
-    let role = if user_count == 0 { "admin" } else { "user" };
+    let role = if user_count == 0 || db::is_bootstrap_admin_email(&email) {
+        "admin"
+    } else {
+        "user"
+    };
 
     // Insert user
     if let Err(_) = conn.execute(
@@ -142,7 +146,7 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
         },
     );
 
-    let (user_id, name, user_email, stored_hash, role) = match user {
+    let (user_id, name, user_email, stored_hash, mut role) = match user {
         Ok(u) => u,
         Err(_) => {
             return HttpResponse::Unauthorized().json(serde_json::json!({
@@ -168,6 +172,15 @@ pub async fn login(pool: web::Data<DbPool>, body: web::Json<LoginRequest>) -> Ht
         return HttpResponse::Unauthorized().json(serde_json::json!({
             "error": "Invalid email or password."
         }));
+    }
+
+    if db::is_bootstrap_admin_email(&user_email) && role != "admin" {
+        conn.execute(
+            "UPDATE users SET role = 'admin' WHERE id = ?1",
+            params![user_id],
+        )
+        .ok();
+        role = "admin".to_string();
     }
 
     // Create session
@@ -249,17 +262,33 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
         "SELECT u.id, u.name, u.email, u.role FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = ?1",
         params![session_id],
         |row| {
-            Ok(serde_json::json!({
-                "id": row.get::<_, String>(0)?,
-                "name": row.get::<_, String>(1)?,
-                "email": row.get::<_, String>(2)?,
-                "role": row.get::<_, String>(3)?,
-            }))
+            Ok((
+                row.get::<_, String>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, String>(2)?,
+                row.get::<_, String>(3)?,
+            ))
         },
     );
 
     match user {
-        Ok(u) => HttpResponse::Ok().json(u),
+        Ok((user_id, name, email, mut role)) => {
+            if db::is_bootstrap_admin_email(&email) && role != "admin" {
+                conn.execute(
+                    "UPDATE users SET role = 'admin' WHERE id = ?1",
+                    params![user_id],
+                )
+                .ok();
+                role = "admin".to_string();
+            }
+
+            HttpResponse::Ok().json(serde_json::json!({
+                "id": user_id,
+                "name": name,
+                "email": email,
+                "role": role,
+            }))
+        }
         Err(_) => HttpResponse::Unauthorized().json(serde_json::json!({
             "error": "Invalid or expired session."
         })),
