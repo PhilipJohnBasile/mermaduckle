@@ -828,13 +828,13 @@ body.marketing-page a {
 }
 
 .marketing-shell {
-  width: min(1180px, calc(100% - 2rem));
+  width: min(1440px, calc(100% - 3rem));
   margin: 0 auto;
   padding: 1.25rem 0 4rem;
 }
 
 .marketing-shell-narrow {
-  width: min(980px, calc(100% - 2rem));
+  width: min(1200px, calc(100% - 3rem));
 }
 
 .marketing-topbar {

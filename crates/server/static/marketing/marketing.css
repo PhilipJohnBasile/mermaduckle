@@ -116,13 +116,13 @@ body.marketing-page main {
 .marketing-shell {
   position: relative;
   z-index: 1;
-  width: min(1220px, calc(100% - 2rem));
+  width: min(1440px, calc(100% - 3rem));
   margin: 0 auto;
   padding: 1.25rem 0 4rem;
 }
 
 .marketing-shell-narrow {
-  width: min(1040px, calc(100% - 2rem));
+  width: min(1200px, calc(100% - 3rem));
 }
 
 .marketing-topbar {
