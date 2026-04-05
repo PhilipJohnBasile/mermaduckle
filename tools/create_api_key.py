@@ -3,14 +3,11 @@ import urllib.request
 import urllib.error
 import sys
 
-URL = 'http://127.0.0.1:3001/api/settings/api-keys'
-# Seeded dev key present in the codebase
-API_TOKEN = 'sk_dev_qwe456**********************'
+URL = 'http://127.0.0.1:3001/dev/api/settings/api-keys'
 
 def main():
     payload = json.dumps({"name": "local-client"}).encode('utf-8')
     req = urllib.request.Request(URL, data=payload, method='POST')
-    req.add_header('Authorization', f'Bearer {API_TOKEN}')
     req.add_header('Content-Type', 'application/json')
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:

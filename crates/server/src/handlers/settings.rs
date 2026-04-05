@@ -36,6 +36,20 @@ pub async fn create_api_key(pool: web::Data<DbPool>, body: web::Json<CreateApiKe
     HttpResponse::Ok().json(serde_json::json!({"id": id, "key": raw_key}))
 }
 
+// Development-only: create API key without authentication when running locally.
+#[post("/dev/api/settings/api-keys")]
+pub async fn create_api_key_dev(pool: web::Data<DbPool>, body: web::Json<CreateApiKeyRequest>) -> HttpResponse {
+    let id = format!("key_{}", uuid::Uuid::new_v4().to_string().split('-').next().unwrap_or("x"));
+    let raw_key = format!("mk_live_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
+    let key_hash = crate::db::hash_key(&raw_key);
+    let conn = pool.get().unwrap();
+    conn.execute(
+        "INSERT INTO api_keys (id, name, key_hash, scopes, status) VALUES (?1,?2,?3,'read,write','active')",
+        params![id, body.name, key_hash],
+    ).ok();
+    HttpResponse::Ok().json(serde_json::json!({"id": id, "key": raw_key}))
+}
+
 #[delete("/api/settings/api-keys/{id}")]
 pub async fn delete_api_key(pool: web::Data<DbPool>, path: web::Path<String>) -> HttpResponse {
     let id = path.into_inner();

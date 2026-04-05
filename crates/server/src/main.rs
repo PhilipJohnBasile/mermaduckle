@@ -58,6 +58,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             // Public routes
             .service(handlers::health::health_check)
+            // Dev-only unprotected key creation (local dev convenience)
+            .service(handlers::settings::create_api_key_dev)
             // Protected API routes
             .service(
                 web::scope("/api")
