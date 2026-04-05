@@ -163,6 +163,16 @@ fn init_schema(conn: &rusqlite::Connection) {
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
+
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            token TEXT NOT NULL UNIQUE,
+            expires_at INTEGER NOT NULL,
+            created_at INTEGER NOT NULL,
+            used_at INTEGER,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
         ",
     )
     .ok();
@@ -173,6 +183,15 @@ fn init_schema(conn: &rusqlite::Connection) {
         "ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'",
         [],
     );
+    let _ = conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id ON password_reset_tokens(user_id)",
+        [],
+    );
+    let _ = conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expires_at ON password_reset_tokens(expires_at)",
+        [],
+    );
+    prune_password_reset_tokens(conn);
     ensure_bootstrap_admins(conn);
 
     // Simple migrations tracking table. Record a baseline migration representing
@@ -250,6 +269,14 @@ pub fn ensure_bootstrap_admins(conn: &rusqlite::Connection) {
             params![email],
         );
     }
+}
+
+pub fn prune_password_reset_tokens(conn: &rusqlite::Connection) {
+    let now_ts = chrono::Utc::now().timestamp();
+    let _ = conn.execute(
+        "DELETE FROM password_reset_tokens WHERE used_at IS NOT NULL OR expires_at <= ?1",
+        params![now_ts],
+    );
 }
 
 pub fn hash_key(key: &str) -> String {
@@ -713,5 +740,54 @@ mod tests {
                 "pbasile@basilecom.com".to_string()
             ]
         );
+    }
+
+    #[test]
+    fn test_prune_password_reset_tokens_removes_used_and_expired_rows() {
+        let conn = rusqlite::Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            "
+            CREATE TABLE password_reset_tokens (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                token TEXT NOT NULL UNIQUE,
+                expires_at INTEGER NOT NULL,
+                created_at INTEGER NOT NULL,
+                used_at INTEGER
+            );
+            ",
+        )
+        .unwrap();
+
+        let now_ts = chrono::Utc::now().timestamp();
+        conn.execute(
+            "INSERT INTO password_reset_tokens (id, user_id, token, expires_at, created_at, used_at) VALUES (?1, ?2, ?3, ?4, ?5, NULL)",
+            params!["keep", "usr_keep", "tok_keep", now_ts + 3600, now_ts],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO password_reset_tokens (id, user_id, token, expires_at, created_at, used_at) VALUES (?1, ?2, ?3, ?4, ?5, NULL)",
+            params!["expired", "usr_expired", "tok_expired", now_ts - 10, now_ts - 20],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO password_reset_tokens (id, user_id, token, expires_at, created_at, used_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+            params!["used", "usr_used", "tok_used", now_ts + 3600, now_ts, now_ts],
+        )
+        .unwrap();
+
+        prune_password_reset_tokens(&conn);
+
+        let count: i64 = conn
+            .query_row("SELECT COUNT(*) FROM password_reset_tokens", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(count, 1);
+
+        let remaining_id: String = conn
+            .query_row("SELECT id FROM password_reset_tokens", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(remaining_id, "keep");
     }
 }
