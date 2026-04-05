@@ -15,3 +15,11 @@ app = "mermaduckle"
   [[services.ports]]
     handlers = ["tls", "http"]
     port = 443
+
+  [[services.http_checks]]
+    grace_period = "10s"
+    interval = "15s"
+    method = "get"
+    path = "/health"
+    protocol = "http"
+    timeout = "5s"

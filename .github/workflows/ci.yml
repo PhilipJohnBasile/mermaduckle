@@ -7,6 +7,9 @@ on:
       - develop
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   rust:
     name: Rust Checks
@@ -14,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install stable toolchain
         run: |

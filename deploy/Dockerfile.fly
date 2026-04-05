@@ -4,7 +4,7 @@
 #########################################################################
 
 FROM rust:1 as builder
-WORKDIR /usr/src/mermaduckle
+WORKDIR /workspace
 COPY . .
 
 # Build release binary for the server crate
@@ -12,7 +12,10 @@ RUN cargo build --release -p mermaduckle-server
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /usr/src/mermaduckle/target/release/mermaduckle-server /usr/local/bin/mermaduckle-server
+WORKDIR /app
+COPY --from=builder /workspace/target/release/mermaduckle-server /usr/local/bin/mermaduckle-server
+COPY --from=builder /workspace/crates/server/static ./static
+RUN mkdir -p data
 EXPOSE 3001
 ENV PORT=3001
 CMD ["/usr/local/bin/mermaduckle-server"]
