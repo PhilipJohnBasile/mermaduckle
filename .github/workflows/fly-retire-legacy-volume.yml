@@ -1,0 +1,196 @@
+name: Fly Retire Legacy Volume
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: Fly app name
+        required: true
+        default: mermaduckle
+      confirm_phrase:
+        description: Type retire-legacy-volume to confirm destructive cleanup
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  retire-volume:
+    name: Retire legacy Fly volume
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Fly token
+        id: fly-token
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [ -n "$FLY_API_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::error::FLY_API_TOKEN is not configured for this repository."
+            exit 1
+          fi
+
+      - name: Checkout
+        if: steps.fly-token.outputs.available == 'true'
+        uses: actions/checkout@v6
+
+      - name: Install flyctl
+        if: steps.fly-token.outputs.available == 'true'
+        shell: bash
+        run: |
+          curl -fsSL https://fly.io/install.sh | sh
+          echo "$HOME/.fly/bin" >> "$GITHUB_PATH"
+
+      - name: Inspect live Fly state
+        if: steps.fly-token.outputs.available == 'true'
+        id: inspect
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          APP_NAME: ${{ inputs.app_name }}
+          CONFIRM_PHRASE: ${{ inputs.confirm_phrase }}
+        run: |
+          volumes="$(flyctl volumes list -a "$APP_NAME" --json)"
+          machines="$(flyctl machine list -a "$APP_NAME" --json)"
+          echo "$volumes"
+          echo "$machines"
+
+          VOLUMES_JSON="$volumes" MACHINES_JSON="$machines" CONFIRM_PHRASE="$CONFIRM_PHRASE" python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          confirm_phrase = os.environ["CONFIRM_PHRASE"].strip()
+          if confirm_phrase != "retire-legacy-volume":
+              print("Confirmation phrase mismatch. Type retire-legacy-volume to proceed.", file=sys.stderr)
+              sys.exit(1)
+
+          volumes = json.loads(os.environ["VOLUMES_JSON"])
+          machines = json.loads(os.environ["MACHINES_JSON"])
+
+          active_volumes = [v for v in volumes if v.get("state") not in {"destroyed", "scheduled_destroy"}]
+          if not active_volumes:
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+                  fh.write("needs_cleanup=false\n")
+              print("No active Fly volumes remain. Nothing to retire.")
+              sys.exit(0)
+
+          if len(active_volumes) != 1:
+              print(f"Expected exactly one active legacy volume, found {len(active_volumes)}.", file=sys.stderr)
+              sys.exit(1)
+
+          volume = active_volumes[0]
+          volume_id = volume.get("id")
+          machine_id = volume.get("attached_machine_id")
+          machine_ids = {m.get("id") for m in machines}
+
+          if not volume_id:
+              print("Volume JSON did not include an id.", file=sys.stderr)
+              sys.exit(1)
+
+          if machine_id and machine_id not in machine_ids:
+              print(f"Attached machine {machine_id} not found in live machine list.", file=sys.stderr)
+              sys.exit(1)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write("needs_cleanup=true\n")
+              fh.write(f"volume_id={volume_id}\n")
+              fh.write(f"machine_id={machine_id or ''}\n")
+          PY
+
+      - name: Build temporary Fly config without mounts
+        if: steps.inspect.outputs.needs_cleanup == 'true'
+        id: config
+        shell: bash
+        run: |
+          temp_config="$RUNNER_TEMP/fly.no-volume.toml"
+          TEMP_CONFIG="$temp_config" python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          source = Path("fly.toml").read_text(encoding="utf-8").splitlines()
+          cleaned = []
+          skip_mount = False
+
+          for line in source:
+              stripped = line.lstrip()
+              if stripped.startswith("[[mounts]]"):
+                  skip_mount = True
+                  continue
+              if skip_mount and stripped.startswith("["):
+                  skip_mount = False
+              if not skip_mount:
+                  cleaned.append(line)
+
+          Path(os.environ["TEMP_CONFIG"]).write_text("\n".join(cleaned) + "\n", encoding="utf-8")
+          PY
+
+          echo "path=$temp_config" >> "$GITHUB_OUTPUT"
+          cat "$temp_config"
+
+      - name: Destroy attached machine
+        if: steps.inspect.outputs.needs_cleanup == 'true' && steps.inspect.outputs.machine_id != ''
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          APP_NAME: ${{ inputs.app_name }}
+          MACHINE_ID: ${{ steps.inspect.outputs.machine_id }}
+        run: |
+          flyctl machine destroy --force -a "$APP_NAME" "$MACHINE_ID"
+
+      - name: Destroy legacy volume
+        if: steps.inspect.outputs.needs_cleanup == 'true'
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          APP_NAME: ${{ inputs.app_name }}
+          VOLUME_ID: ${{ steps.inspect.outputs.volume_id }}
+        run: |
+          flyctl volumes destroy --yes -a "$APP_NAME" "$VOLUME_ID"
+
+      - name: Redeploy without volume mounts
+        if: steps.inspect.outputs.needs_cleanup == 'true'
+        shell: bash
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl deploy --remote-only --yes --config "${{ steps.config.outputs.path }}"
+
+      - name: Verify public health endpoint
+        if: steps.inspect.outputs.needs_cleanup == 'true'
+        shell: bash
+        run: |
+          response="$(curl --fail --silent --show-error --retry 10 --retry-delay 3 --retry-connrefused https://mermaduckle.fly.dev/api/health)"
+          echo "$response"
+          HEALTH_RESPONSE="$response" python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          payload = json.loads(os.environ["HEALTH_RESPONSE"])
+          services = payload.get("services", {})
+          database_ok = services.get("database") == "ok"
+          ollama_required = services.get("ollama_required", False)
+          overall_ok = payload.get("status") == "ok"
+
+          if not database_ok:
+              print("Database health check failed", file=sys.stderr)
+              sys.exit(1)
+
+          if overall_ok or not ollama_required:
+              sys.exit(0)
+
+          print("Required service is degraded", file=sys.stderr)
+          sys.exit(1)
+          PY
+
+      - name: Post-cleanup note
+        if: steps.inspect.outputs.needs_cleanup == 'true'
+        shell: bash
+        run: |
+          echo "::warning::Legacy Fly volume retired. Remove the [[mounts]] stanza from fly.toml in a follow-up commit so normal deploys stop carrying transitional config."

@@ -108,6 +108,8 @@ The workflow file is `.github/workflows/fly-deploy.yml` and runs:
 flyctl deploy --remote-only --config fly.toml
 ```
 
+- If you are retiring the old SQLite-era Fly volume after moving fully to Postgres, run the manual GitHub Actions workflow `.github/workflows/fly-retire-legacy-volume.yml`. It destroys the attached legacy machine and volume, then redeploys with a temporary mount-free Fly config.
+
 - To add your custom domain `mermaduckle.com` to the app:
 
 ```bash
