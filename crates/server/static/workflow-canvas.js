@@ -91,6 +91,8 @@ window.initWorkflowCanvas = function(containerId, workflowData) {
 
   // Draw nodes
   function renderNodes() {
+    const existingTooltip = document.getElementById('node-tooltip');
+    if (existingTooltip) existingTooltip.remove();
     htmlLayer.innerHTML = '';
     nodes.forEach(node => {
       const el = document.createElement('div');
@@ -129,6 +131,9 @@ window.initWorkflowCanvas = function(containerId, workflowData) {
 
       // Inspector Tooltip
       el.onmouseenter = () => {
+        if (draggingNode || isPanning) return;
+        const old = document.getElementById('node-tooltip');
+        if (old) old.remove();
         const tooltip = document.createElement('div');
         tooltip.id = 'node-tooltip';
         tooltip.className = 'node-inspector';
