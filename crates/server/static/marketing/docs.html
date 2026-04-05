@@ -3,18 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle Docs | Local Start and Fly Deploy</title>
+    <title>Mermaduckle Docs | Production Runbook for Local Start and Fly Deploy</title>
     <meta
       name="description"
-      content="Run Mermaduckle locally, deploy it to Fly.io, and configure the environment variables used by the server."
+      content="Run Mermaduckle locally, deploy the same Rust service to Fly.io, and use the repo's production runbook for GitHub Actions and manual releases."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link href="/static/style.css" rel="stylesheet" />
+    <link href="/static/marketing/marketing.css" rel="stylesheet" />
   </head>
   <body class="marketing-page marketing-docs-page">
     <div class="marketing-shell marketing-shell-narrow">
@@ -23,7 +24,7 @@
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>Docs</span>
+            <span>Production runbook</span>
           </span>
         </a>
         <div class="marketing-nav-actions">
@@ -35,11 +36,11 @@
       <main class="marketing-docs-layout">
         <section class="marketing-docs-hero marketing-reveal" data-reveal>
           <div class="marketing-eyebrow">Practical setup</div>
-          <h1>Run it locally first. Push the same service to Fly when you are ready.</h1>
+          <h1>Run it locally first. Ship the same service to Fly when you are ready.</h1>
           <p>
-            These notes mirror the current repo state: the server is a Rust binary, the frontend is
-            served statically by the server, and Fly deployment uses the included Dockerfile and
-            `fly.toml`.
+            These notes mirror the repo as it exists today: a Rust server that serves the app, the
+            marketing site, and the docs together, with Fly deployment driven by the included
+            Dockerfile, <code>fly.toml</code>, GitHub Actions workflow, and local PowerShell helper.
           </p>
         </section>
 
@@ -76,7 +77,7 @@
               <p>The repo already includes the deployment artifacts this command expects.</p>
             </div>
           </div>
-          <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --dockerfile deploy/Dockerfile.fly</code></pre>
+          <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --remote-only --config fly.toml</code></pre>
           <p class="marketing-doc-note">
             Current config in this repo uses <code>app = "mermaduckle"</code> and exposes the Rust
             server on internal port <code>3001</code>.

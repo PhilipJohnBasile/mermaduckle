@@ -10,6 +10,9 @@
   initCopyButtons();
   initTrackedLinks(".marketing-nav a[href^='#']");
   initTrackedLinks(".marketing-doc-links a[href^='#']");
+  initConsoleTabs(prefersReducedMotion);
+  initScrollProgress();
+  initSpotlights(prefersReducedMotion);
 
   function initMenuToggle() {
     var toggle = document.querySelector("[data-marketing-menu-toggle]");
@@ -29,7 +32,7 @@
     });
 
     window.addEventListener("resize", function () {
-      if (window.innerWidth > 1024) {
+      if (window.innerWidth > 880) {
         closeMenu();
       }
     });
@@ -150,7 +153,7 @@
           setActive(visibleEntry.target.id);
         }
       },
-      { threshold: [0.2, 0.45, 0.7], rootMargin: "-35% 0px -45% 0px" }
+      { threshold: [0.18, 0.4, 0.72], rootMargin: "-30% 0px -45% 0px" }
     );
 
     Array.prototype.forEach.call(sections, function (section) {
@@ -162,5 +165,101 @@
     } else if (sections[0].id) {
       setActive(sections[0].id);
     }
+  }
+
+  function initConsoleTabs(reducedMotion) {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll("[data-console-tab]"));
+    var panels = Array.prototype.slice.call(document.querySelectorAll("[data-console-panel]"));
+    var rotationTimer = 0;
+
+    if (!tabs.length || !panels.length) {
+      return;
+    }
+
+    var setActive = function (name) {
+      Array.prototype.forEach.call(tabs, function (tab) {
+        var isActive = tab.getAttribute("data-console-tab") === name;
+        tab.classList.toggle("is-active", isActive);
+        tab.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      Array.prototype.forEach.call(panels, function (panel) {
+        var isActive = panel.getAttribute("data-console-panel") === name;
+        panel.classList.toggle("is-active", isActive);
+        panel.hidden = !isActive;
+      });
+    };
+
+    var scheduleRotation = function () {
+      if (reducedMotion) {
+        return;
+      }
+
+      window.clearInterval(rotationTimer);
+      rotationTimer = window.setInterval(function () {
+        if (document.hidden) {
+          return;
+        }
+
+        var currentIndex = tabs.findIndex(function (tab) {
+          return tab.classList.contains("is-active");
+        });
+        var nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % tabs.length;
+        setActive(tabs[nextIndex].getAttribute("data-console-tab"));
+      }, 4200);
+    };
+
+    Array.prototype.forEach.call(tabs, function (tab) {
+      tab.addEventListener("click", function () {
+        setActive(tab.getAttribute("data-console-tab"));
+        scheduleRotation();
+      });
+    });
+
+    setActive(tabs[0].getAttribute("data-console-tab"));
+
+    if (!reducedMotion) {
+      scheduleRotation();
+    }
+  }
+
+  function initScrollProgress() {
+    var bar = document.querySelector("[data-scroll-progress]");
+    if (!bar) {
+      return;
+    }
+
+    var update = function () {
+      var scrollTop = window.scrollY || window.pageYOffset;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+      bar.style.setProperty("--marketing-progress", String(progress * 100) + "%");
+    };
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+  }
+
+  function initSpotlights(reducedMotion) {
+    if (reducedMotion) {
+      return;
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-spotlight]"), function (panel) {
+      var updateSpotlight = function (event) {
+        var rect = panel.getBoundingClientRect();
+        var x = ((event.clientX - rect.left) / rect.width) * 100;
+        var y = ((event.clientY - rect.top) / rect.height) * 100;
+        panel.style.setProperty("--marketing-spotlight-x", x.toFixed(2) + "%");
+        panel.style.setProperty("--marketing-spotlight-y", y.toFixed(2) + "%");
+      };
+
+      panel.addEventListener("pointermove", updateSpotlight);
+      panel.addEventListener("pointerleave", function () {
+        panel.style.setProperty("--marketing-spotlight-x", "55%");
+        panel.style.setProperty("--marketing-spotlight-y", "10%");
+      });
+    });
   }
 })();

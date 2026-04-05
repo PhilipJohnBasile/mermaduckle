@@ -1,0 +1,1064 @@
+body.marketing-page,
+body.marketing-page * {
+  box-sizing: border-box;
+}
+
+body.marketing-page {
+  --marketing-bg: #07111d;
+  --marketing-bg-soft: #0b1727;
+  --marketing-panel: rgba(12, 24, 39, 0.82);
+  --marketing-panel-strong: rgba(9, 19, 31, 0.94);
+  --marketing-panel-light: rgba(17, 31, 49, 0.72);
+  --marketing-border: rgba(154, 192, 255, 0.14);
+  --marketing-border-strong: rgba(165, 204, 255, 0.22);
+  --marketing-text: #f4f7ff;
+  --marketing-muted: rgba(225, 234, 255, 0.74);
+  --marketing-faint: rgba(191, 205, 232, 0.56);
+  --marketing-cyan: #7fe7ff;
+  --marketing-cyan-deep: #1bb3d2;
+  --marketing-orange: #ff9d68;
+  --marketing-green: #88f0a1;
+  --marketing-shadow: 0 30px 80px rgba(2, 8, 15, 0.42);
+  color-scheme: dark;
+  overflow-x: hidden;
+  font-family: "Sora", var(--font-sans);
+  color: var(--marketing-text);
+  background:
+    radial-gradient(circle at 14% 10%, rgba(255, 157, 104, 0.18), transparent 25rem),
+    radial-gradient(circle at 84% 0%, rgba(127, 231, 255, 0.16), transparent 30rem),
+    radial-gradient(circle at 50% 40%, rgba(79, 113, 255, 0.12), transparent 36rem),
+    linear-gradient(180deg, #06111c 0%, #081421 42%, #091827 100%);
+}
+
+body.marketing-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 92%);
+  opacity: 0.22;
+}
+
+body.marketing-page a {
+  color: inherit;
+}
+
+body.marketing-page code {
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.92em;
+}
+
+body.marketing-page :not(pre) > code {
+  padding: 0.14rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body.marketing-page main {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.marketing-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.marketing-halo {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(40px);
+  opacity: 0.5;
+}
+
+.marketing-halo-one {
+  top: 5rem;
+  left: -6rem;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(255, 157, 104, 0.22);
+}
+
+.marketing-halo-two {
+  top: 12rem;
+  right: -5rem;
+  width: 22rem;
+  height: 22rem;
+  background: rgba(127, 231, 255, 0.16);
+}
+
+.marketing-halo-three {
+  top: 42rem;
+  left: 42%;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(123, 81, 255, 0.14);
+}
+
+.marketing-progress-bar {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 30;
+  width: var(--marketing-progress, 0%);
+  height: 3px;
+  background: linear-gradient(90deg, var(--marketing-orange), var(--marketing-cyan));
+  box-shadow: 0 0 24px rgba(127, 231, 255, 0.5);
+}
+
+.marketing-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1220px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.25rem 0 4rem;
+}
+
+.marketing-shell-narrow {
+  width: min(1040px, calc(100% - 2rem));
+}
+
+.marketing-topbar {
+  position: sticky;
+  top: 1rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1rem;
+  margin-bottom: 1.75rem;
+  border: 1px solid var(--marketing-border);
+  border-radius: 24px;
+  background: rgba(8, 17, 29, 0.72);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 50px rgba(2, 8, 15, 0.22);
+}
+
+.marketing-topbar-docs {
+  position: static;
+}
+
+.marketing-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+}
+
+.marketing-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 1rem;
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.18), transparent 55%),
+    linear-gradient(135deg, #102946, #0e749f 58%, #ff9d68 120%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: 0 18px 35px rgba(7, 18, 32, 0.34);
+}
+
+.marketing-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.marketing-brand-text strong {
+  font-size: 1rem;
+  letter-spacing: -0.04em;
+}
+
+.marketing-brand-text span {
+  color: var(--marketing-faint);
+  font-size: 0.76rem;
+}
+
+.marketing-nav,
+.marketing-nav-actions,
+.marketing-cta-row,
+.marketing-footer,
+.marketing-doc-heading {
+  display: flex;
+  align-items: center;
+}
+
+.marketing-nav {
+  gap: 1.1rem;
+}
+
+.marketing-nav a,
+.marketing-link-chip {
+  text-decoration: none;
+  color: var(--marketing-muted);
+}
+
+.marketing-nav a {
+  position: relative;
+  padding: 0.2rem 0;
+  font-size: 0.92rem;
+}
+
+.marketing-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -0.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--marketing-orange), var(--marketing-cyan));
+  transition: right 0.25s ease;
+}
+
+.marketing-nav a:hover,
+.marketing-nav a.is-active,
+.marketing-doc-link.is-active,
+.marketing-footer a:hover,
+.marketing-link-chip:hover {
+  color: var(--marketing-text);
+}
+
+.marketing-nav a:hover::after,
+.marketing-nav a.is-active::after {
+  right: 0;
+}
+
+.marketing-link-chip,
+.marketing-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.78rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.marketing-link-chip {
+  border-color: var(--marketing-border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.marketing-button:hover,
+.marketing-link-chip:hover {
+  transform: translateY(-1px);
+}
+
+.marketing-button-primary {
+  color: #04111b;
+  background: linear-gradient(135deg, #fff5ed 0%, #dffbff 55%, #9beeff 100%);
+  box-shadow: 0 18px 34px rgba(127, 231, 255, 0.18);
+}
+
+.marketing-button-secondary {
+  color: var(--marketing-text);
+  border-color: var(--marketing-border-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.marketing-nav-actions {
+  gap: 0.8rem;
+}
+
+.marketing-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+  width: 3rem;
+  height: 3rem;
+  padding: 0.75rem;
+  border: 1px solid var(--marketing-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.marketing-menu-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--marketing-text);
+}
+
+.marketing-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.marketing-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.marketing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.97fr);
+  gap: 1.35rem;
+  align-items: stretch;
+}
+
+.marketing-hero-copy,
+.marketing-console,
+.marketing-proofband,
+.marketing-compare-card,
+.marketing-ops-card,
+.marketing-capability-card,
+.marketing-code-card,
+.marketing-checklist-card,
+.marketing-doc-block,
+.marketing-final-cta {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--marketing-border);
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 32%),
+    var(--marketing-panel);
+  box-shadow: var(--marketing-shadow);
+}
+
+.marketing-hero-copy {
+  padding: clamp(2rem, 4vw, 3.4rem);
+}
+
+.marketing-eyebrow,
+.marketing-card-kicker,
+.marketing-console-label,
+.marketing-feature-index,
+.marketing-doc-step,
+.marketing-console-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.34rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--marketing-cyan);
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.73rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.marketing-card-kicker,
+.marketing-console-label,
+.marketing-console-stat-label {
+  padding-inline: 0;
+  background: transparent;
+}
+
+.marketing-hero-copy h1,
+.marketing-section h2,
+.marketing-docs-hero h1,
+.marketing-final-cta h2,
+.marketing-console h2 {
+  margin-top: 1rem;
+  font-size: clamp(3rem, 7vw, 5.95rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+  max-width: 11ch;
+}
+
+.marketing-section h2,
+.marketing-docs-hero h1,
+.marketing-final-cta h2 {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  max-width: 15ch;
+}
+
+.marketing-console h2 {
+  margin-top: 0.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.55rem);
+  max-width: 14ch;
+}
+
+.marketing-lede,
+.marketing-section-heading p,
+.marketing-docs-hero p,
+.marketing-doc-heading p,
+.marketing-card-note,
+.marketing-doc-note,
+.marketing-final-cta p {
+  margin-top: 1.15rem;
+  max-width: 42rem;
+  color: var(--marketing-muted);
+  font-size: 1.02rem;
+  line-height: 1.78;
+}
+
+.marketing-cta-row {
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-top: 1.9rem;
+}
+
+.marketing-proof-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.9rem;
+}
+
+.marketing-proof-row span,
+.marketing-proofband div,
+.marketing-console-chip-row span,
+.marketing-doc-link {
+  border: 1px solid var(--marketing-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.marketing-proof-row span {
+  padding: 0.7rem 0.95rem;
+  color: var(--marketing-muted);
+  font-size: 0.88rem;
+}
+
+.marketing-console {
+  padding: 1.2rem;
+}
+
+.marketing-console::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at var(--marketing-spotlight-x, 55%) var(--marketing-spotlight-y, 10%),
+      rgba(127, 231, 255, 0.18),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(255, 157, 104, 0.18),
+      transparent 24%
+    );
+}
+
+.marketing-console-topline,
+.marketing-console-footer,
+.marketing-console-flow,
+.marketing-governance-rail,
+.marketing-deploy-stack,
+.marketing-compare-grid,
+.marketing-ops-grid,
+.marketing-feature-matrix,
+.marketing-deploy-layout,
+.marketing-docs-layout {
+  display: grid;
+}
+
+.marketing-console-topline {
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.marketing-console-pips {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.marketing-console-pips span {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.marketing-console-tabs {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  gap: 0.45rem;
+  margin-top: 1.4rem;
+  padding: 0.25rem;
+  border: 1px solid var(--marketing-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.marketing-console-tabs button {
+  padding: 0.7rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--marketing-faint);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.marketing-console-tabs button.is-active,
+.marketing-console-tabs button[aria-selected="true"] {
+  color: #06111c;
+  background: linear-gradient(135deg, #fff0e7, #bff4ff);
+}
+
+.marketing-console-panel {
+  position: relative;
+  z-index: 1;
+  margin-top: 1rem;
+  padding: 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  background: rgba(4, 11, 19, 0.55);
+}
+
+.marketing-console-panel[hidden] {
+  display: none;
+}
+
+.marketing-console-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.marketing-console-chip-row span {
+  padding: 0.5rem 0.8rem;
+  color: var(--marketing-muted);
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.marketing-console-flow {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.marketing-console-node,
+.marketing-console-log,
+.marketing-console-audit-list div,
+.marketing-deploy-checks div,
+.marketing-ops-card,
+.marketing-capability-card,
+.marketing-checklist-card ul li,
+.marketing-doc-table div {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.marketing-console-node {
+  padding: 1rem;
+}
+
+.marketing-console-node strong,
+.marketing-console-log strong,
+.marketing-compare-card h3,
+.marketing-ops-card h3,
+.marketing-capability-card h3,
+.marketing-checklist-card h3,
+.marketing-doc-heading h2 {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 1.2rem;
+  letter-spacing: -0.04em;
+}
+
+.marketing-console-node span,
+.marketing-console-log p,
+.marketing-console-audit-list p,
+.marketing-deploy-checks p,
+.marketing-compare-card p,
+.marketing-compare-card li,
+.marketing-ops-card p,
+.marketing-capability-card p,
+.marketing-checklist-card li,
+.marketing-doc-table span {
+  color: var(--marketing-muted);
+}
+
+.marketing-console-footer {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.marketing-console-footer strong {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
+}
+
+.marketing-console-footer p {
+  color: var(--marketing-muted);
+  line-height: 1.7;
+}
+
+.marketing-governance-rail,
+.marketing-deploy-stack {
+  gap: 0.9rem;
+}
+
+.marketing-console-log,
+.marketing-console-audit-list div,
+.marketing-deploy-snippet,
+.marketing-deploy-checks div {
+  padding: 1rem 1.1rem;
+}
+
+.marketing-console-log-state {
+  display: inline-flex;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.71rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.marketing-console-log-state.is-warning {
+  background: rgba(255, 157, 104, 0.16);
+  color: #ffbf97;
+}
+
+.marketing-console-audit-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.marketing-console-audit-list span {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: var(--marketing-cyan);
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.marketing-deploy-snippet pre,
+.marketing-code-card pre,
+.marketing-doc-block pre {
+  overflow-x: auto;
+  margin-top: 0.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 22px;
+  background: rgba(0, 0, 0, 0.28);
+  color: #eef7ff;
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.marketing-proofband {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.marketing-proofband div {
+  padding: 0.75rem 0.9rem;
+  color: var(--marketing-muted);
+  font-size: 0.85rem;
+}
+
+.marketing-section {
+  margin-top: 3.75rem;
+}
+
+.marketing-section-heading {
+  max-width: 50rem;
+  margin-bottom: 1.6rem;
+}
+
+.marketing-compare-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.marketing-compare-card,
+.marketing-ops-card,
+.marketing-capability-card,
+.marketing-code-card,
+.marketing-checklist-card,
+.marketing-doc-block,
+.marketing-final-cta {
+  padding: 1.45rem;
+}
+
+.marketing-compare-card ul,
+.marketing-checklist-card ul,
+.marketing-doc-block ul {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-left: 1.2rem;
+}
+
+.marketing-compare-card-featured {
+  border-color: rgba(127, 231, 255, 0.32);
+  background:
+    radial-gradient(circle at top right, rgba(127, 231, 255, 0.12), transparent 35%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 32%),
+    var(--marketing-panel-strong);
+}
+
+.marketing-section-dark {
+  padding: 2rem;
+  border: 1px solid var(--marketing-border);
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(127, 231, 255, 0.08), transparent 26rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 30%),
+    var(--marketing-panel-strong);
+  box-shadow: var(--marketing-shadow);
+}
+
+.marketing-ops-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.marketing-ops-card,
+.marketing-capability-card {
+  min-height: 15rem;
+}
+
+.marketing-feature-index,
+.marketing-doc-step {
+  padding-inline: 0.6rem;
+}
+
+.marketing-pathway {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.marketing-path-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 1.05rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.marketing-path-step span {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(127, 231, 255, 0.12);
+  color: var(--marketing-cyan);
+  font-family: "IBM Plex Mono", var(--font-mono);
+}
+
+.marketing-path-step strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.marketing-path-step p {
+  color: var(--marketing-muted);
+}
+
+.marketing-feature-matrix {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.marketing-deploy-layout {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.marketing-deploy-layout > .marketing-section-heading {
+  grid-column: 1 / -1;
+  margin-bottom: 0.2rem;
+}
+
+.marketing-code-card {
+  background:
+    radial-gradient(circle at top right, rgba(127, 231, 255, 0.1), transparent 16rem),
+    var(--marketing-panel-strong);
+}
+
+.marketing-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  color: var(--marketing-faint);
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.marketing-code-header a {
+  color: var(--marketing-cyan);
+  text-decoration: none;
+}
+
+.marketing-card-note {
+  margin-top: 0.9rem;
+}
+
+.marketing-checklist-card h3 {
+  margin-top: 0.35rem;
+}
+
+.marketing-checklist-card ul li {
+  padding: 0.9rem 1rem;
+  list-style: none;
+}
+
+.marketing-copy-ready {
+  position: relative;
+  padding-top: 3rem;
+}
+
+.marketing-copy-button {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  min-width: 4.3rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--marketing-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--marketing-text);
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.73rem;
+  cursor: pointer;
+}
+
+.marketing-copy-button:hover {
+  border-color: var(--marketing-border-strong);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.marketing-final-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding: 1.65rem;
+  background:
+    radial-gradient(circle at top right, rgba(255, 157, 104, 0.18), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(127, 231, 255, 0.12), transparent 30%),
+    var(--marketing-panel-strong);
+}
+
+.marketing-final-cta .marketing-cta-row {
+  margin-top: 0;
+}
+
+.marketing-footer {
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--marketing-faint);
+}
+
+.marketing-footer div {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.marketing-docs-layout {
+  gap: 1rem;
+}
+
+.marketing-docs-hero {
+  padding: 1.2rem 0 0.7rem;
+}
+
+.marketing-doc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.marketing-doc-link {
+  padding: 0.65rem 0.9rem;
+  color: var(--marketing-muted);
+}
+
+.marketing-doc-link.is-active {
+  border-color: rgba(127, 231, 255, 0.24);
+  background: rgba(127, 231, 255, 0.12);
+}
+
+.marketing-doc-heading {
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.marketing-doc-step {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.4rem;
+}
+
+.marketing-doc-table {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.marketing-doc-table div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1rem;
+}
+
+@media (max-width: 1080px) {
+  .marketing-hero,
+  .marketing-compare-grid,
+  .marketing-ops-grid,
+  .marketing-feature-matrix,
+  .marketing-pathway,
+  .marketing-deploy-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-final-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 880px) {
+  .marketing-topbar {
+    flex-wrap: wrap;
+  }
+
+  .marketing-menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .marketing-nav {
+    display: none;
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    padding-top: 0.2rem;
+  }
+
+  body.marketing-nav-open .marketing-nav {
+    display: flex;
+  }
+
+  .marketing-nav-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .marketing-console-footer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .marketing-shell,
+  .marketing-shell-narrow {
+    width: min(100% - 1rem, 100%);
+  }
+
+  .marketing-hero-copy,
+  .marketing-console,
+  .marketing-proofband,
+  .marketing-compare-card,
+  .marketing-section-dark,
+  .marketing-ops-card,
+  .marketing-capability-card,
+  .marketing-code-card,
+  .marketing-checklist-card,
+  .marketing-doc-block,
+  .marketing-final-cta {
+    border-radius: 26px;
+  }
+
+  .marketing-hero-copy h1,
+  .marketing-section h2,
+  .marketing-docs-hero h1,
+  .marketing-final-cta h2 {
+    max-width: none;
+  }
+
+  .marketing-console-tabs {
+    width: 100%;
+    flex-wrap: wrap;
+    border-radius: 22px;
+  }
+
+  .marketing-console-tabs button {
+    flex: 1 1 30%;
+  }
+
+  .marketing-console-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-proofband {
+    border-radius: 24px;
+  }
+
+  .marketing-doc-table div,
+  .marketing-code-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-reveal,
+  .marketing-reveal.is-visible,
+  .marketing-button,
+  .marketing-link-chip,
+  .marketing-nav a::after {
+    transition: none;
+  }
+
+  .marketing-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
