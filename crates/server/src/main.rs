@@ -70,6 +70,11 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             // Public routes
             .service(handlers::health::health_check)
+            // Auth routes (public, no API key required)
+            .service(handlers::auth::register)
+            .service(handlers::auth::login)
+            .service(handlers::auth::me)
+            .service(handlers::auth::logout)
             // Dev-only unprotected key creation (local dev convenience)
             .service(handlers::settings::create_api_key_dev)
             // Protected API routes

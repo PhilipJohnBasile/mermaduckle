@@ -22,6 +22,8 @@ const h = (tag, attrs = {}, ...children) => {
 
 let currentPage = 'dashboard';
 let apiKey = localStorage.getItem('apiKey') || '';
+let session = localStorage.getItem('session') || '';
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
 function apiFetch(url, options = {}) {
   if (!apiKey) {
@@ -44,6 +46,144 @@ function apiFetch(url, options = {}) {
     }
     return res;
   });
+}
+
+/* ── Auth Screen ── */
+function showAuthScreen() {
+  const app = $('#app');
+  app.style.display = 'none';
+  let existing = $('#auth-screen');
+  if (existing) existing.remove();
+
+  let isLogin = true;
+
+  function render() {
+    let screen = $('#auth-screen');
+    if (screen) screen.remove();
+
+    const container = h('div', { id: 'auth-screen', class: 'auth-screen' },
+      h('div', { class: 'auth-card' },
+        h('div', { class: 'auth-logo' },
+          h('div', { class: 'sidebar-logo-icon' },
+            h('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+              (() => { const p = document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('d','M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'); return p; })()
+            )
+          )
+        ),
+        h('h2', { class: 'auth-title' }, isLogin ? 'Sign in to Mermaduckle' : 'Create your account'),
+        h('p', { class: 'auth-subtitle' }, isLogin ? 'Enter your credentials to access the platform.' : 'Start orchestrating AI agent workflows for free.'),
+        h('form', { class: 'auth-form', onSubmit: handleAuthSubmit },
+          ...(isLogin ? [] : [
+            h('label', { class: 'auth-label' }, 'Full name'),
+            h('input', { class: 'auth-input', type: 'text', name: 'name', placeholder: 'Jane Smith', required: 'true', autocomplete: 'name' }),
+          ]),
+          h('label', { class: 'auth-label' }, 'Email'),
+          h('input', { class: 'auth-input', type: 'email', name: 'email', placeholder: 'you@company.com', required: 'true', autocomplete: 'email' }),
+          h('label', { class: 'auth-label' }, 'Password'),
+          h('input', { class: 'auth-input', type: 'password', name: 'password', placeholder: isLogin ? 'Enter your password' : 'Min 6 characters', required: 'true', minlength: '6', autocomplete: isLogin ? 'current-password' : 'new-password' }),
+          h('div', { id: 'auth-error', class: 'auth-error', style: { display: 'none' } }),
+          h('button', { class: 'auth-btn', type: 'submit' }, isLogin ? 'Sign in' : 'Create account'),
+        ),
+        h('p', { class: 'auth-toggle' },
+          isLogin ? "Don't have an account? " : 'Already have an account? ',
+          h('a', { href: '#', onClick: (e) => { e.preventDefault(); isLogin = !isLogin; render(); } }, isLogin ? 'Sign up' : 'Sign in')
+        )
+      )
+    );
+    document.body.appendChild(container);
+  }
+
+  async function handleAuthSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const errEl = form.querySelector('#auth-error');
+    const btn = form.querySelector('.auth-btn');
+    errEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = isLogin ? 'Signing in…' : 'Creating account…';
+
+    const body = {
+      email: form.email.value,
+      password: form.password.value,
+    };
+    if (!isLogin) body.name = form.name.value;
+
+    try {
+      const res = await fetch(isLogin ? '/auth/login' : '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        errEl.textContent = data.error || 'Something went wrong.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = isLogin ? 'Sign in' : 'Create account';
+        return;
+      }
+      // Store auth state
+      session = data.session;
+      apiKey = data.apiKey;
+      currentUser = data.user;
+      localStorage.setItem('session', session);
+      localStorage.setItem('apiKey', apiKey);
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      // Remove auth screen, show app
+      $('#auth-screen').remove();
+      app.style.display = '';
+      updateUserDisplay();
+      navigate('dashboard');
+    } catch (err) {
+      errEl.textContent = 'Network error. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = isLogin ? 'Sign in' : 'Create account';
+    }
+  }
+
+  render();
+}
+
+function signOut() {
+  // Fire and forget logout
+  if (session) {
+    fetch('/auth/logout', { method: 'POST', headers: { 'Authorization': `Bearer ${session}` } }).catch(() => {});
+  }
+  session = '';
+  apiKey = '';
+  currentUser = null;
+  localStorage.removeItem('session');
+  localStorage.removeItem('apiKey');
+  localStorage.removeItem('currentUser');
+  showAuthScreen();
+}
+
+function updateUserDisplay() {
+  const el = $('#user-display');
+  if (!el) return;
+  if (currentUser) {
+    el.innerHTML = '';
+    el.appendChild(
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%' } },
+        h('div', { class: 'user-avatar' }, currentUser.name ? currentUser.name[0].toUpperCase() : '?'),
+        h('div', { style: { flex: '1', minWidth: '0' } },
+          h('div', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--slate-200)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, currentUser.name || 'User'),
+          h('div', { style: { fontSize: '10px', color: 'var(--slate-500)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, currentUser.email || ''),
+        ),
+        h('button', { class: 'sign-out-btn', title: 'Sign out', onClick: signOut },
+          h('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '14', height: '14', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+            (() => { const g = document.createDocumentFragment();
+              const p1 = document.createElementNS('http://www.w3.org/2000/svg','path'); p1.setAttribute('d','M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4');
+              const p2 = document.createElementNS('http://www.w3.org/2000/svg','polyline'); p2.setAttribute('points','16 17 21 12 16 7');
+              const p3 = document.createElementNS('http://www.w3.org/2000/svg','line'); p3.setAttribute('x1','21'); p3.setAttribute('y1','12'); p3.setAttribute('x2','9'); p3.setAttribute('y2','12');
+              g.appendChild(p1); g.appendChild(p2); g.appendChild(p3); return g;
+            })()
+          )
+        )
+      )
+    );
+  }
 }
 
 function navigate(page) {
@@ -1615,36 +1755,27 @@ function exportAuditCsv(events) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Development convenience: if running on localhost and no API key is set,
-  // auto-create a one-time dev API key using the seeded dev credential and
-  // store it in localStorage so the SPA becomes functional without manual steps.
-  try {
-    if (!localStorage.getItem('apiKey') && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-      if (!sessionStorage.getItem('dev_auto_key_done')) {
-        try {
-          const res = await fetch('/api/settings/api-keys', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer sk_dev_qwe456**********************'
-            },
-            body: JSON.stringify({ name: 'auto-generated-dev' })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem('apiKey', data.key);
-            apiKey = data.key;
-            sessionStorage.setItem('dev_auto_key_done', '1');
-            showCreatedKeyModal(data.key);
-            showToast('Auto-created a development API key', 'success');
-          }
-        } catch (e) {
-          // ignore — server may not be ready yet
-        }
-      }
-    }
-  } catch (e) { console.error('dev key auto-create failed', e); }
+  // If user has no session, show sign-in screen
+  if (!session || !apiKey) {
+    showAuthScreen();
+    return;
+  }
 
+  // Validate existing session
+  try {
+    const res = await fetch('/auth/me', { headers: { 'Authorization': `Bearer ${session}` } });
+    if (!res.ok) {
+      signOut();
+      return;
+    }
+    const user = await res.json();
+    currentUser = user;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  } catch (e) {
+    // If offline or server unreachable, allow cached session to proceed
+  }
+
+  updateUserDisplay();
   navigate('dashboard');
 
   // Live Polling for active views

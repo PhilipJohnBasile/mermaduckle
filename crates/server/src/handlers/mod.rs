@@ -2,6 +2,7 @@ pub mod agents;
 pub mod approvals;
 pub mod architect;
 pub mod audit;
+pub mod auth;
 pub mod dashboard;
 pub mod health;
 pub mod recovery;
