@@ -1521,6 +1521,24 @@ body.marketing-page a {
 .sign-out-btn:hover {
   color: var(--slate-300, #cbd5e1);
 }
+/* Role badges */
+.role-badge-admin, .role-badge-user {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.role-badge-admin {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-400, #34d399);
+}
+.role-badge-user {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--slate-400, #94a3b8);
+}
   background: rgba(15, 127, 139, 0.12);
 }
 

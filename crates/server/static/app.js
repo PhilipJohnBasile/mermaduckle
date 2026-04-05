@@ -133,6 +133,11 @@ function showAuthScreen() {
       $('#auth-screen').remove();
       app.style.display = '';
       updateUserDisplay();
+      // Hide Settings nav for non-admin users
+      const settingsNav = document.querySelector('.nav-item[data-page="settings"]');
+      if (settingsNav) {
+        settingsNav.style.display = (currentUser && currentUser.role === 'admin') ? '' : 'none';
+      }
       navigate('dashboard');
     } catch (err) {
       errEl.textContent = 'Network error. Please try again.';
@@ -168,7 +173,10 @@ function updateUserDisplay() {
       h('div', { style: { display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%' } },
         h('div', { class: 'user-avatar' }, currentUser.name ? currentUser.name[0].toUpperCase() : '?'),
         h('div', { style: { flex: '1', minWidth: '0' } },
-          h('div', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--slate-200)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, currentUser.name || 'User'),
+          h('div', { style: { display: 'flex', alignItems: 'center', gap: '0.375rem' } },
+            h('span', { style: { fontSize: '12px', fontWeight: '500', color: 'var(--slate-200)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, currentUser.name || 'User'),
+            h('span', { class: currentUser.role === 'admin' ? 'role-badge-admin' : 'role-badge-user' }, currentUser.role || 'user'),
+          ),
           h('div', { style: { fontSize: '10px', color: 'var(--slate-500)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' } }, currentUser.email || ''),
         ),
         h('button', { class: 'sign-out-btn', title: 'Sign out', onClick: signOut },
@@ -187,6 +195,11 @@ function updateUserDisplay() {
 }
 
 function navigate(page) {
+  // Block non-admin users from accessing Settings
+  if (page === 'settings' && (!currentUser || currentUser.role !== 'admin')) {
+    showToast('Settings is restricted to administrators.', 'error');
+    return;
+  }
   currentPage = page;
   $$('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.page === page));
   renderPage(page);
@@ -1776,6 +1789,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   updateUserDisplay();
+  // Hide Settings nav for non-admin users
+  const settingsNav = document.querySelector('.nav-item[data-page="settings"]');
+  if (settingsNav) {
+    settingsNav.style.display = (currentUser && currentUser.role === 'admin') ? '' : 'none';
+  }
   navigate('dashboard');
 
   // Live Polling for active views

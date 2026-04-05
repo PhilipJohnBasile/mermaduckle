@@ -65,10 +65,16 @@ pub async fn register(
     let user_id = format!("usr_{}", uuid::Uuid::new_v4().to_string().replace('-', "")[..12].to_string());
     let session_id = format!("ses_{}", uuid::Uuid::new_v4().to_string().replace('-', ""));
 
+    // First registered user becomes admin, all others are regular users
+    let user_count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM users", [], |row| row.get(0))
+        .unwrap_or(0);
+    let role = if user_count == 0 { "admin" } else { "user" };
+
     // Insert user
     if let Err(_) = conn.execute(
-        "INSERT INTO users (id, name, email, password_hash) VALUES (?1, ?2, ?3, ?4)",
-        params![user_id, name, email, password_hash],
+        "INSERT INTO users (id, name, email, password_hash, role) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![user_id, name, email, password_hash, role],
     ) {
         return HttpResponse::InternalServerError().json(serde_json::json!({
             "error": "Failed to create account."
@@ -110,6 +116,7 @@ pub async fn register(
             "id": user_id,
             "name": name,
             "email": email,
+            "role": role,
         }
     }))
 }
@@ -125,7 +132,7 @@ pub async fn login(
     let conn = pool.get().unwrap();
 
     let user = conn.query_row(
-        "SELECT id, name, email, password_hash FROM users WHERE email = ?1",
+        "SELECT id, name, email, password_hash, role FROM users WHERE email = ?1",
         params![email],
         |row| {
             Ok((
@@ -133,11 +140,12 @@ pub async fn login(
                 row.get::<_, String>(1)?,
                 row.get::<_, String>(2)?,
                 row.get::<_, String>(3)?,
+                row.get::<_, String>(4)?,
             ))
         },
     );
 
-    let (user_id, name, user_email, stored_hash) = match user {
+    let (user_id, name, user_email, stored_hash, role) = match user {
         Ok(u) => u,
         Err(_) => {
             return HttpResponse::Unauthorized().json(serde_json::json!({
@@ -218,6 +226,7 @@ pub async fn login(
             "id": user_id,
             "name": name,
             "email": user_email,
+            "role": role,
         }
     }))
 }
@@ -240,13 +249,14 @@ pub async fn me(req: HttpRequest, pool: web::Data<DbPool>) -> HttpResponse {
 
     let conn = pool.get().unwrap();
     let user = conn.query_row(
-        "SELECT u.id, u.name, u.email FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = ?1",
+        "SELECT u.id, u.name, u.email, u.role FROM sessions s JOIN users u ON s.user_id = u.id WHERE s.id = ?1",
         params![session_id],
         |row| {
             Ok(serde_json::json!({
                 "id": row.get::<_, String>(0)?,
                 "name": row.get::<_, String>(1)?,
                 "email": row.get::<_, String>(2)?,
+                "role": row.get::<_, String>(3)?,
             }))
         },
     );
