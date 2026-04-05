@@ -99,6 +99,38 @@ function showToast(message, type = 'success') {
   setTimeout(() => t.remove(), 3000);
 }
 
+async function installTemplate(t) {
+  if (!apiKey) {
+    showToast('API key required to install templates', 'error');
+    navigate('settings');
+    return;
+  }
+  try {
+    const res = await apiFetch('/api/workflows', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: t.title,
+        description: t.desc,
+        nodes: [
+          { id: 'trigger-1', type: 'agentNode', position: { x: 100, y: 200 }, data: { label: 'Trigger', type: 'trigger', description: 'Workflow entry point', icon: 'Zap', config: {} } },
+          { id: 'agent-1', type: 'agentNode', position: { x: 350, y: 200 }, data: { label: 'AI Agent', type: 'agent', description: t.desc, icon: 'Bot', config: { model: 'llama3' } } },
+          { id: 'action-1', type: 'agentNode', position: { x: 600, y: 200 }, data: { label: 'Output Action', type: 'action', description: 'Deliver result', icon: 'FileText', config: {} } }
+        ],
+        edges: [
+          { id: 'e1', source: 'trigger-1', target: 'agent-1', animated: true },
+          { id: 'e2', source: 'agent-1', target: 'action-1', animated: true }
+        ]
+      })
+    });
+    const data = await res.json();
+    showToast(`"${t.title}" installed!`, 'success');
+    setTimeout(() => navigate('builder:' + data.id), 600);
+  } catch (e) {
+    showToast('Failed to install template', 'error');
+  }
+}
+
 async function renderMarketplace(el) {
   el.innerHTML = '';
   el.className = 'page-content animate-fade-in';
@@ -106,13 +138,8 @@ async function renderMarketplace(el) {
   el.appendChild(h('div', { class: 'page-header' },
     h('div', {},
       h('h2', {}, 'Workflow Marketplace'),
-      h('p', {}, 'Deploy pre-built enterprise agent workflows with a single click')
+      h('p', {}, 'Install pre-built enterprise agent workflows — each creates a new editable workflow')
     )
-  ));
-
-  const categories = ['All Templates', 'Security & Content', 'Data & Analytics', 'Social & Marketing'];
-  el.appendChild(h('div', { class: 'flex gap-4 mb-8' },
-    ...categories.map((cat, i) => h('button', { class: `filter-chip ${i===0?'active':''}` }, cat))
   ));
 
   const templates = [
@@ -121,17 +148,56 @@ async function renderMarketplace(el) {
     { title: 'Customer Sentiment Triage', desc: 'Categorize and prioritize inbound support tickets based on urgency.', icon: '📧', cat: 'Data & Analytics' },
     { title: 'Autonomous Twitter/X Manager', desc: 'Generate and schedule daily industry insights to build brand authority.', icon: '🐦', cat: 'Social & Marketing' },
     { title: 'Daily SEO Performance Audit', desc: 'Connect to Google Search Console and generate a daily PDF performance report.', icon: '📈', cat: 'Data & Analytics' },
-    { title: 'LLM Hallucination Guardrail', desc: 'Secondary validation layer to keep your production agent from drifting.', icon: '🛡️', cat: 'Security & Content' }
+    { title: 'LLM Hallucination Guardrail', desc: 'Secondary validation layer to keep your production agent from drifting.', icon: '🛡️', cat: 'Security & Content' },
+    { title: 'Nightly Data Quality Report', desc: 'Scans your primary database for anomalies and emails a summary report.', icon: '🗃️', cat: 'Data & Analytics' },
+    { title: 'Slack Approval Notifications', desc: 'Posts pending workflow approvals to a Slack channel for quick review.', icon: '💬', cat: 'Security & Content' },
+    { title: 'Competitor Pricing Monitor', desc: 'Daily scrape of competitor pricing pages with Salesforce update sync.', icon: '📊', cat: 'Data & Analytics' },
+    { title: 'Cold Email Personalizer', desc: 'Enriches lead profiles and drafts personalized outreach at scale.', icon: '✉️', cat: 'Social & Marketing' },
+    { title: 'SEC Filing Summarizer', desc: 'Monitors filings for watched tickers and summarizes quarterly impact.', icon: '📑', cat: 'Data & Analytics' },
+    { title: 'On-Call Alert Triage', desc: 'Routes PagerDuty alerts through an AI triage layer before escalation.', icon: '🚨', cat: 'Security & Content' }
   ];
 
-  const grid = h('div', { class: 'grid grid-3' },
-    ...templates.map(t => h('div', { class: 'glass-card marketplace-card animate-slide-up', style: { padding: '1.5rem', display: 'flex', flexDirection: 'column' } },
-      h('div', { style: { fontSize: '32px', marginBottom: '1rem' } }, t.icon),
-      h('h3', { style: { color: 'white', marginBottom: '0.5rem', fontSize: '1rem' } }, t.title),
-      h('p', { style: { fontSize: '12px', color: 'var(--slate-500)', marginBottom: '1.5rem', flex: '1' } }, t.desc),
-      h('button', { class: 'btn-primary w-full', onClick: () => showToast(`Template "${t.title}" installed!`) }, 'Install Template')
-    ))
+  const categories = ['All Templates', 'Security & Content', 'Data & Analytics', 'Social & Marketing'];
+  let activeCategory = 'All Templates';
+
+  const grid = h('div', { class: 'grid grid-3' });
+
+  function renderTemplateCards() {
+    grid.innerHTML = '';
+    const filtered = activeCategory === 'All Templates'
+      ? templates
+      : templates.filter(t => t.cat === activeCategory);
+    filtered.forEach(t => {
+      grid.appendChild(h('div', { class: 'glass-card marketplace-card animate-slide-up', style: { padding: '1.5rem', display: 'flex', flexDirection: 'column' } },
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' } },
+          h('div', { style: { fontSize: '28px' } }, t.icon),
+          h('span', { style: { fontSize: '10px', color: 'var(--slate-600)', background: 'rgba(255,255,255,0.04)', padding: '2px 8px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.06)' } }, t.cat)
+        ),
+        h('h3', { style: { color: 'white', marginBottom: '0.5rem', fontSize: '1rem' } }, t.title),
+        h('p', { style: { fontSize: '12px', color: 'var(--slate-500)', marginBottom: '1.5rem', flex: '1', lineHeight: '1.6' } }, t.desc),
+        h('button', { class: 'btn-primary w-full', onClick: () => installTemplate(t) }, 'Install Template')
+      ));
+    });
+  }
+
+  const chipEls = [];
+  const chipRow = h('div', { class: 'flex gap-4 mb-8' },
+    ...categories.map((cat, i) => {
+      const chip = h('button', {
+        class: `filter-chip ${i === 0 ? 'active' : ''}`,
+        onClick: (e) => {
+          activeCategory = cat;
+          chipEls.forEach(c => c.classList.remove('active'));
+          e.target.classList.add('active');
+          renderTemplateCards();
+        }
+      }, cat);
+      chipEls.push(chip);
+      return chip;
+    })
   );
+  el.appendChild(chipRow);
+  renderTemplateCards();
   el.appendChild(grid);
 }
 
@@ -144,22 +210,43 @@ async function renderDashboard(el) {
     el.className = 'page-content animate-fade-in';
     el.appendChild(h('div', { class: 'page-header' },
       h('div', {},
-        h('h2', {}, 'Dashboard'),
-        h('p', {}, 'Live metrics require an API key. Configure it to view realtime data.')
+        h('h2', {}, 'Welcome to Mermaduckle'),
+        h('p', {}, 'Governed AI workflow operations — self-hosted control plane')
       ),
     ));
 
-    el.appendChild(h('div', { class: 'glass-card', style: { padding: '1.5rem', maxWidth: '800px' } },
-      h('h3', { style: { color: 'white' } }, 'You are viewing a limited dashboard'),
-      h('p', { style: { color: 'var(--slate-500)', marginBottom: '1rem' } }, 'To unlock live metrics and controls, paste your API key in Settings → Client Config.'),
-      h('div', { style: { display: 'flex', gap: '0.75rem' } },
-        h('button', { class: 'btn-primary', onClick: () => navigate('settings') }, 'Open Settings'),
-        h('button', { class: 'btn-glass', onClick: () => showToast('Public demo: no live metrics available', 'info') }, 'Demo')
+    el.appendChild(h('div', { class: 'glass-card', style: { padding: '2rem', maxWidth: '640px', marginBottom: '2rem' } },
+      h('h3', { style: { color: 'white', marginBottom: '0.75rem' } }, 'Configure an API key to get started'),
+      h('p', { style: { color: 'var(--slate-400)', marginBottom: '1.5rem', lineHeight: '1.6' } },
+        'This console requires an API key to access live data. You can generate one right now — it will be stored in your browser and used for all API calls.'
+      ),
+      h('div', { style: { display: 'flex', gap: '0.75rem', flexWrap: 'wrap' } },
+        h('button', { class: 'btn-primary', onClick: async () => {
+          try {
+            const res = await fetch('/dev/api/settings/api-keys', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: 'browser-session' })
+            });
+            if (!res.ok) throw new Error('Server responded ' + res.status);
+            const data = await res.json();
+            apiKey = data.key;
+            localStorage.setItem('apiKey', apiKey);
+            showCreatedKeyModal(data.key);
+            renderPage('dashboard');
+          } catch (e) {
+            showToast('Could not auto-generate key: ' + e.message, 'error');
+          }
+        } }, 'Generate API Key'),
+        h('button', { class: 'btn-glass', onClick: () => navigate('settings') }, 'Paste Existing Key')
+      ),
+      h('p', { style: { fontSize: '11px', color: 'var(--slate-600)', marginTop: '1rem' } },
+        'The generated key is stored only in your browser\'s localStorage. Copy it before clearing browser data.'
       )
     ));
 
-    // Show a few placeholder metric cards so the UI looks reasonable
-    const grid = h('div', { class: 'grid grid-4 mb-8', style: { opacity: '0.7' } });
+    // Show placeholder metric cards
+    const grid = h('div', { class: 'grid grid-4 mb-8', style: { opacity: '0.4' } });
     grid.appendChild(makeStatCard('TOTAL WORKFLOWS', '—'));
     grid.appendChild(makeStatCard('ACTIVE AGENTS', '—'));
     grid.appendChild(makeStatCard('TOTAL RUNS', '—'));
@@ -168,10 +255,11 @@ async function renderDashboard(el) {
     return;
   }
 
-  const [metrics, workflows, events] = await Promise.all([
+  const [metrics, workflows, events, health] = await Promise.all([
     apiFetch('/api/dashboard').then(r => r.json()),
     apiFetch('/api/workflows').then(r => r.json()),
     apiFetch('/api/audit').then(r => r.json()),
+    fetch('/api/health').then(r => r.json()).catch(() => null),
   ]);
 
   el.innerHTML = '';
@@ -260,14 +348,15 @@ async function renderDashboard(el) {
     ),
     h('div', { style: { padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' } },
       ...[
-        { name: 'Workflow Engine', status: 'Operational' },
-        { name: 'Agent Runtime', status: 'Operational' },
-        { name: 'Database', status: 'Operational' },
-        { name: 'Ollama AI', status: 'Connected' },
+        { name: 'Workflow Engine', ok: health?.status === 'ok' },
+        { name: 'Database', ok: health?.services?.database === 'ok' },
+        { name: 'Ollama AI', ok: health?.services?.ollama === 'ok', na: !health },
       ].map(s => h('div', { class: 'status-item' },
-        h('div', { class: 'status-dot' }),
+        h('div', { class: 'status-dot', style: { background: s.na ? 'var(--slate-600)' : s.ok ? 'var(--emerald-400)' : 'var(--red-400)' } }),
         h('span', { class: 'status-label' }, s.name),
-        h('span', { class: 'status-value' }, s.status)
+        h('span', { class: 'status-value', style: { color: s.na ? 'var(--slate-600)' : s.ok ? 'var(--emerald-400)' : 'var(--red-400)' } },
+          s.na ? 'Unknown' : s.ok ? 'Operational' : 'Degraded'
+        )
       ))
     )
   );
@@ -915,8 +1004,8 @@ async function renderAudit(el) {
       h('p', {}, 'Complete historical record of all system and agent activities')
     ),
     h('div', { class: 'flex gap-2' },
-      h('button', { class: 'btn-glass text-xs' }, 'Export CSV'),
-      h('button', { class: 'btn-glass text-xs' }, 'Report')
+      h('button', { class: 'btn-glass text-xs', onClick: () => exportAuditCsv(events) }, 'Export CSV'),
+      h('button', { class: 'btn-glass text-xs', onClick: () => window.open('/api/reporting/audit/' + ((events[0] && events[0].target && events[0].target.target_id) || 'all'), '_blank') }, 'Report')
     )
   ));
 
@@ -1498,6 +1587,31 @@ function showAgentModal(agent = null) {
     )
   );
   document.body.appendChild(overlay);
+}
+
+function exportAuditCsv(events) {
+  const header = ['Timestamp', 'Event', 'Severity', 'Actor', 'Email', 'Target', 'Target Type'];
+  const rows = events.map(ev => [
+    new Date(ev.timestamp).toISOString(),
+    ev.type,
+    ev.severity,
+    ev.actor && ev.actor.name ? ev.actor.name : '',
+    ev.actor && ev.actor.email ? ev.actor.email : '',
+    ev.target && ev.target.name ? ev.target.name : '',
+    ev.target && ev.target.target_type ? ev.target.target_type : ''
+  ]);
+  const csv = [header, ...rows]
+    .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `audit-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
