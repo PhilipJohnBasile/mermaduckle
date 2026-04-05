@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mermaduckle Docs | Local Start and Fly Deploy</title>
+    <meta
+      name="description"
+      content="Run Mermaduckle locally, deploy it to Fly.io, and configure the environment variables used by the server."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/static/style.css" rel="stylesheet" />
+  </head>
+  <body class="marketing-page marketing-docs-page">
+    <div class="marketing-shell marketing-shell-narrow">
+      <header class="marketing-topbar marketing-topbar-docs">
+        <a class="marketing-brand" href="/">
+          <span class="marketing-brand-mark">M</span>
+          <span class="marketing-brand-text">
+            <strong>Mermaduckle</strong>
+            <span>Docs</span>
+          </span>
+        </a>
+        <div class="marketing-nav-actions">
+          <a class="marketing-link-chip" href="/">Marketing site</a>
+          <a class="marketing-button marketing-button-primary" href="/app">Open app</a>
+        </div>
+      </header>
+
+      <main class="marketing-docs-layout">
+        <section class="marketing-docs-hero marketing-reveal" data-reveal>
+          <div class="marketing-eyebrow">Practical setup</div>
+          <h1>Run it locally first. Push the same service to Fly when you are ready.</h1>
+          <p>
+            These notes mirror the current repo state: the server is a Rust binary, the frontend is
+            served statically by the server, and Fly deployment uses the included Dockerfile and
+            `fly.toml`.
+          </p>
+        </section>
+
+        <nav class="marketing-doc-links marketing-reveal" data-reveal>
+          <a class="marketing-doc-link" href="#local-start">Local start</a>
+          <a class="marketing-doc-link" href="#fly-deploy">Fly deploy</a>
+          <a class="marketing-doc-link" href="#github-actions">GitHub Actions</a>
+          <a class="marketing-doc-link" href="#local-script">Local script</a>
+          <a class="marketing-doc-link" href="#env-vars">Env vars</a>
+        </nav>
+
+        <section class="marketing-doc-block marketing-reveal" id="local-start" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">01</div>
+            <div>
+              <h2>Local start</h2>
+              <p>Start the server from the repo root and open the app in the browser.</p>
+            </div>
+          </div>
+          <pre data-copyable><code>cargo run -p mermaduckle-server</code></pre>
+          <ul>
+            <li>Marketing site: <code>/</code></li>
+            <li>Control plane: <code>/app</code></li>
+            <li>Deploy docs: <code>/docs</code></li>
+            <li>Health endpoint: <code>/api/health</code></li>
+          </ul>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" id="fly-deploy" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">02</div>
+            <div>
+              <h2>Deploy to Fly.io</h2>
+              <p>The repo already includes the deployment artifacts this command expects.</p>
+            </div>
+          </div>
+          <pre data-copyable><code>flyctl deploy -a &lt;app-name&gt; --dockerfile deploy/Dockerfile.fly</code></pre>
+          <p class="marketing-doc-note">
+            Current config in this repo uses <code>app = "mermaduckle"</code> and exposes the Rust
+            server on internal port <code>3001</code>.
+          </p>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" id="github-actions" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">03</div>
+            <div>
+              <h2>GitHub Actions deploys</h2>
+              <p>Use an app-scoped deploy token and let pushes to <code>main</code> ship to Fly.</p>
+            </div>
+          </div>
+          <pre data-copyable><code>fly tokens create deploy --app &lt;app-name&gt;</code></pre>
+          <ul>
+            <li>Add the returned token as the GitHub Actions secret <code>FLY_API_TOKEN</code>.</li>
+            <li>The repo workflow file is <code>.github/workflows/fly-deploy.yml</code>.</li>
+            <li>The workflow runs <code>flyctl deploy --remote-only --config fly.toml</code>.</li>
+          </ul>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" id="local-script" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">04</div>
+            <div>
+              <h2>Local helper script</h2>
+              <p>Use the included PowerShell script when you want to deploy from your machine.</p>
+            </div>
+          </div>
+          <pre data-copyable><code>pwsh -File tools/deploy_fly.ps1 -AppName mermaduckle -RemoteOnly</code></pre>
+          <p class="marketing-doc-note">
+            Add <code>-BuildOnly</code> if you only want to push the image without releasing it yet.
+          </p>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">05</div>
+            <div>
+              <h2>Domain and certificate workflow</h2>
+              <p>These are the commands described in the deployment guide.</p>
+            </div>
+          </div>
+          <pre data-copyable><code>flyctl domains add mermaduckle.com -a &lt;app-name&gt;
+flyctl ips allocate-v4 -a &lt;app-name&gt;
+flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" id="env-vars" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">06</div>
+            <div>
+              <h2>Environment variables</h2>
+              <p>Defaults are already coded in the server, but these are the knobs it reads.</p>
+            </div>
+          </div>
+          <div class="marketing-doc-table">
+            <div><strong>DATABASE_PATH</strong><span><code>data/app.db</code></span></div>
+            <div><strong>OLLAMA_URL</strong><span><code>http://localhost:11434</code></span></div>
+            <div><strong>HOST</strong><span><code>0.0.0.0</code></span></div>
+            <div><strong>PORT</strong><span><code>3001</code></span></div>
+          </div>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">07</div>
+            <div>
+              <h2>Repo deployment artifacts</h2>
+              <p>Useful paths when you need to adjust the Fly deployment flow.</p>
+            </div>
+          </div>
+          <ul>
+            <li><code>deploy/Dockerfile.fly</code></li>
+            <li><code>fly.toml</code></li>
+            <li><code>docs/deploy/fly.md</code></li>
+            <li><code>.github/workflows/fly-deploy.yml</code></li>
+            <li><code>tools/deploy_fly.ps1</code></li>
+            <li><code>README.md</code></li>
+          </ul>
+        </section>
+      </main>
+    </div>
+    <script src="/static/marketing/marketing.js" defer></script>
+  </body>
+</html>

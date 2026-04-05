@@ -1,10 +1,43 @@
-# Commit and push local changes for Mermaduckle
-# Run this locally if the automatic git steps fail in the agent environment.
+param(
+    [string]$Message = "chore: update marketing site and fly deployment flow",
+    [switch]$DeployFly,
+    [string]$AppName = "mermaduckle"
+)
 
-git add -A
-git commit -m "chore: apply automated changes (README rewrite, dev port, console snippet)"
-git push
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 
-# Notes:
-# - Ensure your git remote is accessible and you have proper credentials.
-# - If the commit fails because there are no changes, remove the commit step.
+Push-Location $repoRoot
+try {
+    $status = git status --porcelain
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to read git status."
+    }
+
+    if ($status) {
+        git add -A
+        if ($LASTEXITCODE -ne 0) {
+            throw "git add failed."
+        }
+
+        git commit -m $Message
+        if ($LASTEXITCODE -ne 0) {
+            throw "git commit failed."
+        }
+    } else {
+        Write-Output "No local changes to commit."
+    }
+
+    git push
+    if ($LASTEXITCODE -ne 0) {
+        throw "git push failed."
+    }
+
+    if ($DeployFly.IsPresent) {
+        & (Join-Path $PSScriptRoot "deploy_fly.ps1") -AppName $AppName -RemoteOnly
+        if ($LASTEXITCODE -ne 0) {
+            throw "Fly deploy failed."
+        }
+    }
+} finally {
+    Pop-Location
+}

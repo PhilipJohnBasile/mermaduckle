@@ -811,3 +811,746 @@ body {
   50% { filter: drop-shadow(0 0 15px var(--primary-500)); }
   100% { filter: drop-shadow(0 0 5px var(--primary-500)); }
 }
+
+/* ── Marketing Site ───────────────────────────────────── */
+body.marketing-page {
+  color-scheme: light;
+  font-family: 'Space Grotesk', var(--font-sans);
+  color: #112033;
+  background:
+    radial-gradient(circle at top left, rgba(255, 158, 87, 0.24), transparent 24rem),
+    radial-gradient(circle at top right, rgba(19, 167, 181, 0.18), transparent 28rem),
+    linear-gradient(180deg, #f7f0df 0%, #f2e9d5 52%, #efe6d6 100%);
+}
+
+body.marketing-page a {
+  color: inherit;
+}
+
+.marketing-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.25rem 0 4rem;
+}
+
+.marketing-shell-narrow {
+  width: min(980px, calc(100% - 2rem));
+}
+
+.marketing-topbar {
+  position: sticky;
+  top: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(17, 32, 51, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 249, 239, 0.82);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 40px rgba(73, 55, 14, 0.08);
+}
+
+.marketing-topbar-docs {
+  position: static;
+}
+
+.marketing-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+  width: 3rem;
+  height: 3rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(17, 35, 58, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.52);
+  cursor: pointer;
+}
+
+.marketing-menu-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: #11233a;
+}
+
+.marketing-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  text-decoration: none;
+}
+
+.marketing-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 0.95rem;
+  background: linear-gradient(135deg, #12263f, #0f7f8b);
+  color: #fff7e8;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 12px 30px rgba(15, 127, 139, 0.16);
+}
+
+.marketing-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.marketing-brand-text strong {
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+}
+
+.marketing-brand-text span {
+  font-size: 0.78rem;
+  color: rgba(17, 32, 51, 0.68);
+}
+
+.marketing-nav,
+.marketing-nav-actions,
+.marketing-cta-row,
+.marketing-footer,
+.marketing-band,
+.marketing-doc-heading,
+.marketing-deploy-grid,
+.marketing-two-column {
+  display: flex;
+  align-items: center;
+}
+
+.marketing-nav {
+  gap: 1.1rem;
+}
+
+.marketing-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.marketing-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.marketing-nav a,
+.marketing-link-chip {
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: rgba(17, 32, 51, 0.78);
+}
+
+.marketing-nav a {
+  position: relative;
+}
+
+.marketing-nav a.is-active,
+.marketing-doc-link.is-active {
+  color: #11233a;
+}
+
+.marketing-nav a.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.35rem;
+  height: 2px;
+  border-radius: 999px;
+  background: #0f7f8b;
+}
+
+.marketing-link-chip {
+  padding: 0.65rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17, 32, 51, 0.12);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.marketing-nav-actions {
+  gap: 0.8rem;
+}
+
+.marketing-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.marketing-button:hover,
+.marketing-link-chip:hover {
+  transform: translateY(-1px);
+}
+
+.marketing-button-primary {
+  color: #fff9ec;
+  background: linear-gradient(135deg, #11233a, #0e7e88);
+  box-shadow: 0 14px 30px rgba(17, 35, 58, 0.18);
+}
+
+.marketing-button-secondary {
+  color: #11233a;
+  border-color: rgba(17, 35, 58, 0.14);
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.marketing-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.6rem;
+  align-items: stretch;
+  margin-bottom: 2rem;
+}
+
+.marketing-hero-copy,
+.marketing-hero-panel,
+.marketing-feature-card,
+.marketing-stack-card,
+.marketing-code-card,
+.marketing-checklist-card,
+.marketing-doc-block {
+  border: 1px solid rgba(17, 35, 58, 0.08);
+  background: rgba(255, 250, 240, 0.72);
+  border-radius: 28px;
+  box-shadow: 0 22px 60px rgba(87, 63, 22, 0.08);
+}
+
+.marketing-hero-copy {
+  padding: 3rem;
+}
+
+.marketing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 158, 87, 0.14);
+  color: #8f4c16;
+  font-family: 'IBM Plex Mono', var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.marketing-hero-copy h1,
+.marketing-section h2,
+.marketing-docs-hero h1 {
+  font-size: clamp(2.7rem, 6vw, 5.2rem);
+  line-height: 0.97;
+  letter-spacing: -0.05em;
+  max-width: 12ch;
+}
+
+.marketing-section h2,
+.marketing-docs-hero h1 {
+  font-size: clamp(2.1rem, 5vw, 3.7rem);
+  max-width: 14ch;
+}
+
+.marketing-lede,
+.marketing-section-heading p,
+.marketing-section-copy,
+.marketing-docs-hero p,
+.marketing-doc-heading p,
+.marketing-doc-note {
+  margin-top: 1.2rem;
+  max-width: 40rem;
+  font-size: 1.03rem;
+  line-height: 1.7;
+  color: rgba(17, 32, 51, 0.76);
+}
+
+.marketing-cta-row {
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-top: 1.75rem;
+}
+
+.marketing-signal-list {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 2rem;
+  list-style: none;
+}
+
+.marketing-signal-list li {
+  position: relative;
+  padding-left: 1.6rem;
+  color: rgba(17, 32, 51, 0.8);
+}
+
+.marketing-signal-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9657, #0f7f8b);
+}
+
+.marketing-hero-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.marketing-panel-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.6rem;
+  border-radius: 22px;
+}
+
+.marketing-panel-card-primary {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 12rem),
+    linear-gradient(135deg, #152843, #11345b 46%, #0f7f8b 100%);
+  color: #f6f1e6;
+}
+
+.marketing-panel-card-primary h2 {
+  max-width: 12ch;
+  margin-bottom: 1.4rem;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.marketing-panel-kicker {
+  margin-bottom: 0.75rem;
+  font-family: 'IBM Plex Mono', var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 241, 214, 0.76);
+}
+
+.marketing-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.marketing-mini-grid div {
+  padding: 0.85rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.marketing-mini-label,
+.marketing-feature-index,
+.marketing-doc-step {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-family: 'IBM Plex Mono', var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.marketing-run-strip {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.marketing-run-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1rem 1.1rem;
+  border-radius: 20px;
+  background: rgba(17, 35, 58, 0.92);
+  color: #f4ebdc;
+}
+
+.marketing-run-step span,
+.marketing-doc-step {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255, 150, 87, 0.2);
+  color: #ffccaa;
+}
+
+.marketing-run-step p,
+.marketing-stack-card p,
+.marketing-feature-card p,
+.marketing-checklist-card li {
+  color: rgba(17, 32, 51, 0.72);
+}
+
+.marketing-run-step p {
+  color: rgba(244, 235, 220, 0.72);
+}
+
+.marketing-band {
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin: 0 0 3rem;
+  padding: 1rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(17, 35, 58, 0.08);
+  color: rgba(17, 35, 58, 0.72);
+  font-size: 0.92rem;
+}
+
+.marketing-section {
+  margin-top: 3rem;
+}
+
+.marketing-section-heading {
+  margin-bottom: 1.5rem;
+}
+
+.marketing-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.marketing-feature-card {
+  min-height: 16rem;
+  padding: 1.4rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.marketing-feature-card:hover,
+.marketing-stack-card:hover,
+.marketing-code-card:hover,
+.marketing-checklist-card:hover,
+.marketing-doc-block:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 65px rgba(87, 63, 22, 0.11);
+}
+
+.marketing-feature-card h3,
+.marketing-stack-card strong,
+.marketing-checklist-card h3,
+.marketing-doc-heading h2 {
+  display: block;
+  margin-bottom: 0.7rem;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.marketing-section-contrast {
+  padding: 1.5rem 0;
+}
+
+.marketing-two-column {
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+.marketing-two-column > * {
+  flex: 1;
+}
+
+.marketing-stack {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.marketing-stack-card,
+.marketing-checklist-card {
+  padding: 1.2rem 1.25rem;
+}
+
+.marketing-deploy-grid {
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.marketing-deploy-grid > * {
+  flex: 1;
+}
+
+.marketing-code-card {
+  padding: 1.25rem;
+  background: #10243d;
+  color: #efe7da;
+}
+
+.marketing-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: rgba(239, 231, 218, 0.74);
+  font-family: 'IBM Plex Mono', var(--font-mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.marketing-code-header a {
+  color: #7ce1eb;
+  text-decoration: none;
+}
+
+.marketing-code-card pre,
+.marketing-doc-block pre {
+  overflow-x: auto;
+  padding: 1rem 1.1rem;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.22);
+  font-family: 'IBM Plex Mono', var(--font-mono);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.marketing-copy-ready {
+  position: relative;
+  padding-top: 3rem;
+}
+
+.marketing-copy-button {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  min-width: 4.2rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-family: 'IBM Plex Mono', var(--font-mono);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.marketing-card-note {
+  margin-top: 0.9rem;
+  font-size: 0.92rem;
+  color: rgba(239, 231, 218, 0.72);
+}
+
+.marketing-checklist-card ul,
+.marketing-doc-block ul {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-left: 1.2rem;
+}
+
+.marketing-doc-links {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.marketing-doc-link {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(17, 35, 58, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  color: rgba(17, 32, 51, 0.78);
+}
+
+.marketing-doc-link.is-active {
+  border-color: rgba(15, 127, 139, 0.25);
+  background: rgba(15, 127, 139, 0.12);
+}
+
+.marketing-closing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.7rem 0 0.5rem;
+}
+
+.marketing-footer {
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(17, 35, 58, 0.12);
+  color: rgba(17, 35, 58, 0.68);
+}
+
+.marketing-footer div {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.marketing-footer a {
+  text-decoration: none;
+}
+
+.marketing-docs-layout {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.marketing-docs-hero {
+  padding: 1.4rem 0 0.6rem;
+}
+
+.marketing-doc-block {
+  padding: 1.35rem;
+}
+
+.marketing-doc-heading {
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.marketing-doc-table {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.marketing-doc-table div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(17, 35, 58, 0.08);
+}
+
+@media (max-width: 1024px) {
+  .marketing-hero,
+  .marketing-feature-grid,
+  .marketing-two-column,
+  .marketing-deploy-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .marketing-topbar {
+    position: static;
+    flex-wrap: wrap;
+  }
+
+  .marketing-menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .marketing-nav {
+    display: none;
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  body.marketing-nav-open .marketing-nav {
+    display: flex;
+    gap: 0.9rem;
+    padding-top: 0.35rem;
+  }
+
+  .marketing-nav-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .marketing-closing {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .marketing-shell,
+  .marketing-shell-narrow {
+    width: min(100% - 1rem, 100%);
+  }
+
+  .marketing-menu-toggle {
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .marketing-topbar,
+  .marketing-hero-copy,
+  .marketing-hero-panel,
+  .marketing-feature-card,
+  .marketing-stack-card,
+  .marketing-code-card,
+  .marketing-checklist-card,
+  .marketing-doc-block {
+    border-radius: 22px;
+  }
+
+  .marketing-hero-copy {
+    padding: 1.5rem;
+  }
+
+  .marketing-panel-card-primary h2,
+  .marketing-hero-copy h1,
+  .marketing-section h2,
+  .marketing-docs-hero h1 {
+    max-width: none;
+  }
+
+  .marketing-mini-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-band {
+    border-radius: 24px;
+  }
+
+  .marketing-doc-table div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marketing-reveal,
+  .marketing-reveal.is-visible,
+  .marketing-button,
+  .marketing-link-chip,
+  .marketing-feature-card,
+  .marketing-stack-card,
+  .marketing-code-card,
+  .marketing-checklist-card,
+  .marketing-doc-block {
+    transition: none;
+    transform: none;
+    animation: none;
+  }
+
+  .marketing-reveal {
+    opacity: 1;
+  }
+}

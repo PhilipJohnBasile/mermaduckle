@@ -27,7 +27,11 @@ Run the server locally (defaults to http://127.0.0.1:3001):
 cargo run -p mermaduckle-server
 ```
 
-The SPA is available at `/` and static assets at `/static`.
+Routes:
+- Marketing site: `/`
+- Docs hub: `/docs`
+- Control plane SPA: `/app`
+- Static assets: `/static`
 
 Local development convenience
 - On localhost the SPA may auto-create a temporary development API key (server-side seeded dev admin token) and store it in `localStorage` so you can interact with the UI immediately. This is for local dev only.
@@ -62,8 +66,6 @@ cargo test -p mermaduckle-server
 Development notes
 - Seed data includes realistic demo workflows, agents, and a small set of API keys for local testing — these are intended for developer ease only and should not be used in production.
 
-If you want me to, I can also add a short walkthrough showing how to create an API key and paste it into the SPA (or automatically create one for you during local dev). Please tell me which you'd prefer.
-
 Deployment — Fly.io (recommended)
 
 This repository includes Fly.io deployment artifacts to run `mermaduckle` as a service in the Fly platform. Using Docker on Fly is the simplest way to deploy Rust services with consistent builds and automatic TLS.
@@ -76,6 +78,24 @@ Quick steps (full instructions in `docs/deploy/fly.md`):
 
 ```bash
 flyctl deploy -a <app-name> --dockerfile deploy/Dockerfile.fly
+```
+
+- To deploy from the included PowerShell helper:
+
+```powershell
+pwsh -File tools/deploy_fly.ps1 -AppName mermaduckle -RemoteOnly
+```
+
+- To deploy automatically from GitHub Actions on pushes to `main`, create an app-scoped deploy token and save it as the repository secret `FLY_API_TOKEN`:
+
+```bash
+fly tokens create deploy -a <app-name>
+```
+
+The workflow file is `.github/workflows/fly-deploy.yml` and runs:
+
+```bash
+flyctl deploy --remote-only --config fly.toml
 ```
 
 - To add your custom domain `mermaduckle.com` to the app:
@@ -102,7 +122,6 @@ Files in this repo used for Fly deployments:
 - `deploy/Dockerfile.fly` — multi-stage Dockerfile that builds a release binary and packages it in a minimal runtime image.
 - `fly.toml` — minimal Fly app configuration (app name and service port).
 - `docs/deploy/fly.md` — step-by-step Fly deploy and domain instructions.
-
-If you want, I can run the Fly domain commands and provision certificates for `mermaduckle.com` now (I already have an access token saved), or prepare a GitHub Actions workflow to build and deploy on push.
-
+- `.github/workflows/fly-deploy.yml` — Fly deployment workflow for pushes to `main`.
+- `tools/deploy_fly.ps1` — local deployment helper for manual Fly releases.
 

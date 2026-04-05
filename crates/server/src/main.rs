@@ -123,10 +123,15 @@ async fn main() -> std::io::Result<()> {
 }
 
 async fn serve_index(req: actix_web::HttpRequest) -> actix_web::HttpResponse {
-    // Serve the marketing site at `/` and the SPA at `/app` (SPA supports client-side routing).
+    // Serve the marketing site at `/`, the docs hub at `/docs`, and the SPA at `/app`.
     let path = req.path();
     if path.starts_with("/app") {
         let html = include_str!("../static/app/index.html");
+        actix_web::HttpResponse::Ok()
+            .content_type("text/html; charset=utf-8")
+            .body(html)
+    } else if path.starts_with("/docs") {
+        let html = include_str!("../static/marketing/docs.html");
         actix_web::HttpResponse::Ok()
             .content_type("text/html; charset=utf-8")
             .body(html)

@@ -16,10 +16,33 @@ flyctl deploy -a <app-name> --dockerfile deploy/Dockerfile.fly
 
 This builds the release binary inside the Docker build stage, pushes the image to Fly's registry, and releases the app.
 
+Deploy via the local PowerShell helper
+
+```powershell
+pwsh -File tools/deploy_fly.ps1 -AppName mermaduckle -RemoteOnly
+```
+
+Use `-BuildOnly` if you want to push the image without releasing it yet.
+
 Build only (push image without releasing):
 
 ```bash
 flyctl deploy --build-only --push -a <app-name> --dockerfile deploy/Dockerfile.fly
+```
+
+Automatic deploys from GitHub Actions
+
+1. Create an app-scoped deploy token for the Fly app:
+
+```bash
+fly tokens create deploy -a <app-name>
+```
+
+2. Save the token as the GitHub Actions repository secret `FLY_API_TOKEN`.
+3. Push to `main` or trigger the workflow manually. The repo includes `.github/workflows/fly-deploy.yml`, which runs:
+
+```bash
+flyctl deploy --remote-only --config fly.toml
 ```
 
 Add a custom domain
@@ -52,5 +75,5 @@ flyctl certs list -a <app-name>
 ```
 
 Notes
-- If you want CI-driven deploys, I can add a GitHub Actions workflow that runs `flyctl deploy` on push to `main`.
 - If you prefer not to use Docker, you can instead build a release binary and deploy to a VPS (we removed that flow at your request).
+- Fly recommends using the narrowest token scope that works for CI/CD. An app-scoped deploy token is the right default for this repo.
