@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy to Fly
         if: steps.fly-token.outputs.available == 'true'
-        run: flyctl deploy --remote-only --config fly.toml
+        run: flyctl deploy --remote-only --yes --config fly.toml
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
