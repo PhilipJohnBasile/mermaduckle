@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle | Governed AI Operations in One Rust Control Plane</title>
+    <title>Mermaduckle | Self-Hosted AI Operations with a Hosted Evaluation Path</title>
     <meta
       name="description"
-      content="Mermaduckle is the self-hosted Rust control plane for AI workflows that need approvals, audit history, agent operations, webhooks, secrets, and a straight path to production on Fly."
+      content="Mermaduckle is a self-hosted-first Rust control plane for AI workflows, with a hosted evaluation instance and a managed commercial path for teams that need approvals, audit history, and production control."
     />
     <meta
       property="og:title"
-      content="Mermaduckle | Governed AI Operations in One Rust Control Plane"
+      content="Mermaduckle | Self-Hosted AI Operations with a Hosted Evaluation Path"
     />
     <meta
       property="og:description"
@@ -39,7 +39,7 @@
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>Governed AI operations</span>
+            <span>Self-hosted core, managed option</span>
           </span>
         </a>
         <button
@@ -55,37 +55,40 @@
         </button>
         <nav class="marketing-nav">
           <a href="#platform">Platform</a>
+          <a href="#model">Model</a>
           <a href="#why-us">Why us</a>
+          <a href="#commercial">Commercial</a>
           <a href="#governance">Governance</a>
           <a href="#deploy">Deploy</a>
           <a href="/docs">Docs</a>
         </nav>
         <div class="marketing-nav-actions">
           <a class="marketing-link-chip" href="/docs">Read docs</a>
-          <a class="marketing-button marketing-button-primary" href="/app">Open app</a>
+          <a class="marketing-button marketing-button-primary" href="/app">Open hosted eval</a>
         </div>
       </header>
 
       <main>
         <section class="marketing-hero" id="platform">
           <div class="marketing-hero-copy marketing-reveal" data-reveal>
-            <div class="marketing-eyebrow">Self-hosted Rust control plane</div>
-            <h1>The AI operations layer for teams that cannot ship blind automation.</h1>
+            <div class="marketing-eyebrow">Self-hosted first. Hosted by us when needed.</div>
+            <h1>Deploy governed AI workflows in your stack, or use our hosted control plane to move faster.</h1>
             <p class="marketing-lede">
-              Most AI workflow tools stop at composition. Mermaduckle handles what happens when the
-              workflow touches production: approval gates, audit history, agents, secrets,
-              webhooks, scheduling, and a deployment path that stays small enough to reason about.
+              Mermaduckle is software you can run in your own environment. The <code>/app</code>
+              route on this site is our hosted evaluation instance so teams can inspect the control
+              plane before deploying it themselves. Commercially, we make money on managed pilots,
+              hosted operations, and annual self-hosted support.
             </p>
 
             <div class="marketing-cta-row">
-              <a class="marketing-button marketing-button-primary" href="/app">Open control plane</a>
-              <a class="marketing-button marketing-button-secondary" href="/docs">Deployment runbook</a>
+              <a class="marketing-button marketing-button-primary" href="/app">Open hosted eval</a>
+              <a class="marketing-button marketing-button-secondary" href="#model">See deployment model</a>
             </div>
 
             <div class="marketing-proof-row">
-              <span>Visual workflow canvas + AI architect</span>
-              <span>Approval queue and audit timeline</span>
-              <span>Agents, secrets, integrations, and webhooks</span>
+              <span>Self-hosted customer deployments</span>
+              <span>Hosted evaluation at <code>/app</code></span>
+              <span>Managed rollout available</span>
               <span>One Rust service from local dev to Fly</span>
             </div>
           </div>
@@ -192,16 +195,16 @@
                 </div>
                 <div class="marketing-deploy-checks">
                   <div>
-                    <strong>Serve the app and site together</strong>
-                    <p>Marketing, docs, and the control plane come from the same Rust service.</p>
+                    <strong>Hosted eval runs on this domain</strong>
+                    <p>The public <code>/app</code> route is our live hosted instance for evaluation.</p>
                   </div>
                   <div>
-                    <strong>Health checks built around the real API</strong>
-                    <p>Production verification targets <code>/api/health</code>.</p>
+                    <strong>Customer deployments can be self-hosted</strong>
+                    <p>The same Rust service can be deployed in your own Fly app or infrastructure.</p>
                   </div>
                   <div>
-                    <strong>Push to main, ship to Fly</strong>
-                    <p>GitHub Actions and the local PowerShell helper already exist in this repo.</p>
+                    <strong>Managed rollout is the paid fast path</strong>
+                    <p>We can host, tune, and support the first production workflow when speed matters.</p>
                   </div>
                 </div>
               </div>
@@ -212,9 +215,49 @@
         <section class="marketing-proofband marketing-reveal" data-reveal>
           <div>Rust + Actix-web</div>
           <div>Vanilla JS control plane</div>
-          <div>SQLite default for fast self-hosting</div>
+          <div>Hosted evaluation on this site</div>
+          <div>Self-hosted deployment artifacts in repo</div>
           <div>Approvals, audit, reporting, and recovery</div>
           <div>Webhooks, schedules, agents, and secrets</div>
+        </section>
+
+        <section class="marketing-section" id="model">
+          <div class="marketing-section-heading marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">Deployment model</div>
+            <h2>The product is self-hosted. The instance on this site is just one operating mode.</h2>
+            <p>
+              This should be obvious when you land here: Mermaduckle is built to run in the
+              customer&apos;s environment, but we also host a live evaluation instance on this domain and
+              offer a managed commercial path for teams that want help getting to production.
+            </p>
+          </div>
+
+          <div class="marketing-mode-grid">
+            <article class="marketing-mode-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Self-hosted core</span>
+              <h3>Run it in your environment</h3>
+              <p>
+                The repo, docs, Dockerfile, and Fly configuration are there so teams can deploy
+                their own instance and keep operational ownership.
+              </p>
+            </article>
+            <article class="marketing-mode-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Hosted evaluation</span>
+              <h3>Inspect the product before you deploy</h3>
+              <p>
+                The <code>/app</code> route on this site is our hosted control plane so buyers can see the
+                workflow, approval, and audit surfaces immediately.
+              </p>
+            </article>
+            <article class="marketing-mode-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Managed option</span>
+              <h3>Let us run the first rollout with you</h3>
+              <p>
+                If a team wants outcomes before they want infrastructure ownership, we can host,
+                integrate, and support the production rollout as a paid engagement.
+              </p>
+            </article>
+          </div>
         </section>
 
         <section class="marketing-section" id="why-us">
@@ -269,6 +312,51 @@
                 <li>Approval checkpoints and audit events built into the app surface</li>
                 <li>Agent, workflow, and run visibility in one place</li>
                 <li>Self-hosted Rust service with a direct Fly deployment path</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="marketing-section" id="commercial">
+          <div class="marketing-section-heading marketing-reveal" data-reveal>
+            <div class="marketing-eyebrow">Commercial model</div>
+            <h2>We make money around production ownership, not cheap builder seats.</h2>
+            <p>
+              The goal is not to race n8n, Flowise, or Langflow to the lowest self-serve plan.
+              The money is in getting important workflows live, keeping them governed, and backing
+              teams that either want a hosted operator or need support for self-hosted rollout.
+            </p>
+          </div>
+
+          <div class="marketing-commercial-grid">
+            <article class="marketing-commercial-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Managed pilot</span>
+              <h3>The first paid engagement</h3>
+              <p>Use Mermaduckle to launch the first production workflow with hands-on delivery.</p>
+              <ul>
+                <li>We implement the first real workflow with your team</li>
+                <li>We can host or co-run the control plane during rollout</li>
+                <li>Commercial shape: setup fee plus ongoing support</li>
+              </ul>
+            </article>
+            <article class="marketing-commercial-card marketing-commercial-card-featured marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Hosted operations</span>
+              <h3>The recurring revenue layer</h3>
+              <p>Run the control plane for customers that want outcomes without owning infra from day one.</p>
+              <ul>
+                <li>We operate releases, monitoring, and production support</li>
+                <li>Priced as a platform fee plus usage and support expectations</li>
+                <li>The public <code>/app</code> instance is the clearest proof this mode exists</li>
+              </ul>
+            </article>
+            <article class="marketing-commercial-card marketing-reveal" data-reveal>
+              <span class="marketing-card-kicker">Enterprise self-hosted</span>
+              <h3>The annual contract path</h3>
+              <p>Sell commercial terms to teams that want control over data, deployment, and operations.</p>
+              <ul>
+                <li>Customer runs the service in their environment</li>
+                <li>We sell onboarding, support, upgrades, and commercial license terms</li>
+                <li>Best for buyers who care about control more than a generic SaaS seat model</li>
               </ul>
             </article>
           </div>
@@ -377,11 +465,11 @@
           <div class="marketing-deploy-layout">
             <div class="marketing-section-heading marketing-reveal" data-reveal>
               <div class="marketing-eyebrow">Production path</div>
-              <h2>Prod is not a separate project.</h2>
+              <h2>Run your own instance when customer-managed deployment is the point.</h2>
               <p>
                 The repo already ships with a Fly Dockerfile, a working <code>fly.toml</code>,
                 GitHub Actions deployment workflow, and a PowerShell helper script. The same Rust
-                service can serve marketing, docs, and the control plane together.
+                service can power the hosted eval here or a customer-owned deployment elsewhere.
               </p>
             </div>
 
@@ -413,22 +501,22 @@
 
         <section class="marketing-final-cta marketing-reveal" data-reveal>
           <div>
-            <div class="marketing-eyebrow">Use the actual product</div>
-            <h2>Open the control plane, or go straight to the runbook and ship it.</h2>
+            <div class="marketing-eyebrow">Pick the path</div>
+            <h2>Open the hosted eval, or read the self-hosted runbook and deploy your own copy.</h2>
           </div>
           <div class="marketing-cta-row">
-            <a class="marketing-button marketing-button-primary" href="/app">Open <code>/app</code></a>
-            <a class="marketing-button marketing-button-secondary" href="/docs">Open <code>/docs</code></a>
+            <a class="marketing-button marketing-button-primary" href="/app">Open hosted eval</a>
+            <a class="marketing-button marketing-button-secondary" href="/docs">Open self-hosted docs</a>
           </div>
         </section>
       </main>
 
       <footer class="marketing-footer">
-        <p>Mermaduckle is a self-hosted control plane for AI workflows that need review and traceability.</p>
+        <p>Mermaduckle is a self-hosted-first control plane for AI workflows, with hosted and managed commercial options.</p>
         <div>
           <a href="/">Home</a>
           <a href="/docs">Docs</a>
-          <a href="/app">App</a>
+          <a href="/app">Hosted eval</a>
         </div>
       </footer>
     </div>

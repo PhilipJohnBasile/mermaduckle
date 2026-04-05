@@ -321,8 +321,10 @@ body.marketing-page main {
 .marketing-console,
 .marketing-proofband,
 .marketing-compare-card,
+.marketing-mode-card,
 .marketing-ops-card,
 .marketing-capability-card,
+.marketing-commercial-card,
 .marketing-code-card,
 .marketing-checklist-card,
 .marketing-doc-block,
@@ -461,6 +463,8 @@ body.marketing-page main {
 .marketing-console-flow,
 .marketing-governance-rail,
 .marketing-deploy-stack,
+.marketing-mode-grid,
+.marketing-commercial-grid,
 .marketing-compare-grid,
 .marketing-ops-grid,
 .marketing-feature-matrix,
@@ -555,8 +559,11 @@ body.marketing-page main {
 .marketing-console-log,
 .marketing-console-audit-list div,
 .marketing-deploy-checks div,
+.marketing-docs-mode-stack div,
 .marketing-ops-card,
+.marketing-mode-card,
 .marketing-capability-card,
+.marketing-commercial-card,
 .marketing-checklist-card ul li,
 .marketing-doc-table div {
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -570,9 +577,12 @@ body.marketing-page main {
 
 .marketing-console-node strong,
 .marketing-console-log strong,
+.marketing-docs-hero-card h2,
 .marketing-compare-card h3,
+.marketing-mode-card h3,
 .marketing-ops-card h3,
 .marketing-capability-card h3,
+.marketing-commercial-card h3,
 .marketing-checklist-card h3,
 .marketing-doc-heading h2 {
   display: block;
@@ -585,10 +595,14 @@ body.marketing-page main {
 .marketing-console-log p,
 .marketing-console-audit-list p,
 .marketing-deploy-checks p,
+.marketing-docs-mode-stack p,
 .marketing-compare-card p,
 .marketing-compare-card li,
+.marketing-mode-card p,
 .marketing-ops-card p,
 .marketing-capability-card p,
+.marketing-commercial-card p,
+.marketing-commercial-card li,
 .marketing-checklist-card li,
 .marketing-doc-table span {
   color: var(--marketing-muted);
@@ -698,9 +712,17 @@ body.marketing-page main {
   gap: 1rem;
 }
 
+.marketing-mode-grid,
+.marketing-commercial-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
 .marketing-compare-card,
+.marketing-mode-card,
 .marketing-ops-card,
 .marketing-capability-card,
+.marketing-commercial-card,
 .marketing-code-card,
 .marketing-checklist-card,
 .marketing-doc-block,
@@ -709,6 +731,7 @@ body.marketing-page main {
 }
 
 .marketing-compare-card ul,
+.marketing-commercial-card ul,
 .marketing-checklist-card ul,
 .marketing-doc-block ul {
   display: grid;
@@ -723,6 +746,21 @@ body.marketing-page main {
     radial-gradient(circle at top right, rgba(127, 231, 255, 0.12), transparent 35%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 32%),
     var(--marketing-panel-strong);
+}
+
+.marketing-commercial-card-featured {
+  border-color: rgba(255, 157, 104, 0.32);
+  background:
+    radial-gradient(circle at top right, rgba(255, 157, 104, 0.14), transparent 35%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 32%),
+    var(--marketing-panel-strong);
+}
+
+.marketing-mode-card:hover,
+.marketing-commercial-card:hover,
+.marketing-docs-hero-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 32px 86px rgba(2, 8, 15, 0.5);
 }
 
 .marketing-section-dark {
@@ -903,7 +941,77 @@ body.marketing-page main {
 }
 
 .marketing-docs-hero {
-  padding: 1.2rem 0 0.7rem;
+  padding: 0.3rem 0 0.7rem;
+}
+
+.marketing-docs-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 1.1rem;
+  align-items: stretch;
+}
+
+.marketing-docs-hero-copy,
+.marketing-docs-hero-card {
+  border: 1px solid var(--marketing-border);
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 30%),
+    var(--marketing-panel);
+  box-shadow: var(--marketing-shadow);
+}
+
+.marketing-docs-hero-copy {
+  padding: 1.45rem;
+}
+
+.marketing-docs-hero-card {
+  padding: 1.35rem;
+  background:
+    radial-gradient(circle at top right, rgba(127, 231, 255, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 30%),
+    var(--marketing-panel-strong);
+}
+
+.marketing-docs-hero-card h2 {
+  margin-top: 0.35rem;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  max-width: 10ch;
+}
+
+.marketing-docs-mode-stack {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.marketing-docs-mode-stack div {
+  padding: 1rem;
+}
+
+.marketing-docs-mode-stack span {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: var(--marketing-cyan);
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.marketing-mode-card,
+.marketing-commercial-card {
+  min-height: 15rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.marketing-mode-card code,
+.marketing-commercial-card code {
+  white-space: nowrap;
+}
+
+.marketing-docs-hero-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .marketing-doc-links {
@@ -949,11 +1057,14 @@ body.marketing-page main {
 
 @media (max-width: 1080px) {
   .marketing-hero,
+  .marketing-mode-grid,
+  .marketing-commercial-grid,
   .marketing-compare-grid,
   .marketing-ops-grid,
   .marketing-feature-matrix,
   .marketing-pathway,
-  .marketing-deploy-layout {
+  .marketing-deploy-layout,
+  .marketing-docs-hero-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1006,11 +1117,15 @@ body.marketing-page main {
   .marketing-console,
   .marketing-proofband,
   .marketing-compare-card,
+  .marketing-mode-card,
   .marketing-section-dark,
   .marketing-ops-card,
   .marketing-capability-card,
+  .marketing-commercial-card,
   .marketing-code-card,
   .marketing-checklist-card,
+  .marketing-docs-hero-copy,
+  .marketing-docs-hero-card,
   .marketing-doc-block,
   .marketing-final-cta {
     border-radius: 26px;
@@ -1019,7 +1134,8 @@ body.marketing-page main {
   .marketing-hero-copy h1,
   .marketing-section h2,
   .marketing-docs-hero h1,
-  .marketing-final-cta h2 {
+  .marketing-final-cta h2,
+  .marketing-docs-hero-card h2 {
     max-width: none;
   }
 

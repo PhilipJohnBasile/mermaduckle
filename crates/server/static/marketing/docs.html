@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mermaduckle Docs | Production Runbook for Local Start and Fly Deploy</title>
+    <title>Mermaduckle Docs | Hosted Eval Clarity and Self-Hosted Runbook</title>
     <meta
       name="description"
-      content="Run Mermaduckle locally, deploy the same Rust service to Fly.io, and use the repo's production runbook for GitHub Actions and manual releases."
+      content="Understand the hosted evaluation instance on this site, then use the self-hosted runbook to deploy your own Mermaduckle service to Fly.io."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,27 +24,59 @@
           <span class="marketing-brand-mark">M</span>
           <span class="marketing-brand-text">
             <strong>Mermaduckle</strong>
-            <span>Production runbook</span>
+            <span>Hosted eval + self-hosted runbook</span>
           </span>
         </a>
         <div class="marketing-nav-actions">
           <a class="marketing-link-chip" href="/">Marketing site</a>
-          <a class="marketing-button marketing-button-primary" href="/app">Open app</a>
+          <a class="marketing-button marketing-button-primary" href="/app">Open hosted eval</a>
         </div>
       </header>
 
       <main class="marketing-docs-layout">
         <section class="marketing-docs-hero marketing-reveal" data-reveal>
-          <div class="marketing-eyebrow">Practical setup</div>
-          <h1>Run it locally first. Ship the same service to Fly when you are ready.</h1>
-          <p>
-            These notes mirror the repo as it exists today: a Rust server that serves the app, the
-            marketing site, and the docs together, with Fly deployment driven by the included
-            Dockerfile, <code>fly.toml</code>, GitHub Actions workflow, and local PowerShell helper.
-          </p>
+          <div class="marketing-docs-hero-grid">
+            <div class="marketing-docs-hero-copy">
+              <div class="marketing-eyebrow">Practical setup</div>
+              <h1>Use the hosted eval to inspect the product. Use these docs to run your own instance.</h1>
+              <p>
+                The confusing part should be explicit now: <code>/app</code> on this site is a
+                hosted evaluation instance run by the Mermaduckle team. The steps below are for
+                teams that want to deploy their own copy of the same Rust service, or work with us
+                on a managed rollout.
+              </p>
+              <div class="marketing-cta-row">
+                <a class="marketing-button marketing-button-primary" href="/app">Open hosted eval</a>
+                <a class="marketing-button marketing-button-secondary" href="#fly-deploy">Jump to self-hosted deploy</a>
+              </div>
+            </div>
+
+            <aside class="marketing-docs-hero-card">
+              <span class="marketing-card-kicker">What this domain means</span>
+              <h2>Three modes. One product.</h2>
+              <div class="marketing-docs-mode-stack">
+                <div>
+                  <span>Hosted eval</span>
+                  <strong><code>/app</code> is our live instance for evaluation.</strong>
+                  <p>Use it to inspect the control plane before you deploy anything yourself.</p>
+                </div>
+                <div>
+                  <span>Self-hosted runbook</span>
+                  <strong>This page is the customer-owned deployment path.</strong>
+                  <p>Everything below explains how to run the same Rust service in your own environment.</p>
+                </div>
+                <div>
+                  <span>Managed rollout</span>
+                  <strong>We can host and support the production rollout as a paid engagement.</strong>
+                  <p>That is how the hosted and self-hosted stories connect commercially.</p>
+                </div>
+              </div>
+            </aside>
+          </div>
         </section>
 
         <nav class="marketing-doc-links marketing-reveal" data-reveal>
+          <a class="marketing-doc-link" href="#deployment-model">Deployment model</a>
           <a class="marketing-doc-link" href="#local-start">Local start</a>
           <a class="marketing-doc-link" href="#fly-deploy">Fly deploy</a>
           <a class="marketing-doc-link" href="#github-actions">GitHub Actions</a>
@@ -52,12 +84,39 @@
           <a class="marketing-doc-link" href="#env-vars">Env vars</a>
         </nav>
 
-        <section class="marketing-doc-block marketing-reveal" id="local-start" data-reveal>
+        <section class="marketing-doc-block marketing-reveal" id="deployment-model" data-reveal>
           <div class="marketing-doc-heading">
             <div class="marketing-doc-step">01</div>
             <div>
+              <h2>Deployment model</h2>
+              <p>Three modes exist, and the site should state them plainly.</p>
+            </div>
+          </div>
+          <div class="marketing-mode-grid">
+            <article class="marketing-mode-card">
+              <span class="marketing-card-kicker">Hosted eval</span>
+              <h3>Run by us on this domain</h3>
+              <p><code>/app</code> here is the fastest way to inspect the control plane and product shape.</p>
+            </article>
+            <article class="marketing-mode-card">
+              <span class="marketing-card-kicker">Self-hosted</span>
+              <h3>Run by you from this repo</h3>
+              <p>The repo, Dockerfile, Fly config, and server binary are all aimed at a customer-owned deployment path.</p>
+            </article>
+            <article class="marketing-mode-card">
+              <span class="marketing-card-kicker">Managed</span>
+              <h3>Run with our help</h3>
+              <p>If you want the outcome before you want the infrastructure ownership, the same service can be offered as a managed rollout.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="marketing-doc-block marketing-reveal" id="local-start" data-reveal>
+          <div class="marketing-doc-heading">
+            <div class="marketing-doc-step">02</div>
+            <div>
               <h2>Local start</h2>
-              <p>Start the server from the repo root and open the app in the browser.</p>
+              <p>Start your own instance from the repo root and open it in the browser.</p>
             </div>
           </div>
           <pre data-copyable><code>cargo run -p mermaduckle-server</code></pre>
@@ -71,7 +130,7 @@
 
         <section class="marketing-doc-block marketing-reveal" id="fly-deploy" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">02</div>
+            <div class="marketing-doc-step">03</div>
             <div>
               <h2>Deploy to Fly.io</h2>
               <p>The repo already includes the deployment artifacts this command expects.</p>
@@ -86,7 +145,7 @@
 
         <section class="marketing-doc-block marketing-reveal" id="github-actions" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">03</div>
+            <div class="marketing-doc-step">04</div>
             <div>
               <h2>GitHub Actions deploys</h2>
               <p>Use an app-scoped deploy token and let pushes to <code>main</code> ship to Fly.</p>
@@ -102,7 +161,7 @@
 
         <section class="marketing-doc-block marketing-reveal" id="local-script" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">04</div>
+            <div class="marketing-doc-step">05</div>
             <div>
               <h2>Local helper script</h2>
               <p>Use the included PowerShell script when you want to deploy from your machine.</p>
@@ -116,7 +175,7 @@
 
         <section class="marketing-doc-block marketing-reveal" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">05</div>
+            <div class="marketing-doc-step">06</div>
             <div>
               <h2>Domain and certificate workflow</h2>
               <p>These are the commands described in the deployment guide.</p>
@@ -129,7 +188,7 @@ flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
 
         <section class="marketing-doc-block marketing-reveal" id="env-vars" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">06</div>
+            <div class="marketing-doc-step">07</div>
             <div>
               <h2>Environment variables</h2>
               <p>Defaults are already coded in the server, but these are the knobs it reads.</p>
@@ -145,7 +204,7 @@ flyctl certs create mermaduckle.com -a &lt;app-name&gt;</code></pre>
 
         <section class="marketing-doc-block marketing-reveal" data-reveal>
           <div class="marketing-doc-heading">
-            <div class="marketing-doc-step">07</div>
+            <div class="marketing-doc-step">08</div>
             <div>
               <h2>Repo deployment artifacts</h2>
               <p>Useful paths when you need to adjust the Fly deployment flow.</p>
