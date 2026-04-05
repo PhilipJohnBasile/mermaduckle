@@ -1,103 +1,67 @@
-# Mermaduckle (Rust Edition) 🦀
+# Mermaduckle — Rust AI Agent Orchestration
 
-Mermaduckle is an enterprise-grade AI Agent Orchestration Platform, now completely rewritten in **100% Rust** for ultimate performance, safety, and a minimal footprint.
+Mermaduckle is a self-hosted AI agent orchestration platform implemented as a Rust Cargo workspace. It provides a lightweight Actix-web API server, a small SPA frontend, a workflow execution engine, and tooling for team and integration management.
 
-## Architecture
+Quick links
+- Server crate: `crates/server`
+- Engine: `crates/engine`
+- Governance: `crates/governance`
+- SDK: `crates/sdk`
+- CLI: `crates/cli`
 
-The platform has been migrated from a Node.js/Next.js/React monorepo to a high-performance **Cargo Workspace** containing 5 crates:
+Highlights
+- Backend: Rust + Actix-web + Tokio
+- DB: SQLite via `rusqlite` + `r2d2` (bundled build for quick local setup)
+- Frontend: Vanilla JS SPA served from `crates/server/static`
+- API key auth: one-time raw keys returned on creation; keys stored hashed (Argon2)
+- Simple migration tracker: `migrations` table with a baseline marker
 
-*   **`mermaduckle-server`**: Actix-web server hosting the JSON API and a blazing-fast Single-Page Application (SPA) driven by Vanilla JS and a native CSS glassmorphism design system.
-*   **`mermaduckle-engine`**: The core workflow execution engine, managing context, state transitions, and Ollama HTTP integrations.
-*   **`mermaduckle-governance`**: Policy engine enforcing rate limits, cost controls, and content filtering.
-*   **`mermaduckle-sdk`**: A native Rust HTTP client wrapping the Mermaduckle REST API.
-*   **`mermaduckle-cli`**: A robust command-line interface for managing workflows and agents right from your terminal.
+Quick start (local development)
 
-## Key Technologies
+Prerequisites: Rust toolchain (rustup + cargo), optionally Docker and Ollama if you need the LLM runtime.
 
-*   **Backend**: Rust, Actix-web, Tokio
-*   **Database**: SQLite (`rusqlite` + `r2d2`) with bundled SQLite, requiring no external database servers.
-*   **Frontend**: Vanilla HTML/JS/CSS served under `static/`.
-*   **AI Integration**: Direct HTTP integrations with local [Ollama](https://ollama.ai/) instances.
+Run the server locally (defaults to http://127.0.0.1:3000):
 
-## Getting Started
-
-### Prerequisites
-
-*   Rust (`1.94.1`+)
-*   Ollama (running locally on port `11434`)
-
-### Running Locally
-
-```bash
-# Compile and run the server (starts on http://localhost:3000)
+```powershell
+# from repo root
 cargo run -p mermaduckle-server
-
-# Use the CLI to interact with the platform
-cargo run -p mermaduckle-cli -- workflows
-cargo run -p mermaduckle-cli -- agents
-cargo run -p mermaduckle-cli -- run <workflow_id>
 ```
 
-## Deployment
+The SPA is available at `/` and static assets at `/static`.
 
-### Docker
+Local development convenience
+- On localhost the SPA may auto-create a temporary development API key (server-side seeded dev admin token) and store it in `localStorage` so you can interact with the UI immediately. This is for local dev only.
 
-Build and run with Docker:
+Managing API keys
+- List keys (protected): GET `/api/settings/api-keys`
+- Create key (protected): POST `/api/settings/api-keys` with JSON `{ "name": "My Client" }`. Returns `{ id, key }` where `key` is the raw one-time secret.
+- Rotate key (protected): POST `/api/settings/api-keys/{id}/rotate` — returns new raw key.
+- Delete key (protected): DELETE `/api/settings/api-keys/{id}`
+
+Note: Protected endpoints require a Bearer token. The server stores key hashes using Argon2 and verifies incoming bearer tokens accordingly.
+
+Health & readiness
+- Health endpoint: GET `/api/health` — useful for CI and readiness checks.
+
+Database & migrations
+- The server initializes the local SQLite database (`data/app.db` by default), creates required tables, and records a baseline migration in `migrations`. For production use, adopt a real migration tool and consider Postgres.
+
+Environment variables
+- `DATABASE_PATH` (default `data/app.db`)
+- `OLLAMA_URL` (default `http://localhost:11434`)
+- `HOST` (default `0.0.0.0`)
+- `PORT` (default `3000`)
+
+Building & testing
 
 ```bash
-docker build -t mermaduckle .
-docker run -p 3000:3000 -v $(pwd)/data:/data mermaduckle
+cargo build
+cargo test -p mermaduckle-server
 ```
 
-### Docker Compose (with Ollama)
+Development notes
+- Seed data includes realistic demo workflows, agents, and a small set of API keys for local testing — these are intended for developer ease only and should not be used in production.
 
-For full deployment including Ollama:
+If you want me to, I can also add a short walkthrough showing how to create an API key and paste it into the SPA (or automatically create one for you during local dev). Please tell me which you'd prefer.
 
-```bash
-docker-compose up -d
-```
-
-This starts both Mermaduckle on port 3000 and Ollama on port 11434.
-
-### Environment Variables
-
-- `DATABASE_PATH`: Path to SQLite database (default: `data/app.db`)
-- `OLLAMA_URL`: Ollama server URL (default: `http://localhost:11434`)
-- `HOST`: Server host (default: `0.0.0.0`)
-- `PORT`: Server port (default: `3000`)
-
-## Development
-
-The entire monorepo builds as a single unit:
-
-```bash
-cargo build       # Build all crates
-cargo test        # Run unit tests across all libraries
-cargo clippy      # Run linting
-```
-
-## Database migrations & API keys
-
-This repository includes a minimal migration tracker and secure API key handling.
-
-- A `migrations` table is created on startup by the server; a baseline migration is recorded automatically.
-- The `integrations` table is created if missing to avoid seed errors on fresh databases.
-
-API keys are created as one-time raw keys and stored hashed (Argon2) in the database. The server verifies incoming bearer tokens by hashing and comparing.
-
-Create a new API key (one-time raw key returned):
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name":"My Frontend"}' http://localhost:3000/api/settings/api-keys -H "Authorization: Bearer <ADMIN_KEY>"
-```
-
-Rotate an API key (returns new one-time raw key):
-
-```bash
-curl -X POST http://localhost:3000/api/settings/api-keys/<key_id>/rotate -H "Authorization: Bearer <ADMIN_KEY>"
-```
-
-Notes:
-- The raw API key is shown only once on creation or rotation; it is stored hashed server-side.
-- For production prefer Postgres and a dedicated migration tool; the simple tracker here is intended for fast self-hosted setups.
 

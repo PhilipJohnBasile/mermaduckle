@@ -46,7 +46,7 @@ async fn main() -> std::io::Result<()> {
     let port: u16 = std::env::var("PORT")
         .ok()
         .and_then(|p| p.parse().ok())
-        .unwrap_or(3000);
+        .unwrap_or(3001);
 
     log::info!("Starting Mermaduckle server on {host}:{port}");
 
